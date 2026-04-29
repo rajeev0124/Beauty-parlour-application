@@ -1,0 +1,22 @@
+:host { display: block; }
+
+// Role Badge - Professional styling
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--brand-subtle);
+  color: var(--brand);
+  text-transform: capitalize;
+}
+
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    table { min-width: 700px; }
+  }
+}

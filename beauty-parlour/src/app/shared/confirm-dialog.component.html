@@ -1,0 +1,19 @@
+<div class="dialog-shell">
+  <div class="dialog-header">
+    <div class="dialog-header-icon" [ngClass]="data.type || 'danger'">
+      <mat-icon>{{ iconMap[data.type || 'danger'] }}</mat-icon>
+    </div>
+    <div class="dialog-header-text">
+      <h2>{{ data.title }}</h2>
+      <p>{{ data.message }}</p>
+    </div>
+  </div>
+  <div class="dialog-footer">
+    <button class="dialog-cancel" (click)="dialogRef.close(false)">
+      {{ data.cancelText || 'Cancel' }}
+    </button>
+    <button class="dialog-submit" [ngClass]="data.type || 'danger'" (click)="dialogRef.close(true)">
+      {{ data.confirmText || 'Confirm' }}
+    </button>
+  </div>
+</div>

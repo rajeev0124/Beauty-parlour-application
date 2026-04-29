@@ -1,0 +1,395 @@
+<div class="about-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-bg-pattern"></div>
+    <div class="hero-bg-glow"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <mat-icon>auto_awesome</mat-icon>
+        <span>About Us</span>
+      </div>
+      <h1 class="hero-title">Where Beauty Meets Excellence</h1>
+      <p class="hero-subtitle">Discover our story, meet our talented team, and learn why thousands trust us for their beauty transformations</p>
+      <div class="hero-actions">
+        <a routerLink="/book" class="hero-btn primary">
+          <mat-icon>calendar_today</mat-icon>
+          <span>Book Appointment</span>
+        </a>
+        <a href="#contact" class="hero-btn secondary">
+          <span>Contact Us</span>
+          <mat-icon>arrow_downward</mat-icon>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="stats-container">
+      @for (stat of stats; track stat.label) {
+        <div class="stat-card">
+          <div class="stat-icon">
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Story Section -->
+  <section class="story-section">
+    <div class="story-container">
+      <div class="story-visual">
+        <div class="visual-main">
+          <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80" alt="Our Salon">
+        </div>
+        <div class="visual-accent">
+          <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80" alt="Beauty Services">
+        </div>
+        <div class="visual-badge">
+          <mat-icon>verified</mat-icon>
+          <span>Since 2013</span>
+        </div>
+      </div>
+      
+      <div class="story-content">
+        <span class="section-tag">
+          <mat-icon>history</mat-icon>
+          Our Story
+        </span>
+        <h2 class="section-title">A Decade of Redefining Beauty</h2>
+        <p class="story-text">
+          Founded in 2013, Beauty Parlour started as a small salon with a big vision — to make 
+          premium beauty services accessible to everyone. What began as a team of 3 passionate 
+          stylists has grown into a full-service beauty destination trusted by thousands.
+        </p>
+        <p class="story-text">
+          We believe beauty is personal. That's why every service we offer is tailored to 
+          your unique needs, using only the finest products and the latest techniques from 
+          around the world.
+        </p>
+        
+        <div class="story-highlights">
+          <div class="highlight-item">
+            <mat-icon>check_circle</mat-icon>
+            <span>Premium International Products</span>
+          </div>
+          <div class="highlight-item">
+            <mat-icon>check_circle</mat-icon>
+            <span>Certified Expert Professionals</span>
+          </div>
+          <div class="highlight-item">
+            <mat-icon>check_circle</mat-icon>
+            <span>Personalized Consultations</span>
+          </div>
+          <div class="highlight-item">
+            <mat-icon>check_circle</mat-icon>
+            <span>Hygiene & Safety Standards</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <section class="values-section">
+    <div class="values-container">
+      <div class="section-header">
+        <span class="section-tag">
+          <mat-icon>stars</mat-icon>
+          Our Values
+        </span>
+        <h2 class="section-title">What Sets Us Apart</h2>
+        <p class="section-desc">Our commitment to excellence drives everything we do</p>
+      </div>
+      
+      <div class="values-grid">
+        @for (value of values; track value.title; let i = $index) {
+          <div class="value-card" [style.animation-delay]="(i * 100) + 'ms'">
+            <div class="value-icon">
+              <mat-icon>{{ value.icon }}</mat-icon>
+            </div>
+            <h3>{{ value.title }}</h3>
+            <p>{{ value.description }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline/Journey Section -->
+  <section class="journey-section">
+    <div class="journey-container">
+      <div class="section-header">
+        <span class="section-tag">
+          <mat-icon>timeline</mat-icon>
+          Our Journey
+        </span>
+        <h2 class="section-title">Milestones That Define Us</h2>
+        <p class="section-desc">From humble beginnings to becoming a trusted beauty destination</p>
+      </div>
+      
+      <div class="timeline">
+        @for (milestone of milestones; track milestone.year; let i = $index; let last = $last) {
+          <div class="timeline-item" [class.last]="last">
+            <div class="timeline-marker">
+              <span class="year">{{ milestone.year }}</span>
+            </div>
+            <div class="timeline-content">
+              <h3>{{ milestone.title }}</h3>
+              <p>{{ milestone.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="team-section">
+    <div class="team-container">
+      <div class="section-header">
+        <span class="section-tag">
+          <mat-icon>groups</mat-icon>
+          Our Team
+        </span>
+        <h2 class="section-title">Meet the Experts</h2>
+        <p class="section-desc">Our talented team is dedicated to making you look and feel your best</p>
+      </div>
+
+      <div class="team-grid">
+        @for (member of team; track member.name; let i = $index) {
+          <article class="team-card" [style.animation-delay]="(i * 100) + 'ms'">
+            <div class="member-image">
+              <img [src]="member.image" [alt]="member.name">
+              <div class="member-overlay">
+                <div class="social-links">
+                  <a [href]="member.social.instagram" class="social-link" aria-label="Instagram">
+                    <mat-icon>photo_camera</mat-icon>
+                  </a>
+                  <a [href]="member.social.linkedin" class="social-link" aria-label="LinkedIn">
+                    <mat-icon>work</mat-icon>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="member-info">
+              <h3>{{ member.name }}</h3>
+              <span class="member-role">{{ member.role }}</span>
+              <p class="member-bio">{{ member.bio }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section">
+    <div class="testimonials-container">
+      <div class="section-header">
+        <span class="section-tag">
+          <mat-icon>format_quote</mat-icon>
+          Testimonials
+        </span>
+        <h2 class="section-title">What Our Clients Say</h2>
+        <p class="section-desc">Real stories from real people who trusted us with their transformations</p>
+      </div>
+      
+      <div class="testimonials-grid">
+        @for (testimonial of testimonials; track testimonial.name; let i = $index) {
+          <div class="testimonial-card" [style.animation-delay]="(i * 100) + 'ms'">
+            <div class="quote-icon">
+              <mat-icon>format_quote</mat-icon>
+            </div>
+            <p class="testimonial-text">{{ testimonial.text }}</p>
+            <div class="testimonial-rating">
+              @for (star of getStars(testimonial.rating); track $index) {
+                <mat-icon class="star">star</mat-icon>
+              }
+            </div>
+            <div class="testimonial-author">
+              <img [src]="testimonial.image" [alt]="testimonial.name">
+              <div class="author-info">
+                <h4>{{ testimonial.name }}</h4>
+                <span>{{ testimonial.service }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section" id="contact">
+    <div class="contact-container">
+      <div class="contact-info">
+        <span class="section-tag light">
+          <mat-icon>mail</mat-icon>
+          Get in Touch
+        </span>
+        <h2 class="section-title light">Contact Us</h2>
+        <p class="section-desc light">Have questions or ready to book? We'd love to hear from you.</p>
+
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="info-icon">
+              <mat-icon>location_on</mat-icon>
+            </div>
+            <div class="info-content">
+              <h4>Visit Our Salon</h4>
+              <p>123 Beauty Lane, Anna Nagar<br>Chennai – 600040</p>
+            </div>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-icon">
+              <mat-icon>phone</mat-icon>
+            </div>
+            <div class="info-content">
+              <h4>Call Us</h4>
+              <p>+91 98765 43210<br>+91 98765 43211</p>
+            </div>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-icon">
+              <mat-icon>email</mat-icon>
+            </div>
+            <div class="info-content">
+              <h4>Email Us</h4>
+              <p>hello&#64;beautyparlour.com<br>booking&#64;beautyparlour.com</p>
+            </div>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-icon">
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <div class="info-content">
+              <h4>Working Hours</h4>
+              <p>Mon – Sat: 9 AM – 9 PM<br>Sun: 10 AM – 6 PM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form-wrapper">
+        <div class="contact-form-card">
+          <!-- Form Header -->
+          <div class="form-header">
+            <div class="form-icon">
+              <mat-icon>mail_outline</mat-icon>
+            </div>
+            <h3>Send Us a Message</h3>
+            <p>Fill out the form below and we'll get back to you within 24 hours</p>
+          </div>
+          
+          <form [formGroup]="contactForm" (ngSubmit)="sendMessage()" class="contact-form">
+            <!-- Name & Email Row -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name" class="form-label">
+                  <mat-icon>person_outline</mat-icon>
+                  <span>Your Name</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  formControlName="name" 
+                  class="form-input"
+                  placeholder="Enter your full name">
+              </div>
+
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <mat-icon>email</mat-icon>
+                  <span>Email Address</span>
+                </label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  formControlName="email" 
+                  class="form-input"
+                  placeholder="Enter your email">
+              </div>
+            </div>
+
+            <!-- Subject -->
+            <div class="form-group">
+              <label for="subject" class="form-label">
+                <mat-icon>subject</mat-icon>
+                <span>Subject</span>
+              </label>
+              <input 
+                type="text" 
+                id="subject" 
+                formControlName="subject" 
+                class="form-input"
+                placeholder="How can we help you?">
+            </div>
+
+            <!-- Message -->
+            <div class="form-group">
+              <label for="message" class="form-label">
+                <mat-icon>chat_bubble_outline</mat-icon>
+                <span>Message</span>
+              </label>
+              <textarea 
+                id="message" 
+                formControlName="message" 
+                class="form-textarea"
+                rows="5"
+                placeholder="Tell us more about your inquiry..."></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn" [disabled]="contactForm.invalid">
+              <span class="btn-content">
+                <mat-icon>send</mat-icon>
+                <span>Send Message</span>
+              </span>
+              <span class="btn-bg"></span>
+            </button>
+            
+            <!-- Form Footer -->
+            <p class="form-footer">
+              <mat-icon>lock</mat-icon>
+              Your information is secure and will never be shared
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="cta-container">
+      <div class="cta-content">
+        <span class="cta-tag">
+          <mat-icon>auto_awesome</mat-icon>
+          Ready to Transform?
+        </span>
+        <h2>Start Your Beauty Journey Today</h2>
+        <p>Book your appointment now and experience the difference of premium beauty services. Our expert team is ready to make you look and feel amazing.</p>
+        <div class="cta-actions">
+          <a routerLink="/book" class="cta-btn primary">
+            <mat-icon>calendar_today</mat-icon>
+            <span>Book Appointment</span>
+          </a>
+          <a routerLink="/services" class="cta-btn secondary">
+            <span>Explore Services</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

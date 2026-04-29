@@ -1,0 +1,152 @@
+<div class="my-appointments-page">
+  <!-- Page Hero -->
+  <div class="page-hero">
+    <div class="page-hero-content">
+      <span class="hero-badge">
+        <mat-icon>event_available</mat-icon>
+        Manage Your Bookings
+      </span>
+      <h1>My Appointments</h1>
+      <p>View and manage your upcoming and past appointments</p>
+    </div>
+  </div>
+
+  <div class="appointments-container">
+    @if (!isLoggedIn) {
+      <div class="auth-required-card">
+        <div class="auth-icon">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <h3>Sign In Required</h3>
+        <p>Please sign in to view and manage your appointments</p>
+        <button mat-flat-button color="primary" (click)="goToSignIn()" class="sign-in-btn">
+          <mat-icon>login</mat-icon> Sign In
+        </button>
+        <p class="auth-hint">
+          Don't have an account? <a routerLink="/sign-up">Create one</a>
+        </p>
+      </div>
+    } @else {
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <div class="tabs" role="tablist" aria-label="Appointment filters">
+          <button class="tab" role="tab" 
+                  [attr.aria-selected]="activeTab === 'upcoming'" 
+                  [class.active]="activeTab === 'upcoming'" 
+                  (click)="setTab('upcoming')">
+            <mat-icon>event</mat-icon> 
+            <span>Upcoming</span>
+            @if (getCount('upcoming') > 0) {
+              <span class="tab-badge">{{ getCount('upcoming') }}</span>
+            }
+          </button>
+          <button class="tab" role="tab" 
+                  [attr.aria-selected]="activeTab === 'completed'" 
+                  [class.active]="activeTab === 'completed'" 
+                  (click)="setTab('completed')">
+            <mat-icon>check_circle</mat-icon> 
+            <span>Completed</span>
+          </button>
+          <button class="tab" role="tab" 
+                  [attr.aria-selected]="activeTab === 'cancelled'" 
+                  [class.active]="activeTab === 'cancelled'" 
+                  (click)="setTab('cancelled')">
+            <mat-icon>cancel</mat-icon> 
+            <span>Cancelled</span>
+          </button>
+        </div>
+      </div>
+
+      @if (loading) {
+        <div class="appt-list">
+          @for (i of [1,2,3]; track i) {
+            <div class="appt-card skeleton-card">
+              <div class="skeleton skeleton-icon"></div>
+              <div class="skeleton-content">
+                <div class="skeleton" style="height: 18px; width: 60%; margin-bottom: 10px;"></div>
+                <div class="skeleton" style="height: 14px; width: 80%;"></div>
+              </div>
+              <div class="skeleton" style="height: 24px; width: 80px;"></div>
+            </div>
+          }
+        </div>
+      } @else if (errorMessage) {
+        <div class="error-card">
+          <div class="error-icon">
+            <mat-icon>error_outline</mat-icon>
+          </div>
+          <h3>Something went wrong</h3>
+          <p>{{ errorMessage }}</p>
+          @if (errorMessage.includes('sign in')) {
+            <button mat-flat-button color="primary" (click)="goToSignIn()" class="sign-in-btn">
+              <mat-icon>login</mat-icon> Sign In
+            </button>
+          } @else {
+            <button mat-stroked-button color="primary" (click)="loadAppointments()">
+              <mat-icon>refresh</mat-icon> Try Again
+            </button>
+          }
+        </div>
+      } @else {
+        <!-- Appointment Cards -->
+        @if (filteredAppointments.length > 0) {
+          <div class="appt-list">
+            @for (appt of filteredAppointments; track appt._id; let i = $index) {
+              <div class="appt-card" [class]="appt.status" [style.animation-delay]="(i * 50) + 'ms'">
+                <div class="appt-icon">
+                  <mat-icon>{{ getStatusIcon(appt.status) }}</mat-icon>
+                </div>
+
+                <div class="appt-details">
+                  <h3>{{ appt.service }}</h3>
+                  <div class="meta">
+                    <span class="meta-item">
+                      <mat-icon>person</mat-icon> {{ appt.stylist }}
+                    </span>
+                    <span class="meta-item">
+                      <mat-icon>calendar_today</mat-icon> {{ appt.date | date:'EEE, MMM d, y' }}
+                    </span>
+                    <span class="meta-item">
+                      <mat-icon>schedule</mat-icon> {{ appt.time }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="appt-price">₹{{ appt.price | number }}</div>
+
+                @if (appt.status === 'upcoming') {
+                  <button mat-stroked-button color="warn" class="cancel-btn" (click)="cancelAppointment(appt)">
+                    <mat-icon>close</mat-icon>
+                    Cancel
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <div class="empty-icon">
+              <mat-icon>{{ getEmptyIcon() }}</mat-icon>
+            </div>
+            <h3>No {{ activeTab }} appointments</h3>
+            <p>
+              @if (activeTab === 'upcoming') {
+                You don't have any upcoming appointments.
+              } @else if (activeTab === 'completed') {
+                You haven't completed any appointments yet.
+              } @else {
+                You haven't cancelled any appointments.
+              }
+            </p>
+            @if (activeTab === 'upcoming') {
+              <a routerLink="/book" class="book-now-btn">
+                <mat-icon>add</mat-icon>
+                Book an Appointment
+              </a>
+            }
+          </div>
+        }
+      }
+    }
+  </div>
+</div>

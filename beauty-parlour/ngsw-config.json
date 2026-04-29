@@ -1,0 +1,159 @@
+{
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.json",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/icons/**",
+          "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+        ],
+        "urls": [
+          "https://fonts.googleapis.com/**",
+          "https://fonts.gstatic.com/**"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-services",
+      "urls": [
+        "/api/services",
+        "/api/services/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "1h",
+        "timeout": "10s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-products",
+      "urls": [
+        "/api/products",
+        "/api/products/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 200,
+        "maxAge": "1h",
+        "timeout": "10s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-packages",
+      "urls": [
+        "/api/packages",
+        "/api/packages/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "1h",
+        "timeout": "10s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-staff",
+      "urls": [
+        "/api/staff",
+        "/api/staff/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "30m",
+        "timeout": "10s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-reviews",
+      "urls": [
+        "/api/reviews/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "15m",
+        "timeout": "10s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-gallery",
+      "urls": [
+        "/api/gallery/**",
+        "/uploads/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 200,
+        "maxAge": "12h",
+        "timeout": "15s",
+        "strategy": "performance"
+      }
+    },
+    {
+      "name": "api-coupons-public",
+      "urls": [
+        "/api/coupons/active"
+      ],
+      "cacheConfig": {
+        "maxSize": 20,
+        "maxAge": "10m",
+        "timeout": "5s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-user",
+      "urls": [
+        "/api/users/me",
+        "/api/wishlist/**",
+        "/api/loyalty/**",
+        "/api/appointments/my**"
+      ],
+      "cacheConfig": {
+        "maxSize": 30,
+        "maxAge": "5m",
+        "timeout": "5s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-reports",
+      "urls": [
+        "/api/reports/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 20,
+        "maxAge": "5m",
+        "timeout": "30s",
+        "strategy": "freshness"
+      }
+    }
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*/**",
+    "!/api/**"
+  ]
+}

@@ -1,0 +1,128 @@
+<div class="login-shell">
+  <!-- Left: Brand panel -->
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-logo">
+        <mat-icon>spa</mat-icon>
+      </div>
+      <h1 class="brand-title">Beauty Parlour</h1>
+      <p class="brand-subtitle">Salon Management System</p>
+      <div class="brand-features">
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Manage appointments & bookings</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Track revenue & analytics</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Staff & customer management</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Inventory & product tracking</span>
+        </div>
+      </div>
+    </div>
+    <p class="brand-footer-text">&copy; 2026 Beauty Parlour. All rights reserved.</p>
+  </div>
+
+  <!-- Right: Form -->
+  <div class="form-panel">
+    <div class="form-container">
+      <div class="form-header">
+        <h2>Welcome back</h2>
+        <p>Enter your credentials to access the dashboard</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        @if (errorMessage) {
+          <div class="auth-error-banner">
+            <mat-icon>error_outline</mat-icon>
+            {{ errorMessage }}
+          </div>
+        }
+        <div class="field-group">
+          <label class="field-label">Email address</label>
+          <div class="input-wrapper" [class.focused]="emailFocused" [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            <input 
+              type="email" 
+              formControlName="email" 
+              placeholder="you&#64;company.com"
+              (focus)="emailFocused = true"
+              (blur)="emailFocused = false">
+          </div>
+          @if (loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
+            <span class="error-text">Email is required</span>
+          }
+          @if (loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched) {
+            <span class="error-text">Enter a valid email</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <div class="input-wrapper password-wrapper" [class.focused]="passwordFocused" [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <input 
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Enter your password"
+              (focus)="passwordFocused = true"
+              (blur)="passwordFocused = false">
+            <button type="button" class="toggle-password" (click)="hidePassword = !hidePassword" tabindex="-1">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+            <span class="error-text">Password is required</span>
+          }
+          @if (loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
+            <span class="error-text">Minimum 6 characters</span>
+          }
+        </div>
+
+        <button type="submit" class="signin-btn" [disabled]="loginForm.invalid || loading">
+          @if (loading) {
+            <mat-spinner diameter="18"></mat-spinner>
+            <span>Signing in...</span>
+          } @else {
+            <span>Sign in</span>
+          }
+        </button>
+      </form>
+
+      <div class="section-divider">
+        <span>Demo accounts</span>
+      </div>
+
+      <div class="demo-row">
+        <button class="demo-card" (click)="fillDemo('admin')" type="button">
+          <div class="demo-icon admin-bg">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="demo-text">
+            <strong>Admin</strong>
+            <span>admin&#64;beauty.com</span>
+          </div>
+          <mat-icon class="demo-arrow">east</mat-icon>
+        </button>
+        <button class="demo-card" (click)="fillDemo('superadmin')" type="button">
+          <div class="demo-icon super-bg">
+            <mat-icon>shield</mat-icon>
+          </div>
+          <div class="demo-text">
+            <strong>Super Admin</strong>
+            <span>superadmin&#64;beauty.com</span>
+          </div>
+          <mat-icon class="demo-arrow">east</mat-icon>
+        </button>
+      </div>
+
+      <p class="form-footer">
+        Don't have an account? <a routerLink="/register">Create account</a>
+      </p>
+    </div>
+  </div>
+</div>

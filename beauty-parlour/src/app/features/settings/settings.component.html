@@ -1,0 +1,150 @@
+<div class="page-shell">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1 class="page-title">Settings</h1>
+      <p class="page-desc">Configure your salon preferences and notifications</p>
+    </div>
+  </div>
+
+  <div class="settings-layout">
+    <nav class="settings-nav">
+      <button class="settings-nav-item" [class.active]="activeTab === 'business'" (click)="activeTab = 'business'">
+        <mat-icon>store</mat-icon>
+        <div>
+          <span class="nav-item-label">Business Info</span>
+          <span class="nav-item-desc">Name, contact, hours</span>
+        </div>
+      </button>
+      <button class="settings-nav-item" [class.active]="activeTab === 'notifications'" (click)="activeTab = 'notifications'">
+        <mat-icon>notifications</mat-icon>
+        <div>
+          <span class="nav-item-label">Notifications</span>
+          <span class="nav-item-desc">Email, SMS, reminders</span>
+        </div>
+      </button>
+    </nav>
+
+    <div class="settings-content">
+      @if (activeTab === 'business') {
+        <div class="settings-section">
+          <div class="section-head">
+            <h3>Business Information</h3>
+            <p>Update your salon details visible to customers</p>
+          </div>
+          <form [formGroup]="businessForm" (ngSubmit)="saveBusinessSettings()" class="settings-form">
+            <div class="form-row">
+              <div class="form-field">
+                <label class="field-label">Business Name</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <input matInput formControlName="businessName">
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-row two-col">
+              <div class="form-field">
+                <label class="field-label">Email</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <input matInput formControlName="email" type="email">
+                </mat-form-field>
+              </div>
+              <div class="form-field">
+                <label class="field-label">Phone</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <input matInput formControlName="phone">
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label class="field-label">Address</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <textarea matInput formControlName="address" rows="2"></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-row two-col">
+              <div class="form-field">
+                <label class="field-label">Opening Time</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <input matInput formControlName="openTime" type="time">
+                </mat-form-field>
+              </div>
+              <div class="form-field">
+                <label class="field-label">Closing Time</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <input matInput formControlName="closeTime" type="time">
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn-add" type="submit" [disabled]="savingBusiness">
+                @if (savingBusiness) {
+                  <mat-spinner diameter="18" color="accent"></mat-spinner>
+                } @else {
+                  <mat-icon>check</mat-icon>
+                }
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+
+      @if (activeTab === 'notifications') {
+        <div class="settings-section">
+          <div class="section-head">
+            <h3>Notification Preferences</h3>
+            <p>Control how you receive alerts and updates</p>
+          </div>
+          <form [formGroup]="notificationForm" (ngSubmit)="saveNotificationSettings()">
+            <div class="toggle-list">
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Email Notifications</span>
+                  <span class="toggle-desc">Receive booking confirmations via email</span>
+                </div>
+                <mat-slide-toggle formControlName="emailNotifications"></mat-slide-toggle>
+              </div>
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">SMS Notifications</span>
+                  <span class="toggle-desc">Get text alerts for new appointments</span>
+                </div>
+                <mat-slide-toggle formControlName="smsNotifications"></mat-slide-toggle>
+              </div>
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Appointment Reminders</span>
+                  <span class="toggle-desc">Auto-remind customers before appointments</span>
+                </div>
+                <mat-slide-toggle formControlName="appointmentReminders"></mat-slide-toggle>
+              </div>
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Promotional Emails</span>
+                  <span class="toggle-desc">Send marketing offers to customers</span>
+                </div>
+                <mat-slide-toggle formControlName="promotionalEmails"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn-add" type="submit" [disabled]="savingNotifications">
+                @if (savingNotifications) {
+                  <mat-spinner diameter="18" color="accent"></mat-spinner>
+                } @else {
+                  <mat-icon>check</mat-icon>
+                }
+                Save Preferences
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+    </div>
+  </div>
+</div>

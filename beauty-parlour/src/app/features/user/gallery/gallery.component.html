@@ -1,0 +1,267 @@
+<div class="gallery-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-bg-pattern"></div>
+    <div class="hero-bg-glow"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <mat-icon>auto_awesome</mat-icon>
+        <span>Our Portfolio</span>
+      </div>
+      <h1 class="hero-title">Stunning Transformations</h1>
+      <p class="hero-subtitle">Discover the artistry and expertise of our talented team through our collection of beautiful makeovers</p>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="stats-container">
+      @for (stat of stats; track stat.label) {
+        <div class="stat-card">
+          <div class="stat-icon">
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section class="gallery-section">
+    <div class="gallery-container">
+      <!-- Section Header -->
+      <div class="section-header">
+        <div class="header-content">
+          <span class="section-tag">
+            <mat-icon>photo_library</mat-icon>
+            Gallery
+          </span>
+          <h2 class="section-title">Our Best Work</h2>
+          <p class="section-desc">Browse through our portfolio of stunning transformations and find your inspiration</p>
+        </div>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="category-tabs">
+        @for (cat of categories; track cat.key) {
+          <button class="tab-btn" 
+                  [class.active]="selectedCategory === cat.key"
+                  (click)="filterItems(cat.key)">
+            <mat-icon>{{ cat.icon }}</mat-icon>
+            <span>{{ cat.label }}</span>
+            @if (selectedCategory === cat.key) {
+              <span class="tab-indicator"></span>
+            }
+          </button>
+        }
+      </div>
+
+      <!-- Results Count -->
+      <div class="results-info">
+        <span class="results-count">{{ filteredItems.length }} transformations</span>
+        @if (selectedCategory !== 'All') {
+          <span class="results-category">in {{ selectedCategory }}</span>
+        }
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="gallery-grid">
+        @for (item of filteredItems; track item.id; let i = $index) {
+          <article class="gallery-card" 
+                   [class.featured]="item.featured"
+                   [style.animation-delay]="(i * 60) + 'ms'"
+                   (click)="openLightbox(item, i)">
+            <!-- Image -->
+            <div class="card-image">
+              <img [src]="item.image" [alt]="item.title" loading="lazy">
+              <div class="image-overlay">
+                <div class="overlay-content">
+                  <button class="view-btn">
+                    <mat-icon>zoom_in</mat-icon>
+                    <span>View Details</span>
+                  </button>
+                </div>
+              </div>
+              <!-- Badges -->
+              @if (item.featured) {
+                <span class="featured-badge">
+                  <mat-icon>star</mat-icon>
+                  Featured
+                </span>
+              }
+              <span class="category-badge">
+                <mat-icon>{{ getCategoryIcon(item.category) }}</mat-icon>
+                {{ item.category }}
+              </span>
+              <!-- Before/After indicator -->
+              <div class="before-after-indicator">
+                <mat-icon>compare</mat-icon>
+              </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="card-content">
+              <h3 class="card-title">{{ item.title }}</h3>
+              <p class="card-service">{{ item.service }}</p>
+              <div class="card-footer">
+                <div class="stylist-info">
+                  <div class="stylist-avatar">
+                    {{ item.stylist.charAt(0) }}
+                  </div>
+                  <span class="stylist-name">{{ item.stylist }}</span>
+                </div>
+                <button class="card-action">
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+
+      @if (filteredItems.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <mat-icon>photo_library</mat-icon>
+          </div>
+          <h3>No items found</h3>
+          <p>Try selecting a different category to explore more transformations</p>
+          <button class="browse-btn" (click)="filterItems('All')">
+            <mat-icon>apps</mat-icon>
+            View All Work
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="cta-container">
+      <div class="cta-content">
+        <span class="cta-tag">
+          <mat-icon>calendar_today</mat-icon>
+          Book Now
+        </span>
+        <h2>Ready for Your Transformation?</h2>
+        <p>Let our expert stylists create magic for you. Book your appointment today and start your beauty journey.</p>
+        <div class="cta-actions">
+          <a routerLink="/book" class="cta-btn primary">
+            <mat-icon>event</mat-icon>
+            <span>Book Appointment</span>
+          </a>
+          <a routerLink="/services" class="cta-btn secondary">
+            <span>View Services</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+      </div>
+      <div class="cta-visual">
+        <div class="visual-card">
+          <mat-icon>spa</mat-icon>
+          <span>Premium Services</span>
+        </div>
+        <div class="visual-card">
+          <mat-icon>verified</mat-icon>
+          <span>Expert Stylists</span>
+        </div>
+        <div class="visual-card">
+          <mat-icon>favorite</mat-icon>
+          <span>100% Satisfaction</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Lightbox Modal -->
+@if (selectedItem) {
+  <div class="lightbox" (click)="closeLightbox()">
+    <div class="lightbox-backdrop"></div>
+    
+    <!-- Navigation -->
+    <button class="lightbox-nav prev" (click)="navigateLightbox('prev'); $event.stopPropagation()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button class="lightbox-nav next" (click)="navigateLightbox('next'); $event.stopPropagation()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    
+    <!-- Close Button -->
+    <button class="lightbox-close" (click)="closeLightbox()">
+      <mat-icon>close</mat-icon>
+    </button>
+    
+    <!-- Counter -->
+    <div class="lightbox-counter">
+      {{ lightboxIndex + 1 }} / {{ filteredItems.length }}
+    </div>
+    
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <!-- Before/After Images -->
+      <div class="lightbox-images">
+        <div class="image-compare">
+          <div class="compare-side before">
+            <img [src]="selectedItem.beforeImage" [alt]="'Before - ' + selectedItem.title">
+            <span class="compare-label">Before</span>
+          </div>
+          <div class="compare-divider">
+            <div class="divider-icon">
+              <mat-icon>compare_arrows</mat-icon>
+            </div>
+          </div>
+          <div class="compare-side after">
+            <img [src]="selectedItem.afterImage" [alt]="'After - ' + selectedItem.title">
+            <span class="compare-label">After</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Info Panel -->
+      <div class="lightbox-info">
+        <div class="info-header">
+          <span class="info-category">
+            <mat-icon>{{ getCategoryIcon(selectedItem.category) }}</mat-icon>
+            {{ selectedItem.category }}
+          </span>
+          @if (selectedItem.featured) {
+            <span class="info-featured">
+              <mat-icon>star</mat-icon>
+              Featured
+            </span>
+          }
+        </div>
+        
+        <h2 class="info-title">{{ selectedItem.title }}</h2>
+        <p class="info-desc">{{ selectedItem.description }}</p>
+        
+        <div class="info-details">
+          <div class="detail-item">
+            <mat-icon>spa</mat-icon>
+            <div class="detail-content">
+              <span class="detail-label">Service</span>
+              <span class="detail-value">{{ selectedItem.service }}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <mat-icon>person</mat-icon>
+            <div class="detail-content">
+              <span class="detail-label">Stylist</span>
+              <span class="detail-value">{{ selectedItem.stylist }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <a routerLink="/book" class="info-cta" (click)="closeLightbox()">
+          <span>Book This Service</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+}

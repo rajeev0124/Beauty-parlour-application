@@ -1,0 +1,168 @@
+<div class="auth-shell">
+  <!-- Left: Illustration Panel -->
+  <div class="illustration-panel">
+    <div class="illustration-content">
+      <!-- Floating decorative elements -->
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+      </div>
+      
+      <!-- Main illustration -->
+      <div class="illustration-graphic">
+        <div class="beauty-icon-grid">
+          <div class="icon-item">
+            <mat-icon>spa</mat-icon>
+          </div>
+          <div class="icon-item accent">
+            <mat-icon>face_retouching_natural</mat-icon>
+          </div>
+          <div class="icon-item">
+            <mat-icon>content_cut</mat-icon>
+          </div>
+          <div class="icon-item accent">
+            <mat-icon>brush</mat-icon>
+          </div>
+        </div>
+        <div class="central-icon">
+          <mat-icon>favorite</mat-icon>
+        </div>
+      </div>
+
+      <div class="illustration-text">
+        <h2>Welcome Back, Beautiful!</h2>
+        <p>Sign in to continue your beauty journey with us</p>
+      </div>
+
+      <div class="feature-pills">
+        <div class="pill">
+          <mat-icon>history</mat-icon>
+          <span>Track History</span>
+        </div>
+        <div class="pill">
+          <mat-icon>star</mat-icon>
+          <span>Earn Points</span>
+        </div>
+        <div class="pill">
+          <mat-icon>card_giftcard</mat-icon>
+          <span>Get Rewards</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Form Panel -->
+  <div class="form-panel">
+    <div class="form-container">
+      <div class="form-header">
+        <div class="logo-mark">
+          <mat-icon>spa</mat-icon>
+        </div>
+        <h1>Welcome Back</h1>
+        <p>Sign in to book appointments and track your visits</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        @if (errorMessage) {
+          <div class="auth-error">
+            <mat-icon>error_outline</mat-icon>
+            {{ errorMessage }}
+          </div>
+        }
+
+        <div class="field-group">
+          <label>Email address</label>
+          <div class="input-wrapper" [class.focused]="emailFocused" [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            <div class="input-icon">
+              <mat-icon>mail_outline</mat-icon>
+            </div>
+            <input 
+              type="email" 
+              formControlName="email" 
+              placeholder="you&#64;example.com"
+              (focus)="emailFocused = true"
+              (blur)="emailFocused = false">
+          </div>
+          @if (loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
+            <span class="error-text">Email is required</span>
+          }
+          @if (loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched) {
+            <span class="error-text">Enter a valid email</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label>Password</label>
+          <div class="input-wrapper password-wrapper" [class.focused]="passwordFocused" [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <div class="input-icon">
+              <mat-icon>lock_outline</mat-icon>
+            </div>
+            <input 
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Enter your password"
+              (focus)="passwordFocused = true"
+              (blur)="passwordFocused = false">
+            <button type="button" class="toggle-password" (click)="hidePassword = !hidePassword" tabindex="-1">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+            <span class="error-text">Password is required</span>
+          }
+          @if (loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
+            <span class="error-text">Minimum 6 characters</span>
+          }
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="loginForm.invalid || loading">
+          @if (loading) {
+            <mat-spinner diameter="18"></mat-spinner>
+            <span>Signing in...</span>
+          } @else {
+            <span>Sign In</span>
+            <mat-icon>arrow_forward</mat-icon>
+          }
+        </button>
+
+        <p class="forgot-password">
+          <a href="javascript:void(0)" (click)="showForgotPassword()">Forgot password?</a>
+        </p>
+      </form>
+
+      <div class="divider">
+        <span>Demo Customers</span>
+      </div>
+
+      <div class="demo-buttons">
+        <button class="demo-card" (click)="fillDemo('priya')" type="button">
+          <div class="demo-avatar">
+            <span>PS</span>
+          </div>
+          <div class="demo-text">
+            <strong>Priya Sharma</strong>
+            <span>priya&#64;gmail.com</span>
+          </div>
+          <mat-icon class="demo-arrow">east</mat-icon>
+        </button>
+
+        <button class="demo-card" (click)="fillDemo('sneha')" type="button">
+          <div class="demo-avatar">
+            <span>SR</span>
+          </div>
+          <div class="demo-text">
+            <strong>Sneha Reddy</strong>
+            <span>sneha&#64;gmail.com</span>
+          </div>
+          <mat-icon class="demo-arrow">east</mat-icon>
+        </button>
+      </div>
+
+      <p class="auth-footer">
+        Don't have an account? <a routerLink="/sign-up">Create account</a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,80 @@
+<div class="dialog-shell">
+  <div class="dialog-header">
+    <div class="dialog-header-icon">
+      <mat-icon>inventory_2</mat-icon>
+    </div>
+    <div class="dialog-header-text">
+      <h2>{{ data ? 'Edit Product' : 'New Product' }}</h2>
+      <p>{{ data ? 'Update product information' : 'Add a new product to inventory' }}</p>
+    </div>
+  </div>
+  <div class="dialog-body">
+    <form [formGroup]="form" class="dialog-form">
+      <div>
+        <label class="dialog-field-label">Product Name</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput formControlName="name" placeholder="e.g. Argan Oil Shampoo">
+          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+            <mat-error>Product name is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div>
+        <label class="dialog-field-label">Category</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select formControlName="category">
+            <mat-option value="hair-care">Hair Care</mat-option>
+            <mat-option value="skin-care">Skin Care</mat-option>
+            <mat-option value="nail-care">Nail Care</mat-option>
+            <mat-option value="makeup">Makeup</mat-option>
+            <mat-option value="tools">Tools</mat-option>
+            <mat-option value="other">Other</mat-option>
+          </mat-select>
+          @if (form.get('category')?.hasError('required') && form.get('category')?.touched) {
+            <mat-error>Category is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="dialog-row">
+        <div>
+          <label class="dialog-field-label">Price</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <span matPrefix>&nbsp;&#8377;&nbsp;</span>
+            <input matInput formControlName="price" type="number">
+            @if (form.get('price')?.invalid && form.get('price')?.touched) {
+              <mat-error>Valid price required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div>
+          <label class="dialog-field-label">Stock Quantity</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="stock" type="number">
+            @if (form.get('stock')?.invalid && form.get('stock')?.touched) {
+              <mat-error>Valid stock required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div>
+        <label class="dialog-field-label">Description</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput formControlName="description" rows="2"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="dialog-toggle">
+        <mat-slide-toggle formControlName="isActive">Active</mat-slide-toggle>
+      </div>
+    </form>
+  </div>
+  <div class="dialog-footer">
+    <button class="dialog-cancel" (click)="dialogRef.close()">Cancel</button>
+    <button class="dialog-submit" (click)="save()" [disabled]="form.invalid">
+      {{ data ? 'Save Changes' : 'Add Product' }}
+    </button>
+  </div>
+</div>

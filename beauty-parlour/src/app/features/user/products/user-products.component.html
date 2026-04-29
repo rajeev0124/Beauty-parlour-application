@@ -1,0 +1,233 @@
+<div class="products-page">
+  <!-- Elegant Hero Section -->
+  <section class="hero-section">
+    <div class="hero-bg-pattern"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <mat-icon>verified</mat-icon>
+        <span>100% Authentic Products</span>
+      </div>
+      <h1 class="hero-title">Premium Beauty Collection</h1>
+      <p class="hero-subtitle">Discover handpicked beauty essentials curated by our experts for your radiant transformation</p>
+      <div class="hero-features">
+        <div class="feature">
+          <mat-icon>local_shipping</mat-icon>
+          <span>Free Shipping</span>
+        </div>
+        <div class="feature">
+          <mat-icon>replay</mat-icon>
+          <span>Easy Returns</span>
+        </div>
+        <div class="feature">
+          <mat-icon>security</mat-icon>
+          <span>Secure Payment</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="main-container">
+    <!-- Sidebar Filters -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h3>
+          <mat-icon>filter_list</mat-icon>
+          Categories
+        </h3>
+      </div>
+      <div class="category-list">
+        @for (cat of categories; track cat.key) {
+          <button class="category-item" [class.active]="activeCategory === cat.key" (click)="setCategory(cat.key)">
+            <div class="category-icon" [style.background]="getCategoryColor(cat.key)">
+              <mat-icon>{{ cat.icon || 'category' }}</mat-icon>
+            </div>
+            <div class="category-info">
+              <span class="category-name">{{ cat.label }}</span>
+              <span class="category-count">{{ cat.count }} items</span>
+            </div>
+            <mat-icon class="category-arrow">chevron_right</mat-icon>
+          </button>
+        }
+      </div>
+    </aside>
+
+    <!-- Products Area -->
+    <main class="products-main">
+      <!-- Toolbar -->
+      <div class="products-toolbar">
+        <div class="toolbar-left">
+          <h2 class="section-title">
+            @if (activeCategory === 'all') {
+              All Products
+            } @else {
+              {{ getCategoryLabel(activeCategory) }}
+            }
+          </h2>
+          <span class="product-count">{{ filteredProducts.length }} products</span>
+        </div>
+        <div class="toolbar-right">
+          <div class="view-toggle">
+            <button class="view-btn" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'" title="Grid View">
+              <mat-icon>grid_view</mat-icon>
+            </button>
+            <button class="view-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'" title="List View">
+              <mat-icon>view_list</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Category Filter -->
+      <div class="mobile-categories">
+        @for (cat of categories; track cat.key) {
+          <button class="mobile-cat-chip" [class.active]="activeCategory === cat.key" (click)="setCategory(cat.key)">
+            <mat-icon>{{ cat.icon }}</mat-icon>
+            {{ cat.label }}
+          </button>
+        }
+      </div>
+
+      @if (loading) {
+        <div class="products-grid">
+          @for (i of [1,2,3,4,5,6,7,8]; track i) {
+            <div class="product-card skeleton-card">
+              <div class="skeleton-image"></div>
+              <div class="skeleton-content">
+                <div class="skeleton-line w-40"></div>
+                <div class="skeleton-line w-80"></div>
+                <div class="skeleton-line w-60"></div>
+                <div class="skeleton-line w-50"></div>
+                <div class="skeleton-btn"></div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (errorMessage) {
+        <div class="error-state">
+          <div class="error-icon">
+            <mat-icon>error_outline</mat-icon>
+          </div>
+          <h3>Oops! Something went wrong</h3>
+          <p>{{ errorMessage }}</p>
+          <button class="retry-btn" (click)="loadProducts()">
+            <mat-icon>refresh</mat-icon>
+            Try Again
+          </button>
+        </div>
+      } @else if (filteredProducts.length === 0) {
+        <div class="empty-state">
+          <div class="empty-illustration">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+          <h3>No products found</h3>
+          <p>We couldn't find any products in this category.</p>
+          <button class="browse-btn" (click)="setCategory('all')">
+            <mat-icon>apps</mat-icon>
+            Browse All Products
+          </button>
+        </div>
+      } @else {
+        <!-- Products Grid -->
+        <div class="products-grid" [class.list-view]="viewMode === 'list'">
+          @for (product of filteredProducts; track product._id; let i = $index) {
+            <article class="product-card" [style.animation-delay]="(i * 50) + 'ms'">
+              <!-- Image Section -->
+              <div class="card-image-section">
+                <!-- Badges -->
+                @if (product.bestseller) {
+                  <span class="badge-bestseller">
+                    <mat-icon>local_fire_department</mat-icon>
+                    Bestseller
+                  </span>
+                }
+                @if (product.originalPrice && product.originalPrice > product.price) {
+                  <span class="badge-discount">
+                    -{{ ((1 - product.price / product.originalPrice) * 100) | number:'1.0-0' }}%
+                  </span>
+                }
+
+                <!-- Wishlist -->
+                <button class="wishlist-btn" 
+                        [class.active]="$any(product).inWishlist"
+                        (click)="toggleWishlist(product); $event.stopPropagation()">
+                  <mat-icon>{{ $any(product).inWishlist ? 'favorite' : 'favorite_border' }}</mat-icon>
+                </button>
+
+                <!-- Image -->
+                <div class="image-wrapper" [attr.data-category]="product.category" (click)="viewProduct(product)">
+                  @if (!hasImageError(product._id)) {
+                    <img [src]="getProductImage(product.category, i)" 
+                         [alt]="product.name"
+                         class="product-image"
+                         loading="lazy"
+                         (error)="onImageError($event, product._id)" />
+                  }
+                  <div class="image-fallback" [class.visible]="hasImageError(product._id)">
+                    <mat-icon>{{ getProductIcon(product.category) }}</mat-icon>
+                  </div>
+                  <div class="image-hover-overlay">
+                    <button class="quick-view-btn">
+                      <mat-icon>visibility</mat-icon>
+                      <span>Quick View</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Content Section -->
+              <div class="card-content">
+                <span class="product-category-tag">{{ product.category }}</span>
+                <h3 class="product-title">{{ product.name }}</h3>
+                
+                <!-- Rating -->
+                <div class="product-rating">
+                  <div class="stars">
+                    @for (star of [1,2,3,4,5]; track star) {
+                      <mat-icon [class.filled]="star <= (product.rating || 4)">star</mat-icon>
+                    }
+                  </div>
+                  <span class="rating-count">({{ $any(product).reviewCount || 128 }})</span>
+                </div>
+
+                <!-- Price -->
+                <div class="product-pricing">
+                  <span class="current-price">₹{{ product.price | number }}</span>
+                  @if (product.originalPrice && product.originalPrice > product.price) {
+                    <span class="original-price">₹{{ product.originalPrice | number }}</span>
+                  }
+                </div>
+
+                <!-- Stock -->
+                <div class="stock-indicator" 
+                     [class.in-stock]="product.stock > 5"
+                     [class.low-stock]="product.stock > 0 && product.stock <= 5"
+                     [class.out-of-stock]="product.stock === 0">
+                  @if (product.stock === 0) {
+                    <mat-icon>block</mat-icon>
+                    <span>Out of Stock</span>
+                  } @else if (product.stock <= 5) {
+                    <mat-icon>warning_amber</mat-icon>
+                    <span>Only {{ product.stock }} left</span>
+                  } @else {
+                    <mat-icon>check_circle</mat-icon>
+                    <span>In Stock</span>
+                  }
+                </div>
+
+                <!-- Add to Cart -->
+                <button class="add-cart-btn" 
+                        [disabled]="product.stock === 0"
+                        [class.notify-mode]="product.stock === 0"
+                        (click)="addToCart(product)">
+                  <mat-icon>{{ product.stock === 0 ? 'notifications_active' : 'shopping_bag' }}</mat-icon>
+                  <span>{{ product.stock === 0 ? 'Notify Me' : 'Add to Cart' }}</span>
+                </button>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </main>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+{
+  "name": "beauty-parlour-fullstack",
+  "version": "1.0.0",
+  "description": "Beauty Parlour Management System - Full Stack Application",
+  "scripts": {
+    "prestart": "npx kill-port 3000 4200",
+    "start": "concurrently -k -n BACKEND,FRONTEND -c blue,green \"npm:backend\" \"npm:frontend\"",
+    "backend": "cd backend && npx nest start --watch",
+    "frontend": "cd beauty-parlour && npx ng serve --port 4200",
+    "build": "concurrently \"npm run build:backend\" \"npm run build:frontend\"",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd beauty-parlour && npm run build",
+    "seed": "cd backend && npm run seed",
+    "install:all": "npm install && cd backend && npm install && cd ../beauty-parlour && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

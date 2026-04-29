@@ -1,0 +1,1087 @@
+// ============================================
+// PROFESSIONAL DARK/LIGHT MODE SYSTEM
+// Beauty Parlour - Premium Theme v2.0
+// ============================================
+
+// ============================================
+// THEME TRANSITION
+// ============================================
+*, *::before, *::after {
+  transition: 
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.15s ease;
+}
+
+// Exclude elements that shouldn't transition
+input, textarea, select, button, a, .mat-ripple, .cdk-overlay-pane, [class*="animation"] {
+  transition: 
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.15s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+// ============================================
+// LIGHT THEME (Default)
+// ============================================
+:root {
+  // Backgrounds
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: rgba(124, 58, 237, 0.04);
+  --bg-active: rgba(124, 58, 237, 0.08);
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  
+  // Text colors
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+  --text-placeholder: #9ca3af;
+  
+  // Borders
+  --border-color: #e2e8f0;
+  --border-light: #f1f5f9;
+  --border-focus: #7c3aed;
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  
+  // Shadows
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(124, 58, 237, 0.15);
+  
+  // Brand colors
+  --brand: #7c3aed;
+  --brand-hover: #6d28d9;
+  --brand-light: #ede9fe;
+  --brand-dark: #5b21b6;
+  --brand-bg: rgba(124, 58, 237, 0.08);
+  --brand-text: #7c3aed;
+  
+  // Accent colors
+  --accent: #ec4899;
+  --accent-light: #fce7f3;
+  --accent-bg: rgba(236, 72, 153, 0.1);
+  
+  // Status colors - Light mode
+  --success: #059669;
+  --success-bg: rgba(5, 150, 105, 0.1);
+  --success-light: #d1fae5;
+  --warning: #d97706;
+  --warning-bg: rgba(217, 119, 6, 0.1);
+  --warning-light: #fef3c7;
+  --error: #dc2626;
+  --error-bg: rgba(220, 38, 38, 0.1);
+  --error-light: #fee2e2;
+  --info: #2563eb;
+  --info-bg: rgba(37, 99, 235, 0.1);
+  --info-light: #dbeafe;
+  
+  // Sidebar - Premium purple gradient
+  --sidebar-bg: linear-gradient(180deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+  --sidebar-text: rgba(255, 255, 255, 0.85);
+  --sidebar-text-active: #ffffff;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.1);
+  --sidebar-active-bg: rgba(255, 255, 255, 0.15);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  
+  // Input colors
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --input-border-hover: #9ca3af;
+  --input-border-focus: #7c3aed;
+  --input-placeholder: #9ca3af;
+  
+  // Table colors
+  --table-header-bg: #f8fafc;
+  --table-row-odd: #ffffff;
+  --table-row-even: #fafafa;
+  --table-row-hover: #f1f5f9;
+  --table-border: #e5e7eb;
+  
+  // Scrollbar
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+  
+  // Chart colors
+  --chart-1: #7c3aed;
+  --chart-2: #ec4899;
+  --chart-3: #06b6d4;
+  --chart-4: #f59e0b;
+  --chart-5: #10b981;
+  --chart-grid: #e5e7eb;
+}
+
+// ============================================
+// DARK THEME
+// ============================================
+.dark-theme,
+[data-theme="dark"] {
+  // Backgrounds - Deep luxurious dark
+  --bg-primary: #0c0a1d;
+  --bg-secondary: #13102a;
+  --bg-tertiary: #1c1836;
+  --bg-card: #181432;
+  --bg-elevated: #1f1a40;
+  --bg-hover: rgba(139, 92, 246, 0.08);
+  --bg-active: rgba(139, 92, 246, 0.15);
+  --bg-overlay: rgba(0, 0, 0, 0.75);
+  
+  // Text colors - High contrast for readability
+  --text-primary: #f8fafc;
+  --text-secondary: #a5b4fc;
+  --text-muted: #6b7280;
+  --text-inverse: #0f172a;
+  --text-placeholder: #6b7280;
+  
+  // Borders - Subtle glow effect
+  --border-color: #312e81;
+  --border-light: #1e1b4b;
+  --border-focus: #a78bfa;
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  
+  // Shadows - Deeper with purple glow
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 30px rgba(139, 92, 246, 0.2);
+  --shadow-focus: 0 0 0 3px rgba(139, 92, 246, 0.25);
+  
+  // Brand colors - Brighter for dark mode
+  --brand: #a78bfa;
+  --brand-hover: #c4b5fd;
+  --brand-light: rgba(167, 139, 250, 0.2);
+  --brand-dark: #7c3aed;
+  --brand-bg: rgba(167, 139, 250, 0.12);
+  --brand-text: #c4b5fd;
+  
+  // Accent colors
+  --accent: #f472b6;
+  --accent-light: rgba(244, 114, 182, 0.2);
+  --accent-bg: rgba(244, 114, 182, 0.15);
+  
+  // Status colors - Brighter for dark mode
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.15);
+  --success-light: rgba(52, 211, 153, 0.2);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.15);
+  --warning-light: rgba(251, 191, 36, 0.2);
+  --error: #f87171;
+  --error-bg: rgba(248, 113, 113, 0.15);
+  --error-light: rgba(248, 113, 113, 0.2);
+  --info: #60a5fa;
+  --info-bg: rgba(96, 165, 250, 0.15);
+  --info-light: rgba(96, 165, 250, 0.2);
+  
+  // Sidebar - Deep elegant purple
+  --sidebar-bg: linear-gradient(180deg, #1e1b4b 0%, #18163a 50%, #0f0d26 100%);
+  --sidebar-text: rgba(255, 255, 255, 0.7);
+  --sidebar-text-active: #ffffff;
+  --sidebar-hover-bg: rgba(167, 139, 250, 0.1);
+  --sidebar-active-bg: rgba(167, 139, 250, 0.2);
+  --sidebar-border: rgba(139, 92, 246, 0.2);
+  
+  // Input colors
+  --input-bg: #1c1836;
+  --input-border: #312e81;
+  --input-border-hover: #4f46e5;
+  --input-border-focus: #a78bfa;
+  --input-placeholder: #6b7280;
+  
+  // Table colors
+  --table-header-bg: #1c1836;
+  --table-row-odd: #181432;
+  --table-row-even: #1c1836;
+  --table-row-hover: rgba(139, 92, 246, 0.1);
+  --table-border: #312e81;
+  
+  // Scrollbar
+  --scrollbar-track: #1c1836;
+  --scrollbar-thumb: #4f46e5;
+  --scrollbar-thumb-hover: #6366f1;
+  
+  // Chart colors - Brighter for dark mode
+  --chart-1: #a78bfa;
+  --chart-2: #f472b6;
+  --chart-3: #22d3ee;
+  --chart-4: #fbbf24;
+  --chart-5: #34d399;
+  --chart-grid: #312e81;
+}
+
+// ============================================
+// BASE STYLES
+// ============================================
+body {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+// ============================================
+// CARD STYLES
+// ============================================
+.card, 
+.mat-mdc-card,
+.mat-card {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-sm) !important;
+  
+  &:hover {
+    border-color: var(--border-focus) !important;
+    box-shadow: var(--shadow-md), var(--shadow-glow) !important;
+  }
+}
+
+.mat-mdc-card-title,
+.mat-mdc-card-subtitle {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-card-content {
+  color: var(--text-secondary) !important;
+}
+
+// ============================================
+// FORM CONTROLS
+// ============================================
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select,
+.mat-mdc-form-field {
+  &:not(.mat-mdc-form-field) {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
+    border-radius: 10px;
+    
+    &:hover {
+      border-color: var(--input-border-hover);
+    }
+    
+    &:focus {
+      border-color: var(--input-border-focus);
+      box-shadow: var(--shadow-focus);
+      outline: none;
+    }
+    
+    &::placeholder {
+      color: var(--input-placeholder);
+    }
+  }
+}
+
+// Material Form Field
+.mat-mdc-form-field {
+  .mdc-text-field {
+    background: var(--input-bg) !important;
+    border-radius: 10px !important;
+  }
+  
+  .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: var(--input-bg) !important;
+  }
+  
+  .mdc-text-field--outlined {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--input-border) !important;
+    }
+    
+    &:hover .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--input-border-hover) !important;
+      }
+    }
+  }
+  
+  .mat-mdc-form-field-focus-overlay {
+    background: transparent !important;
+  }
+  
+  .mdc-floating-label {
+    color: var(--text-secondary) !important;
+  }
+  
+  .mat-mdc-input-element {
+    color: var(--text-primary) !important;
+    caret-color: var(--brand) !important;
+  }
+}
+
+// ============================================
+// BUTTONS
+// ============================================
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-stroked-button,
+.mat-mdc-flat-button {
+  border-radius: 10px !important;
+  font-weight: 500 !important;
+}
+
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-flat-button.mat-primary {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-hover) 100%) !important;
+  color: white !important;
+  
+  &:hover {
+    box-shadow: var(--shadow-lg), var(--shadow-glow) !important;
+  }
+}
+
+.mat-mdc-stroked-button {
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+  
+  &:hover {
+    background: var(--bg-hover) !important;
+    border-color: var(--brand) !important;
+  }
+}
+
+.mat-mdc-icon-button {
+  color: var(--text-secondary) !important;
+  
+  &:hover {
+    background: var(--bg-hover) !important;
+    color: var(--brand) !important;
+  }
+}
+
+// ============================================
+// TABLES
+// ============================================
+table,
+.mat-mdc-table {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--table-border);
+  border-radius: 12px;
+  overflow: hidden;
+  
+  thead, .mat-mdc-header-row {
+    background: var(--table-header-bg) !important;
+  }
+  
+  th, .mat-mdc-header-cell {
+    background: var(--table-header-bg) !important;
+    color: var(--text-secondary) !important;
+    font-weight: 600 !important;
+    border-bottom: 1px solid var(--table-border) !important;
+    padding: 14px 16px !important;
+  }
+  
+  td, .mat-mdc-cell {
+    color: var(--text-primary) !important;
+    border-bottom: 1px solid var(--table-border) !important;
+    padding: 14px 16px !important;
+  }
+  
+  tr:nth-child(odd), .mat-mdc-row:nth-child(odd) {
+    background: var(--table-row-odd) !important;
+  }
+  
+  tr:nth-child(even), .mat-mdc-row:nth-child(even) {
+    background: var(--table-row-even) !important;
+  }
+  
+  tr:hover, .mat-mdc-row:hover {
+    background: var(--table-row-hover) !important;
+  }
+}
+
+// ============================================
+// DIALOGS & OVERLAYS
+// ============================================
+.mat-mdc-dialog-container,
+.mat-mdc-dialog-surface {
+  background: var(--bg-card) !important;
+  border-radius: 20px !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+.mat-mdc-dialog-title {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-dialog-content {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-dialog-actions {
+  border-top: 1px solid var(--border-color) !important;
+}
+
+.cdk-overlay-dark-backdrop {
+  background: var(--bg-overlay) !important;
+}
+
+// ============================================
+// MENUS & DROPDOWNS
+// ============================================
+.mat-mdc-menu-panel {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-xl) !important;
+  
+  .mat-mdc-menu-content {
+    padding: 8px !important;
+  }
+  
+  .mat-mdc-menu-item {
+    color: var(--text-primary) !important;
+    border-radius: 8px !important;
+    margin: 2px 0 !important;
+    
+    &:hover {
+      background: var(--bg-hover) !important;
+    }
+    
+    .mat-icon {
+      color: var(--text-secondary) !important;
+    }
+  }
+}
+
+.mat-mdc-select-panel {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+  
+  .mat-mdc-option {
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      background: var(--bg-hover) !important;
+    }
+    
+    &.mat-mdc-option-active {
+      background: var(--brand-bg) !important;
+    }
+  }
+}
+
+// ============================================
+// TABS
+// ============================================
+.mat-mdc-tab-group,
+.mat-mdc-tab-nav-bar {
+  .mat-mdc-tab-header {
+    background: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+  }
+  
+  .mat-mdc-tab {
+    color: var(--text-secondary) !important;
+    
+    &.mdc-tab--active {
+      color: var(--brand) !important;
+    }
+  }
+  
+  .mat-mdc-tab-body-wrapper {
+    background: var(--bg-card) !important;
+  }
+}
+
+// ============================================
+// CHIPS & BADGES
+// ============================================
+.mat-mdc-chip {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  
+  &.mat-primary {
+    background: var(--brand-bg) !important;
+    color: var(--brand-text) !important;
+    border-color: var(--brand) !important;
+  }
+}
+
+.mat-badge-content {
+  background: var(--brand) !important;
+  color: white !important;
+}
+
+// ============================================
+// PROGRESS & SPINNERS
+// ============================================
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: var(--brand) !important;
+  --mdc-linear-progress-track-color: var(--brand-bg) !important;
+}
+
+.mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: var(--brand) !important;
+}
+
+// ============================================
+// TOOLTIPS
+// ============================================
+.mat-mdc-tooltip {
+  --mdc-plain-tooltip-container-color: var(--bg-elevated) !important;
+  --mdc-plain-tooltip-supporting-text-color: var(--text-primary) !important;
+  
+  .mdc-tooltip__surface {
+    background: var(--bg-elevated) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-lg) !important;
+  }
+}
+
+// ============================================
+// SNACKBAR
+// ============================================
+.mat-mdc-snack-bar-container {
+  .mdc-snackbar__surface {
+    background: var(--bg-elevated) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-xl) !important;
+  }
+}
+
+// ============================================
+// EXPANSION PANELS
+// ============================================
+.mat-expansion-panel {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  
+  .mat-expansion-panel-header {
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      background: var(--bg-hover) !important;
+    }
+  }
+  
+  .mat-expansion-panel-header-title {
+    color: var(--text-primary) !important;
+  }
+  
+  .mat-expansion-panel-header-description {
+    color: var(--text-secondary) !important;
+  }
+}
+
+// ============================================
+// LISTS
+// ============================================
+.mat-mdc-list {
+  background: transparent !important;
+  
+  .mat-mdc-list-item {
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      background: var(--bg-hover) !important;
+    }
+    
+    .mat-mdc-list-item-title {
+      color: var(--text-primary) !important;
+    }
+    
+    .mat-mdc-list-item-line {
+      color: var(--text-secondary) !important;
+    }
+  }
+}
+
+// ============================================
+// SIDENAV
+// ============================================
+.mat-sidenav {
+  background: var(--bg-card) !important;
+  border-right: 1px solid var(--border-color) !important;
+}
+
+.mat-sidenav-content {
+  background: var(--bg-secondary) !important;
+}
+
+// ============================================
+// DIVIDERS
+// ============================================
+.mat-divider {
+  border-color: var(--border-color) !important;
+}
+
+// ============================================
+// DATEPICKER
+// ============================================
+.mat-datepicker-content {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-xl) !important;
+  
+  .mat-calendar-body-cell-content {
+    color: var(--text-primary) !important;
+  }
+  
+  .mat-calendar-body-selected {
+    background: var(--brand) !important;
+    color: white !important;
+  }
+  
+  .mat-calendar-body-today {
+    border-color: var(--brand) !important;
+  }
+}
+
+// ============================================
+// AUTOCOMPLETE
+// ============================================
+.mat-mdc-autocomplete-panel {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+// ============================================
+// PAGINATOR
+// ============================================
+.mat-mdc-paginator {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-top: 1px solid var(--border-color) !important;
+  
+  .mat-mdc-paginator-page-size-label,
+  .mat-mdc-paginator-range-label {
+    color: var(--text-secondary) !important;
+  }
+}
+
+// ============================================
+// SCROLLBAR
+// ============================================
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+  
+  &:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+}
+
+// ============================================
+// STATUS BADGES
+// ============================================
+.badge,
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  &.success, &.completed, &.active {
+    background: var(--success-bg);
+    color: var(--success);
+  }
+  
+  &.warning, &.pending {
+    background: var(--warning-bg);
+    color: var(--warning);
+  }
+  
+  &.error, &.cancelled, &.inactive {
+    background: var(--error-bg);
+    color: var(--error);
+  }
+  
+  &.info, &.scheduled {
+    background: var(--info-bg);
+    color: var(--info);
+  }
+}
+
+// ============================================
+// STAT CARDS
+// ============================================
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  
+  .stat-value {
+    color: var(--text-primary);
+    font-size: 28px;
+    font-weight: 700;
+  }
+  
+  .stat-label {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  
+  .stat-change {
+    &.positive {
+      color: var(--success);
+    }
+    
+    &.negative {
+      color: var(--error);
+    }
+  }
+}
+
+// ============================================
+// NAVIGATION ITEMS
+// ============================================
+.nav-item {
+  color: var(--text-secondary);
+  border-radius: 10px;
+  
+  &:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+  
+  &.active, &.nav-active {
+    background: var(--brand-bg);
+    color: var(--brand);
+    
+    .mat-icon {
+      color: var(--brand);
+    }
+  }
+}
+
+// ============================================
+// LINKS
+// ============================================
+a {
+  color: var(--brand);
+  
+  &:hover {
+    color: var(--brand-hover);
+  }
+}
+
+// ============================================
+// CODE BLOCKS
+// ============================================
+code, pre {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+// ============================================
+// SELECTION
+// ============================================
+::selection {
+  background: var(--brand-bg);
+  color: var(--brand-text);
+}
+
+// ============================================
+// TEXT VISIBILITY - COMPREHENSIVE FIX
+// ============================================
+
+// All headings
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--text-primary) !important;
+}
+
+// Paragraphs and general text
+p, span, div, label, li {
+  color: inherit;
+}
+
+// Ensure body text is visible
+body {
+  color: var(--text-primary);
+}
+
+// Dark mode specific text overrides
+.dark-theme,
+[data-theme="dark"] {
+  // Force all text to be visible
+  color: var(--text-primary);
+  
+  // Headings - bright white
+  h1, h2, h3, h4, h5, h6,
+  .h1, .h2, .h3, .h4, .h5, .h6,
+  .title, .heading, .header {
+    color: #ffffff !important;
+  }
+  
+  // Paragraphs
+  p {
+    color: #e2e8f0 !important;
+  }
+  
+  // Labels and form text
+  label, .label,
+  .mat-mdc-form-field-label,
+  .mdc-floating-label,
+  .mat-mdc-floating-label {
+    color: #c4b5fd !important;
+  }
+  
+  // Spans with text (not icons)
+  span:not(.mat-icon):not([class*="icon"]) {
+    color: inherit;
+  }
+  
+  // Table text
+  td, th,
+  .mat-mdc-cell, .mat-mdc-header-cell,
+  .mat-cell, .mat-header-cell {
+    color: #f1f5f9 !important;
+  }
+  
+  // Card content
+  .mat-mdc-card-title {
+    color: #ffffff !important;
+  }
+  
+  .mat-mdc-card-subtitle {
+    color: #a5b4fc !important;
+  }
+  
+  .mat-mdc-card-content,
+  .mat-card-content {
+    color: #e2e8f0 !important;
+  }
+  
+  // List items
+  li, .list-item,
+  .mat-mdc-list-item {
+    color: #e2e8f0 !important;
+  }
+  
+  // Input text
+  input, textarea, select,
+  .mat-mdc-input-element,
+  .mat-input-element {
+    color: #ffffff !important;
+    
+    &::placeholder {
+      color: #94a3b8 !important;
+    }
+  }
+  
+  // Select options
+  .mat-mdc-option,
+  .mat-option {
+    color: #f1f5f9 !important;
+  }
+  
+  // Menu items
+  .mat-mdc-menu-item {
+    color: #f1f5f9 !important;
+    
+    .mat-icon {
+      color: #a5b4fc !important;
+    }
+  }
+  
+  // Button text
+  .mat-mdc-button,
+  .mat-mdc-outlined-button,
+  .mat-mdc-stroked-button {
+    color: #f1f5f9 !important;
+  }
+  
+  // Tabs
+  .mat-mdc-tab {
+    color: #a5b4fc !important;
+    
+    &.mdc-tab--active {
+      color: #c4b5fd !important;
+    }
+  }
+  
+  // Expansion panel
+  .mat-expansion-panel-header-title {
+    color: #ffffff !important;
+  }
+  
+  .mat-expansion-panel-header-description {
+    color: #a5b4fc !important;
+  }
+  
+  .mat-expansion-panel-body {
+    color: #e2e8f0 !important;
+  }
+  
+  // Stepper
+  .mat-step-label {
+    color: #a5b4fc !important;
+    
+    &.mat-step-label-active,
+    &.mat-step-label-selected {
+      color: #ffffff !important;
+    }
+  }
+  
+  // Snackbar
+  .mat-mdc-snack-bar-label {
+    color: #f1f5f9 !important;
+  }
+  
+  // Tooltip
+  .mat-mdc-tooltip {
+    color: #f1f5f9 !important;
+  }
+  
+  // Checkbox & Radio labels
+  .mat-mdc-checkbox-label,
+  .mat-mdc-radio-button .mdc-label {
+    color: #e2e8f0 !important;
+  }
+  
+  // Slider
+  .mat-mdc-slider .mdc-slider__value-indicator-text {
+    color: #ffffff !important;
+  }
+  
+  // Paginator
+  .mat-mdc-paginator-page-size-label,
+  .mat-mdc-paginator-range-label {
+    color: #a5b4fc !important;
+  }
+  
+  // Datepicker
+  .mat-calendar-body-label,
+  .mat-calendar-period-button {
+    color: #e2e8f0 !important;
+  }
+  
+  .mat-calendar-table-header th {
+    color: #a5b4fc !important;
+  }
+  
+  .mat-calendar-body-cell-content {
+    color: #f1f5f9 !important;
+  }
+  
+  // Dialog
+  .mat-mdc-dialog-title {
+    color: #ffffff !important;
+  }
+  
+  .mat-mdc-dialog-content {
+    color: #e2e8f0 !important;
+  }
+  
+  // Bottom sheet
+  .mat-bottom-sheet-container {
+    color: #e2e8f0 !important;
+  }
+  
+  // Sort header
+  .mat-sort-header-content {
+    color: #c4b5fd !important;
+  }
+  
+  // Tree
+  .mat-tree-node {
+    color: #e2e8f0 !important;
+  }
+  
+  // Generic text classes
+  .text, .content, .description, .subtitle, .caption {
+    color: #e2e8f0 !important;
+  }
+  
+  .text-muted, .muted {
+    color: #94a3b8 !important;
+  }
+  
+  .text-secondary, .secondary {
+    color: #a5b4fc !important;
+  }
+  
+  // Ensure stat cards text is visible
+  .stat-value, .stat-number, .value {
+    color: #ffffff !important;
+  }
+  
+  .stat-label, .stat-title {
+    color: #a5b4fc !important;
+  }
+  
+  // Price and currency
+  .price, .amount, .currency {
+    color: #ffffff !important;
+  }
+  
+  // Time and date
+  .time, .date, .datetime {
+    color: #e2e8f0 !important;
+  }
+  
+  // Name and title fields
+  .name, .customer-name, .staff-name, .service-name {
+    color: #ffffff !important;
+  }
+  
+  // Status text (keep colored but ensure visibility)
+  .status {
+    &.active, &.completed, &.success {
+      color: #34d399 !important;
+    }
+    &.pending, &.warning {
+      color: #fbbf24 !important;
+    }
+    &.cancelled, &.error, &.inactive {
+      color: #f87171 !important;
+    }
+  }
+  
+  // Empty state text
+  .empty-state, .no-data, .placeholder {
+    color: #94a3b8 !important;
+  }
+  
+  // Hint and helper text
+  .hint, .helper-text, .mat-hint {
+    color: #94a3b8 !important;
+  }
+  
+  // Error text
+  .error-text, .mat-error, .mat-mdc-form-field-error {
+    color: #f87171 !important;
+  }
+}

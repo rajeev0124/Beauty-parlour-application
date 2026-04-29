@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Environment files (NEVER push to GitHub!)
+.env
+.env.local
+.env.production
+
+# Build output
+dist/
+.angular/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploads
+uploads/*
+!uploads/.gitkeep

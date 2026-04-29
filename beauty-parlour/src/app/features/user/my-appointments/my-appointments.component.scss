@@ -1,0 +1,661 @@
+// =============================================================
+// MY APPOINTMENTS PAGE - PROFESSIONAL REDESIGN
+// Dark/Light Mode Compatible
+// =============================================================
+
+.my-appointments-page {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  transition: background-color 0.3s ease;
+}
+
+// --- Page Hero ---
+.page-hero {
+  background: linear-gradient(135deg, #7C3AED 0%, #9333EA 50%, #A855F7 100%);
+  padding: 80px 24px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+}
+
+.page-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.page-hero h1 {
+  font-size: 40px;
+  font-weight: 800;
+  color: white;
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+.page-hero p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+// --- Container ---
+.appointments-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px 96px;
+}
+
+// --- Auth Required Card ---
+.auth-required-card {
+  text-align: center;
+  padding: 60px 40px;
+  background: var(--bg-card);
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.auth-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F3E8FF 0%, #EDE9FE 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #7C3AED;
+  }
+}
+
+.auth-required-card h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.auth-required-card > p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+}
+
+.auth-hint {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 20px !important;
+
+  a {
+    color: var(--brand);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// --- Tabs ---
+.tabs-container {
+  margin-bottom: 28px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  background: var(--bg-card);
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 250ms ease;
+  flex: 1;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .tab-badge {
+    background: #7C3AED;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  &:hover {
+    background: #F9FAFB;
+    color: #4B5563;
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+
+    mat-icon {
+      color: white;
+    }
+
+    .tab-badge {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
+
+// --- Appointment Cards ---
+.appt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.appt-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 400ms ease forwards;
+  opacity: 0;
+
+  &:hover {
+    border-color: #7C3AED;
+    box-shadow: 0 12px 32px -8px rgba(124, 58, 237, 0.15),
+                0 4px 12px -2px rgba(0, 0, 0, 0.06);
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.appt-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
+  }
+
+  .upcoming & {
+    background: linear-gradient(135deg, #F3E8FF 0%, #EDE9FE 100%);
+    color: #7C3AED;
+  }
+
+  .completed & {
+    background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+    color: #059669;
+  }
+
+  .cancelled & {
+    background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+    color: #DC2626;
+  }
+}
+
+.appt-details {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 10px;
+    color: #1F2937;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6B7280;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #9CA3AF;
+  }
+}
+
+.appt-price {
+  font-size: 22px;
+  font-weight: 800;
+  color: #7C3AED;
+  white-space: nowrap;
+}
+
+.cancel-btn {
+  flex-shrink: 0;
+  border-radius: 12px !important;
+  padding: 10px 20px !important;
+  font-weight: 600 !important;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+  }
+}
+
+// --- Empty State ---
+.empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #E5E7EB;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #F3E8FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    color: #7C3AED;
+  }
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1F2937;
+  margin: 0 0 8px;
+}
+
+.empty-state p {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0 0 24px;
+}
+
+.book-now-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  transition: all 300ms ease;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.45);
+  }
+}
+
+// --- Error Card ---
+.error-card {
+  text-align: center;
+  padding: 60px 40px;
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #FEE2E2;
+}
+
+.error-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #FEE2E2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    color: #DC2626;
+  }
+}
+
+.error-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1F2937;
+  margin: 0 0 8px;
+}
+
+.error-card p {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0 0 24px;
+}
+
+// --- Sign In Button ---
+.sign-in-btn {
+  min-width: 180px;
+  height: 48px;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%) !important;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35) !important;
+  transition: all 300ms ease !important;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.45) !important;
+  }
+}
+
+// --- Skeleton Loading ---
+.skeleton-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.skeleton-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  flex-shrink: 0;
+}
+
+.skeleton-content {
+  flex: 1;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// --- Dark Mode ---
+:host-context(.dark-mode),
+:host-context(.dark-theme) {
+  .my-appointments-page {
+    background: #111827;
+  }
+
+  .auth-required-card,
+  .appt-card,
+  .empty-state,
+  .error-card {
+    background: #1F2937;
+    border-color: #374151;
+  }
+
+  .auth-required-card h3,
+  .appt-details h3,
+  .empty-state h3,
+  .error-card h3 {
+    color: #F9FAFB;
+  }
+
+  .auth-required-card p,
+  .empty-state p,
+  .error-card p {
+    color: #9CA3AF;
+  }
+
+  .tabs {
+    background: #1F2937;
+    border-color: #374151;
+  }
+
+  .tab {
+    color: #9CA3AF;
+
+    &:hover {
+      background: #374151;
+    }
+  }
+
+  .appt-service {
+    color: #F9FAFB;
+  }
+
+  .appt-meta {
+    color: #9CA3AF;
+  }
+}
+
+// --- Responsive ---
+@media (max-width: 768px) {
+  .page-hero {
+    padding: 60px 20px 40px;
+  }
+
+  .page-hero h1 {
+    font-size: 32px;
+  }
+
+  .appointments-container {
+    padding: 24px 16px 60px;
+  }
+
+  .tabs {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tab {
+    justify-content: flex-start;
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-hero h1 {
+    font-size: 28px;
+  }
+
+  .appt-card {
+    flex-wrap: wrap;
+    padding: 20px;
+  }
+
+  .appt-price {
+    order: -1;
+    margin-left: auto;
+  }
+
+  .cancel-btn {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .auth-required-card,
+  .empty-state,
+  .error-card {
+    padding: 40px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .hero-badge {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+}
+
+// --- Loading ---
+.skeleton-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-secondary) 25%, var(--surface-tertiary, #e5e7eb) 50%, var(--surface-secondary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// =============================================================
+// DARK MODE - PROFESSIONAL STYLING
+// =============================================================
+:host-context(.dark-mode),
+:host-context(.dark-theme) {
+  .tabs {
+    border-bottom-color: var(--border);
+  }
+
+  .tab {
+    color: var(--ink-muted);
+    &:hover { 
+      color: var(--ink); 
+      background: var(--surface-tertiary); 
+    }
+    &.active { 
+      color: var(--brand); 
+    }
+  }
+
+  .appt-card {
+    background: var(--surface);
+    border-color: var(--border);
+
+    &:hover {
+      border-color: var(--brand-light);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface-tertiary) 25%, var(--surface-secondary) 50%, var(--surface-tertiary) 75%);
+  }
+}

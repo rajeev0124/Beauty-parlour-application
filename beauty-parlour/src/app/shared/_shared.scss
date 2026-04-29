@@ -1,0 +1,60 @@
+// =============================================================
+// SHARED SCSS PARTIALS — Single source of truth
+// =============================================================
+
+// --- Shared Keyframes ---
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// --- Shared Page Hero ---
+.page-hero {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  padding: 56px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(167, 139, 250, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+}
+
+.page-hero-content {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  animation: fadeInUp 500ms ease both;
+
+  h1 { font-size: 34px; font-weight: 700; color: #fff; margin: 0 0 8px; letter-spacing: -0.025em; }
+  p { font-size: 16px; color: rgba(255,255,255,0.7); margin: 0; }
+}
+
+// --- Shared Section Tag ---
+.section-tag {
+  display: inline-block;
+  padding: 5px 16px;
+  background: var(--brand-subtle);
+  color: var(--brand);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
+  border: 1px solid rgba(108, 60, 225, 0.08);
+}
+
+// --- Shared Full Width ---
+.full-width { width: 100%; }
+
+// --- Responsive Hero ---
+@media (max-width: 768px) {
+  .page-hero { padding: 40px 16px; }
+  .page-hero-content h1 { font-size: 28px; }
+}

@@ -1,0 +1,309 @@
+<!-- Offers Banner -->
+@if (activeCoupons.length > 0) {
+  <section class="offers-banner">
+    <div class="offers-container">
+      <div class="offers-icon">
+        <mat-icon>local_offer</mat-icon>
+      </div>
+      <div class="offers-content">
+        <span class="offers-title">Special Offers!</span>
+        <div class="offers-list">
+          @for (coupon of activeCoupons; track coupon.code) {
+            <span class="offer-tag">
+              Use code <strong>{{ coupon.code }}</strong> for 
+              @if (coupon.discountType === 'percentage') {
+                {{ coupon.discountValue }}% OFF
+              } @else {
+                ₹{{ coupon.discountValue }} OFF
+              }
+            </span>
+          }
+        </div>
+      </div>
+      <a routerLink="/book" class="offers-btn">Book Now</a>
+    </div>
+  </section>
+}
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="hero-badge">
+      <mat-icon>auto_awesome</mat-icon>
+      Trusted by 10,000+ clients
+    </span>
+    <h1 class="hero-title">Your Beauty, <br />Our <span class="hero-highlight">Passion</span></h1>
+    <p class="hero-desc">Experience premium salon services with expert stylists. From everyday grooming to bridal transformations — we make you shine.</p>
+    <div class="hero-actions">
+      <a routerLink="/book" class="hero-btn primary">
+        <mat-icon>calendar_today</mat-icon>
+        Book Appointment
+      </a>
+      <a routerLink="/services" class="hero-btn secondary">
+        Explore Services
+        <mat-icon>east</mat-icon>
+      </a>
+    </div>
+    <div class="hero-stats">
+      @for (stat of stats; track stat.label) {
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ stat.value }}</span>
+          <span class="hero-stat-label">{{ stat.label }}</span>
+        </div>
+      }
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card hero-card-1">
+      <mat-icon>content_cut</mat-icon>
+      <span>Hair Styling</span>
+    </div>
+    <div class="hero-card hero-card-2">
+      <mat-icon>face_retouching_natural</mat-icon>
+      <span>Skin Care</span>
+    </div>
+    <div class="hero-card hero-card-3">
+      <mat-icon>spa</mat-icon>
+      <span>Wellness</span>
+    </div>
+    <div class="hero-glow"></div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="section services-section">
+  <div class="services-bg-pattern"></div>
+  <div class="services-bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="section-container">
+    <div class="section-header">
+      <div class="section-badge">
+        <span class="badge-line"></span>
+        <span class="badge-text">
+          <mat-icon>auto_awesome</mat-icon>
+          Our Services
+        </span>
+        <span class="badge-line"></span>
+      </div>
+      <h2 class="section-title-premium">Exceptional Beauty <span class="title-highlight">Experiences</span></h2>
+      <p class="section-desc-premium">Discover our curated collection of premium treatments designed to enhance your natural beauty</p>
+    </div>
+    
+    <div class="services-grid-premium">
+      @for (service of services; track service.name; let i = $index) {
+        <div class="service-card-premium" [style.--delay]="(i * 100) + 'ms'" [class.is-featured]="service.featured">
+          <div class="card-glow" [style.--glow-color]="service.color"></div>
+          <div class="card-image-container">
+            <img [src]="service.image" [alt]="service.name" class="card-image" loading="lazy">
+            <div class="card-image-gradient"></div>
+            @if (service.featured) {
+              <div class="featured-ribbon">
+                <mat-icon>trending_up</mat-icon>
+                <span>Most Popular</span>
+              </div>
+            }
+          </div>
+          <div class="card-icon-wrapper">
+            <div class="card-icon" [style.background]="'linear-gradient(135deg, ' + service.color + ' 0%, ' + service.color + '99 100%)'">
+              <mat-icon>{{ service.icon }}</mat-icon>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">{{ service.name }}</h3>
+            <p class="card-description">{{ service.desc }}</p>
+            <div class="card-divider"></div>
+            <div class="card-footer">
+              <div class="card-pricing">
+                <span class="price-from">From</span>
+                <span class="price-amount">₹{{ service.price }}</span>
+              </div>
+              <a routerLink="/services" class="card-action-btn">
+                <span>Book</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+    
+    <div class="section-footer">
+      <a routerLink="/services" class="explore-all-btn">
+        <span class="btn-content">
+          <mat-icon>grid_view</mat-icon>
+          View All Services
+        </span>
+        <span class="btn-arrow">
+          <mat-icon>arrow_forward</mat-icon>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="section why-section">
+  <div class="why-bg-decoration">
+    <div class="decoration-circle circle-1"></div>
+    <div class="decoration-circle circle-2"></div>
+  </div>
+  <div class="section-container">
+    <div class="section-header">
+      <div class="section-badge">
+        <span class="badge-line"></span>
+        <span class="badge-text">
+          <mat-icon>workspace_premium</mat-icon>
+          Why Choose Us
+        </span>
+        <span class="badge-line"></span>
+      </div>
+      <h2 class="section-title-premium">The <span class="title-highlight">Beauty Parlour</span> Difference</h2>
+      <p class="section-desc-premium">What sets us apart from the rest</p>
+    </div>
+    <div class="why-grid-premium">
+      @for (card of whyCards; track card.title; let i = $index) {
+        <div class="why-card-premium" [style.--delay]="(i * 80) + 'ms'">
+          <div class="why-card-inner">
+            <div class="why-icon-premium" [class]="card.accent">
+              <mat-icon>{{ card.icon }}</mat-icon>
+              <div class="icon-ring"></div>
+            </div>
+            <h3 class="why-card-title">{{ card.title }}</h3>
+            <p class="why-card-desc">{{ card.desc }}</p>
+            <div class="why-card-number">{{ (i + 1) | number:'2.0-0' }}</div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Reviews Section -->
+<section class="section testimonials-section">
+  <div class="testimonials-bg-shapes">
+    <div class="testimonial-shape shape-1"></div>
+    <div class="testimonial-shape shape-2"></div>
+  </div>
+  <div class="section-container">
+    <div class="section-header">
+      <div class="section-badge">
+        <span class="badge-line"></span>
+        <span class="badge-text">
+          <mat-icon>rate_review</mat-icon>
+          Customer Reviews
+        </span>
+        <span class="badge-line"></span>
+      </div>
+      <h2 class="section-title-premium">What Our <span class="title-highlight">Clients</span> Say</h2>
+      <div class="review-summary-premium">
+        <div class="rating-showcase">
+          <span class="rating-number">{{ reviewStats.avgRating | number:'1.1-1' }}</span>
+          <div class="rating-details">
+            <div class="rating-stars-premium">
+              @for (star of [1,2,3,4,5]; track star) {
+                <mat-icon [class.filled]="star <= reviewStats.avgRating">star</mat-icon>
+              }
+            </div>
+            <span class="rating-text">Based on {{ reviewStats.totalReviews }}+ reviews</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonials-grid-premium">
+      @for (review of reviews; track review._id || review.userName; let i = $index) {
+        <div class="testimonial-card-premium" [style.--delay]="(i * 100) + 'ms'">
+          <div class="testimonial-header">
+            <div class="testimonial-avatar-premium">{{ review.userName?.charAt(0) || 'U' }}</div>
+            <div class="testimonial-author-info">
+              <span class="testimonial-name-premium">{{ review.userName }}</span>
+              <span class="testimonial-role-premium">Verified Customer</span>
+            </div>
+            <div class="testimonial-stars-premium">
+              @for (star of [1,2,3,4,5]; track star) {
+                <mat-icon [class.filled]="star <= review.rating">star</mat-icon>
+              }
+            </div>
+          </div>
+          <div class="testimonial-body">
+            <mat-icon class="quote-icon">format_quote</mat-icon>
+            <p class="testimonial-text-premium">{{ review.comment }}</p>
+          </div>
+          @if (review.serviceName) {
+            <div class="testimonial-footer">
+              <span class="testimonial-service-tag">
+                <mat-icon>spa</mat-icon>
+                {{ review.serviceName }}
+              </span>
+            </div>
+          }
+          @if (review.adminReply) {
+            <div class="testimonial-reply-premium">
+              <div class="reply-header">
+                <mat-icon>reply</mat-icon>
+                <span>Response from Beauty Parlour</span>
+              </div>
+              <p>{{ review.adminReply }}</p>
+            </div>
+          }
+        </div>
+      }
+    </div>
+    <div class="section-footer">
+      <a routerLink="/reviews" class="explore-all-btn secondary-style">
+        <span class="btn-content">
+          <mat-icon>reviews</mat-icon>
+          Read All Reviews
+        </span>
+        <span class="btn-arrow">
+          <mat-icon>arrow_forward</mat-icon>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section-premium">
+  <div class="cta-bg-premium">
+    <div class="cta-shape cta-shape-1"></div>
+    <div class="cta-shape cta-shape-2"></div>
+    <div class="cta-particles">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="particle" [style.--i]="i"></div>
+      }
+    </div>
+  </div>
+  <div class="section-container">
+    <div class="cta-content-premium">
+      <div class="cta-icon-wrapper">
+        <mat-icon>spa</mat-icon>
+      </div>
+      <h2 class="cta-title">Ready to <span>Glow</span>?</h2>
+      <p class="cta-desc">Book your appointment today and let our experts transform your look</p>
+      <div class="cta-buttons">
+        <a routerLink="/book" class="cta-btn-primary">
+          <mat-icon>calendar_today</mat-icon>
+          Book Appointment
+          <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+        </a>
+        <a href="tel:+919876543210" class="cta-btn-secondary">
+          <mat-icon>phone</mat-icon>
+          Call Now
+        </a>
+      </div>
+      <div class="cta-trust">
+        <div class="trust-avatars">
+          <span class="avatar">P</span>
+          <span class="avatar">M</span>
+          <span class="avatar">A</span>
+          <span class="avatar-more">+</span>
+        </div>
+        <span class="trust-text">Join 10,000+ happy customers</span>
+      </div>
+    </div>
+  </div>
+</section>

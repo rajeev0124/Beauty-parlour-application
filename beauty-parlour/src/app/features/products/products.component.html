@@ -1,0 +1,103 @@
+<div class="page-shell">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1 class="page-title">Products</h1>
+      <p class="page-desc">Manage inventory and product catalog</p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn-add" (click)="openDialog()">
+        <mat-icon>add</mat-icon>
+        Add Product
+      </button>
+    </div>
+  </div>
+
+  <div class="data-card">
+    <div class="data-card-toolbar">
+      <div class="data-search">
+        <mat-icon>search</mat-icon>
+        <input (keyup)="applyFilter($event)" placeholder="Search products...">
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="skeleton-table-loader">
+        @for (i of [1,2,3,4,5]; track i) {
+          <div class="skeleton-row">
+            <div class="skeleton-cell skeleton-long"></div>
+            <div class="skeleton-cell skeleton-medium"></div>
+            <div class="skeleton-cell skeleton-short"></div>
+            <div class="skeleton-cell skeleton-short"></div>
+            <div class="skeleton-cell skeleton-short"></div>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="table-responsive">
+    <table mat-table [dataSource]="dataSource" matSort class="full-width">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Product</th>
+        <td mat-cell *matCellDef="let row" class="cell-name">{{ row.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="category-tag">{{ row.category }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+        <td mat-cell *matCellDef="let row" class="amount-cell">{{ row.price | currency:'INR':'symbol':'1.0-0' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="status-badge" [class]="row.stock > 10 ? 'status-active' : row.stock > 0 ? 'status-pending' : 'status-inactive'">
+            {{ row.stock }} units
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="status-badge" [class]="row.isActive ? 'status-active' : 'status-inactive'">
+            {{ row.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <div class="row-actions">
+            <button mat-icon-button (click)="openDialog(row)" title="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteProduct(row._id)" title="Delete">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    </div>
+
+    @if (dataSource.data.length === 0) {
+      <div class="empty-state">
+        <mat-icon>inventory_2</mat-icon>
+        <h3>No products in inventory</h3>
+        <p>Add products to start managing your inventory.</p>
+      </div>
+    }
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

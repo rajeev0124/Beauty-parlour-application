@@ -1,0 +1,129 @@
+<div class="login-shell">
+  <!-- Left: Brand panel -->
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-logo">
+        <mat-icon>spa</mat-icon>
+      </div>
+      <h1 class="brand-title">Beauty Parlour</h1>
+      <p class="brand-subtitle">Salon Management System</p>
+      <div class="brand-features">
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Manage appointments & bookings</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Track revenue & analytics</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Staff & customer management</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Inventory & product tracking</span>
+        </div>
+      </div>
+    </div>
+    <p class="brand-footer-text">&copy; 2026 Beauty Parlour. All rights reserved.</p>
+  </div>
+
+  <!-- Right: Form -->
+  <div class="form-panel">
+    <div class="form-container">
+      <div class="form-header">
+        <h2>Create account</h2>
+        <p>Get started with your salon management</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        @if (errorMessage) {
+          <div class="auth-error-banner">
+            <mat-icon>error_outline</mat-icon>
+            {{ errorMessage }}
+          </div>
+        }
+        <div class="field-group">
+          <label class="field-label">Full name</label>
+          <div class="input-wrapper" [class.focused]="nameFocused" [class.error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+            <input 
+              type="text" 
+              formControlName="name" 
+              placeholder="Enter your name"
+              (focus)="nameFocused = true"
+              (blur)="nameFocused = false">
+          </div>
+          @if (registerForm.get('name')?.hasError('required') && registerForm.get('name')?.touched) {
+            <span class="error-text">Name is required</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Email address</label>
+          <div class="input-wrapper" [class.focused]="emailFocused" [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            <input 
+              type="email" 
+              formControlName="email" 
+              placeholder="you&#64;company.com"
+              (focus)="emailFocused = true"
+              (blur)="emailFocused = false">
+          </div>
+          @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+            <span class="error-text">Email is required</span>
+          }
+          @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
+            <span class="error-text">Enter a valid email</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Phone number</label>
+          <div class="input-wrapper" [class.focused]="phoneFocused" [class.error]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+            <input 
+              type="tel" 
+              formControlName="phone" 
+              placeholder="10-digit number"
+              maxlength="10"
+              (focus)="phoneFocused = true"
+              (blur)="phoneFocused = false">
+          </div>
+          @if (registerForm.get('phone')?.hasError('pattern') && registerForm.get('phone')?.touched) {
+            <span class="error-text">Enter a valid 10-digit phone number</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <div class="input-wrapper password-wrapper" [class.focused]="passwordFocused" [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+            <input 
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Min. 6 characters"
+              (focus)="passwordFocused = true"
+              (blur)="passwordFocused = false">
+            <button type="button" class="toggle-password" (click)="hidePassword = !hidePassword" tabindex="-1">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
+            <span class="error-text">Minimum 6 characters</span>
+          }
+        </div>
+
+        <button type="submit" class="signin-btn" [disabled]="registerForm.invalid || loading">
+          @if (loading) {
+            <mat-spinner diameter="18"></mat-spinner>
+            <span>Creating account...</span>
+          } @else {
+            <span>Create account</span>
+          }
+        </button>
+      </form>
+
+      <p class="form-footer">
+        Already have an account? <a routerLink="/login">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

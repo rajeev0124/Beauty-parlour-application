@@ -1,0 +1,9 @@
+:host { display: block; }
+
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    table { min-width: 600px; }
+  }
+}

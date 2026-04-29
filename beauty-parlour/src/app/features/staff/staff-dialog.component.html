@@ -1,0 +1,74 @@
+<div class="dialog-shell">
+  <div class="dialog-header">
+    <div class="dialog-header-icon">
+      <mat-icon>badge</mat-icon>
+    </div>
+    <div class="dialog-header-text">
+      <h2>{{ data ? 'Edit Staff' : 'New Staff Member' }}</h2>
+      <p>{{ data ? 'Update member details' : 'Add a new team member' }}</p>
+    </div>
+  </div>
+  <div class="dialog-body">
+    <form [formGroup]="form" class="dialog-form">
+      <div>
+        <label class="dialog-field-label">Full Name</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput formControlName="name" placeholder="e.g. Priya Sharma">
+          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+            <mat-error>Name is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div>
+        <label class="dialog-field-label">Role</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select formControlName="role">
+            <mat-option value="stylist">Stylist</mat-option>
+            <mat-option value="therapist">Therapist</mat-option>
+            <mat-option value="technician">Technician</mat-option>
+            <mat-option value="manager">Manager</mat-option>
+          </mat-select>
+          @if (form.get('role')?.hasError('required') && form.get('role')?.touched) {
+            <mat-error>Role is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="dialog-row">
+        <div>
+          <label class="dialog-field-label">Phone</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="phone">
+            @if (form.get('phone')?.hasError('required') && form.get('phone')?.touched) {
+              <mat-error>Phone is required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div>
+          <label class="dialog-field-label">Email</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="email" type="email">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div>
+        <label class="dialog-field-label">Specialization</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput formControlName="specialization" placeholder="e.g. Hair Coloring">
+        </mat-form-field>
+      </div>
+
+      <div class="dialog-toggle">
+        <mat-slide-toggle formControlName="availability">Available</mat-slide-toggle>
+      </div>
+    </form>
+  </div>
+  <div class="dialog-footer">
+    <button class="dialog-cancel" (click)="dialogRef.close()">Cancel</button>
+    <button class="dialog-submit" (click)="save()" [disabled]="form.invalid">
+      {{ data ? 'Save Changes' : 'Add Member' }}
+    </button>
+  </div>
+</div>

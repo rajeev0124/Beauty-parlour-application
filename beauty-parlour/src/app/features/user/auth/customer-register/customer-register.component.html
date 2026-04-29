@@ -1,0 +1,170 @@
+<div class="auth-shell">
+  <!-- Left: Illustration Panel -->
+  <div class="illustration-panel">
+    <div class="illustration-content">
+      <!-- Floating decorative elements -->
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+      </div>
+      
+      <!-- Main illustration -->
+      <div class="illustration-graphic">
+        <div class="beauty-icon-grid">
+          <div class="icon-item">
+            <mat-icon>spa</mat-icon>
+          </div>
+          <div class="icon-item accent">
+            <mat-icon>face_retouching_natural</mat-icon>
+          </div>
+          <div class="icon-item">
+            <mat-icon>content_cut</mat-icon>
+          </div>
+          <div class="icon-item accent">
+            <mat-icon>brush</mat-icon>
+          </div>
+        </div>
+        <div class="central-icon">
+          <mat-icon>auto_awesome</mat-icon>
+        </div>
+      </div>
+
+      <div class="illustration-text">
+        <h2>Join Our Beauty Community</h2>
+        <p>Create an account to unlock exclusive offers and seamless booking</p>
+      </div>
+
+      <div class="feature-pills">
+        <div class="pill">
+          <mat-icon>calendar_today</mat-icon>
+          <span>Easy Booking</span>
+        </div>
+        <div class="pill">
+          <mat-icon>local_offer</mat-icon>
+          <span>Exclusive Offers</span>
+        </div>
+        <div class="pill">
+          <mat-icon>loyalty</mat-icon>
+          <span>Loyalty Rewards</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Form Panel -->
+  <div class="form-panel">
+    <div class="form-container">
+      <div class="form-header">
+        <div class="logo-mark">
+          <mat-icon>spa</mat-icon>
+        </div>
+        <h1>Create Account</h1>
+        <p>Start your beauty journey with us today</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        @if (errorMessage) {
+          <div class="auth-error">
+            <mat-icon>error_outline</mat-icon>
+            {{ errorMessage }}
+          </div>
+        }
+
+        <div class="field-group">
+          <label>Full Name</label>
+          <div class="input-wrapper" [class.focused]="nameFocused" [class.error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+            <div class="input-icon">
+              <mat-icon>person_outline</mat-icon>
+            </div>
+            <input 
+              type="text" 
+              formControlName="name" 
+              placeholder="Enter your name"
+              (focus)="nameFocused = true"
+              (blur)="nameFocused = false">
+          </div>
+          @if (registerForm.get('name')?.hasError('required') && registerForm.get('name')?.touched) {
+            <span class="error-text">Name is required</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label>Email address</label>
+          <div class="input-wrapper" [class.focused]="emailFocused" [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            <div class="input-icon">
+              <mat-icon>mail_outline</mat-icon>
+            </div>
+            <input 
+              type="email" 
+              formControlName="email" 
+              placeholder="you&#64;example.com"
+              (focus)="emailFocused = true"
+              (blur)="emailFocused = false">
+          </div>
+          @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+            <span class="error-text">Email is required</span>
+          }
+          @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
+            <span class="error-text">Enter a valid email</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label>Phone number</label>
+          <div class="input-wrapper" [class.focused]="phoneFocused" [class.error]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+            <div class="input-icon">
+              <mat-icon>phone_outlined</mat-icon>
+            </div>
+            <input 
+              type="tel" 
+              formControlName="phone" 
+              placeholder="10-digit number"
+              maxlength="10"
+              (focus)="phoneFocused = true"
+              (blur)="phoneFocused = false">
+          </div>
+          @if (registerForm.get('phone')?.hasError('pattern') && registerForm.get('phone')?.touched) {
+            <span class="error-text">Enter a valid 10-digit phone number</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label>Password</label>
+          <div class="input-wrapper password-wrapper" [class.focused]="passwordFocused" [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+            <div class="input-icon">
+              <mat-icon>lock_outline</mat-icon>
+            </div>
+            <input 
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Min. 6 characters"
+              (focus)="passwordFocused = true"
+              (blur)="passwordFocused = false">
+            <button type="button" class="toggle-password" (click)="hidePassword = !hidePassword" tabindex="-1">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
+            <span class="error-text">Minimum 6 characters</span>
+          }
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="registerForm.invalid || loading">
+          @if (loading) {
+            <mat-spinner diameter="18"></mat-spinner>
+            <span>Creating account...</span>
+          } @else {
+            <span>Create Account</span>
+            <mat-icon>arrow_forward</mat-icon>
+          }
+        </button>
+      </form>
+
+      <p class="auth-footer">
+        Already have an account? <a routerLink="/sign-in">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,503 @@
+<section class="profile-hero">
+  <div class="hero-bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <mat-icon>person</mat-icon>
+      <span>Account Settings</span>
+    </div>
+    <h1>My Profile</h1>
+    <p>Manage your account settings and preferences</p>
+  </div>
+</section>
+
+<section class="profile-section">
+  <div class="profile-container">
+    @if (loading && !user) {
+      <div class="loading-state">
+        <div class="loading-spinner">
+          <mat-spinner diameter="44"></mat-spinner>
+        </div>
+        <p>Loading your profile...</p>
+      </div>
+    } @else if (user) {
+      <div class="profile-layout">
+        <!-- Sidebar -->
+        <div class="profile-sidebar">
+          <div class="profile-card">
+            <div class="card-glow"></div>
+            <div class="profile-avatar-section">
+              <div class="profile-avatar-container">
+                <div class="profile-avatar" [class.has-image]="getProfileImageUrl()" (click)="triggerFileInput()">
+                  <div class="avatar-ring"></div>
+                  @if (uploadingPhoto) {
+                    <mat-spinner diameter="32" class="avatar-spinner"></mat-spinner>
+                  } @else if (getProfileImageUrl()) {
+                    <img [src]="getProfileImageUrl()" alt="Profile" class="avatar-image">
+                  } @else {
+                    <span class="avatar-initials">{{ getInitials() }}</span>
+                  }
+                  <div class="avatar-overlay">
+                    <mat-icon>photo_camera</mat-icon>
+                    <span>Change</span>
+                  </div>
+                </div>
+                <input 
+                  #fileInput 
+                  type="file" 
+                  accept="image/*" 
+                  (change)="onFileSelected($event)" 
+                  hidden>
+                @if (getProfileImageUrl()) {
+                  <button class="remove-photo-btn" (click)="removeProfilePhoto()" [disabled]="uploadingPhoto">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                }
+              </div>
+              <button class="change-photo-btn" (click)="triggerFileInput()" [disabled]="uploadingPhoto">
+                <mat-icon>{{ getProfileImageUrl() ? 'edit' : 'add_a_photo' }}</mat-icon>
+                {{ getProfileImageUrl() ? 'Change Photo' : 'Add Photo' }}
+              </button>
+            </div>
+            <h2 class="profile-name">{{ user?.name }}</h2>
+            <p class="profile-email">{{ user?.email }}</p>
+            <div class="profile-badge">
+              <mat-icon>verified</mat-icon>
+              <span>Verified Customer</span>
+            </div>
+            <div class="profile-stats">
+              <div class="stat">
+                <span class="stat-value">{{ appointments?.length || 0 }}</span>
+                <span class="stat-label">Bookings</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-value">{{ upcomingAppointments?.length || 0 }}</span>
+                <span class="stat-label">Upcoming</span>
+              </div>
+            </div>
+          </div>
+
+          <nav class="profile-nav">
+            <div class="nav-header">
+              <mat-icon>menu</mat-icon>
+              <span>Menu</span>
+            </div>
+            <button 
+              class="nav-item" 
+              [class.active]="activeTabIndex === 0"
+              (click)="activeTabIndex = 0">
+              <div class="nav-icon">
+                <mat-icon>person</mat-icon>
+              </div>
+              <div class="nav-text">
+                <span class="nav-title">Personal Info</span>
+                <span class="nav-desc">Update your details</span>
+              </div>
+              <mat-icon class="nav-arrow">chevron_right</mat-icon>
+            </button>
+            <button 
+              class="nav-item" 
+              [class.active]="activeTabIndex === 1"
+              (click)="activeTabIndex = 1">
+              <div class="nav-icon">
+                <mat-icon>lock</mat-icon>
+              </div>
+              <div class="nav-text">
+                <span class="nav-title">Security</span>
+                <span class="nav-desc">Change password</span>
+              </div>
+              <mat-icon class="nav-arrow">chevron_right</mat-icon>
+            </button>
+            <button 
+              class="nav-item" 
+              [class.active]="activeTabIndex === 2"
+              (click)="activeTabIndex = 2">
+              <div class="nav-icon">
+                <mat-icon>calendar_today</mat-icon>
+              </div>
+              <div class="nav-text">
+                <span class="nav-title">Appointments</span>
+                <span class="nav-desc">Manage bookings</span>
+              </div>
+              <mat-icon class="nav-arrow">chevron_right</mat-icon>
+            </button>
+          </nav>
+
+          <button class="logout-btn" (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Sign Out</span>
+          </button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="profile-content">
+          @if (activeTabIndex === 0) {
+            <div class="content-card animate-in">
+              <div class="card-header">
+                <div class="header-icon">
+                  <mat-icon>person</mat-icon>
+                </div>
+                <div class="header-text">
+                  <h3>Personal Information</h3>
+                  <p>Update your personal details and contact info</p>
+                </div>
+              </div>
+              
+              <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
+                <!-- Basic Details Section -->
+                <div class="form-section">
+                  <div class="section-header">
+                    <div class="section-icon">
+                      <mat-icon>badge</mat-icon>
+                    </div>
+                    <span>Basic Details</span>
+                  </div>
+                  
+                  <div class="input-grid">
+                    <div class="input-group">
+                      <label for="name" class="input-label">
+                        <mat-icon>person</mat-icon>
+                        Full Name
+                      </label>
+                      <div class="input-wrapper" [class.focused]="nameFocused" [class.error]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched">
+                        <input 
+                          id="name"
+                          type="text" 
+                          formControlName="name" 
+                          placeholder="Enter your full name"
+                          (focus)="nameFocused = true"
+                          (blur)="nameFocused = false">
+                      </div>
+                      @if (profileForm.get('name')?.hasError('required') && profileForm.get('name')?.touched) {
+                        <span class="error-text">Name is required</span>
+                      }
+                    </div>
+
+                    <div class="input-group">
+                      <label for="email" class="input-label">
+                        <mat-icon>email</mat-icon>
+                        Email Address
+                      </label>
+                      <div class="input-wrapper" [class.focused]="emailFocused" [class.error]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+                        <input 
+                          id="email"
+                          type="email" 
+                          formControlName="email" 
+                          placeholder="your@email.com"
+                          (focus)="emailFocused = true"
+                          (blur)="emailFocused = false">
+                      </div>
+                      @if (profileForm.get('email')?.hasError('required') && profileForm.get('email')?.touched) {
+                        <span class="error-text">Email is required</span>
+                      }
+                      @if (profileForm.get('email')?.hasError('email') && profileForm.get('email')?.touched) {
+                        <span class="error-text">Invalid email format</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contact Info Section -->
+                <div class="form-section">
+                  <div class="section-header">
+                    <div class="section-icon">
+                      <mat-icon>contact_phone</mat-icon>
+                    </div>
+                    <span>Contact Information</span>
+                  </div>
+                  
+                  <div class="input-grid">
+                    <div class="input-group">
+                      <label for="phone" class="input-label">
+                        <mat-icon>phone</mat-icon>
+                        Phone Number
+                      </label>
+                      <div class="input-wrapper" [class.focused]="phoneFocused" [class.error]="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched">
+                        <input 
+                          id="phone"
+                          type="tel" 
+                          formControlName="phone" 
+                          placeholder="9876543210"
+                          (focus)="phoneFocused = true"
+                          (blur)="phoneFocused = false">
+                      </div>
+                      @if (profileForm.get('phone')?.hasError('pattern') && profileForm.get('phone')?.touched) {
+                        <span class="error-text">Enter a valid 10-digit number</span>
+                      }
+                    </div>
+
+                    <div class="input-group full-width">
+                      <label for="address" class="input-label">
+                        <mat-icon>location_on</mat-icon>
+                        Address
+                      </label>
+                      <div class="input-wrapper textarea-wrapper" [class.focused]="addressFocused">
+                        <textarea 
+                          id="address"
+                          formControlName="address" 
+                          rows="3" 
+                          placeholder="Enter your address"
+                          (focus)="addressFocused = true"
+                          (blur)="addressFocused = false"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button 
+                    type="submit"
+                    class="save-btn"
+                    [disabled]="profileForm.invalid || saving">
+                    @if (saving) {
+                      <mat-spinner diameter="18"></mat-spinner>
+                      <span>Saving...</span>
+                    } @else {
+                      <mat-icon>save</mat-icon>
+                      <span>Save Changes</span>
+                    }
+                  </button>
+                </div>
+              </form>
+            </div>
+          }
+
+          @if (activeTabIndex === 1) {
+            <div class="content-card animate-in">
+              <div class="card-header">
+                <div class="header-icon security">
+                  <mat-icon>shield</mat-icon>
+                </div>
+                <div class="header-text">
+                  <h3>Security Settings</h3>
+                  <p>Keep your account secure by updating your password</p>
+                </div>
+              </div>
+              
+              <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="profile-form">
+                <div class="form-section">
+                  <div class="section-header">
+                    <div class="section-icon security">
+                      <mat-icon>key</mat-icon>
+                    </div>
+                    <span>Change Password</span>
+                  </div>
+                  
+                  <div class="input-grid single-column">
+                    <div class="input-group">
+                      <label for="currentPassword" class="input-label">
+                        <mat-icon>lock</mat-icon>
+                        Current Password
+                      </label>
+                      <div class="input-wrapper" [class.focused]="currentPwFocused" [class.error]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched">
+                        <input 
+                          id="currentPassword"
+                          type="password" 
+                          formControlName="currentPassword" 
+                          placeholder="Enter current password"
+                          (focus)="currentPwFocused = true"
+                          (blur)="currentPwFocused = false">
+                      </div>
+                      @if (passwordForm.get('currentPassword')?.hasError('required') && passwordForm.get('currentPassword')?.touched) {
+                        <span class="error-text">Current password is required</span>
+                      }
+                    </div>
+
+                    <div class="input-group">
+                      <label for="newPassword" class="input-label">
+                        <mat-icon>lock_outline</mat-icon>
+                        New Password
+                      </label>
+                      <div class="input-wrapper" [class.focused]="newPwFocused" [class.error]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
+                        <input 
+                          id="newPassword"
+                          type="password" 
+                          formControlName="newPassword" 
+                          placeholder="Enter new password"
+                          (focus)="newPwFocused = true"
+                          (blur)="newPwFocused = false">
+                      </div>
+                      @if (passwordForm.get('newPassword')?.hasError('required') && passwordForm.get('newPassword')?.touched) {
+                        <span class="error-text">New password is required</span>
+                      }
+                      @if (passwordForm.get('newPassword')?.hasError('minlength') && passwordForm.get('newPassword')?.touched) {
+                        <span class="error-text">Password must be at least 6 characters</span>
+                      }
+                    </div>
+
+                    <div class="input-group">
+                      <label for="confirmPassword" class="input-label">
+                        <mat-icon>lock_outline</mat-icon>
+                        Confirm New Password
+                      </label>
+                      <div class="input-wrapper" [class.focused]="confirmPwFocused" [class.error]="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched">
+                        <input 
+                          id="confirmPassword"
+                          type="password" 
+                          formControlName="confirmPassword" 
+                          placeholder="Confirm new password"
+                          (focus)="confirmPwFocused = true"
+                          (blur)="confirmPwFocused = false">
+                      </div>
+                      @if (passwordForm.get('confirmPassword')?.hasError('required') && passwordForm.get('confirmPassword')?.touched) {
+                        <span class="error-text">Please confirm your password</span>
+                      }
+                      @if (passwordForm.get('confirmPassword')?.hasError('passwordMismatch') && passwordForm.get('confirmPassword')?.touched) {
+                        <span class="error-text">Passwords do not match</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="password-requirements">
+                  <div class="requirements-header">
+                    <mat-icon>info</mat-icon>
+                    <span>Password Requirements</span>
+                  </div>
+                  <ul>
+                    <li><mat-icon>check_circle</mat-icon> Minimum 6 characters</li>
+                    <li><mat-icon>check_circle</mat-icon> Use a mix of letters and numbers</li>
+                    <li><mat-icon>check_circle</mat-icon> Avoid common passwords</li>
+                  </ul>
+                </div>
+
+                <div class="form-actions">
+                  <button 
+                    type="submit"
+                    class="save-btn security-btn"
+                    [disabled]="passwordForm.invalid || changingPassword">
+                    @if (changingPassword) {
+                      <mat-spinner diameter="18"></mat-spinner>
+                      <span>Updating...</span>
+                    } @else {
+                      <mat-icon>vpn_key</mat-icon>
+                      <span>Update Password</span>
+                    }
+                  </button>
+                </div>
+              </form>
+            </div>
+          }
+
+          @if (activeTabIndex === 2) {
+            <div class="content-card animate-in">
+              <div class="card-header">
+                <div class="header-icon appointments">
+                  <mat-icon>event</mat-icon>
+                </div>
+                <div class="header-text">
+                  <h3>My Appointments</h3>
+                  <p>View and manage your upcoming bookings</p>
+                </div>
+              </div>
+              
+              @if (loadingAppointments) {
+                <div class="appointments-loading">
+                  <div class="loading-animation">
+                    <mat-spinner diameter="36"></mat-spinner>
+                  </div>
+                  <span>Loading your appointments...</span>
+                </div>
+              } @else if (appointments.length === 0) {
+                <div class="no-appointments">
+                  <div class="empty-icon">
+                    <mat-icon>event_busy</mat-icon>
+                  </div>
+                  <h4>No Appointments Yet</h4>
+                  <p>You haven't booked any appointments. Start your beauty journey today!</p>
+                  <a routerLink="/book" class="book-btn">
+                    <mat-icon>add</mat-icon>
+                    Book an Appointment
+                  </a>
+                </div>
+              } @else {
+                <!-- Upcoming Appointments -->
+                @if (upcomingAppointments.length > 0) {
+                  <div class="appointments-section">
+                    <h4 class="section-title">
+                      <div class="title-icon upcoming">
+                        <mat-icon>event_available</mat-icon>
+                      </div>
+                      <span>Upcoming Appointments</span>
+                      <span class="count-badge">{{ upcomingAppointments.length }}</span>
+                    </h4>
+                    <div class="appointments-list">
+                      @for (appt of upcomingAppointments; track appt._id; let i = $index) {
+                        <div class="appointment-card upcoming" [style.--delay]="(i * 50) + 'ms'">
+                          <div class="appt-icon">
+                            <mat-icon>{{ getStatusIcon(appt.status) }}</mat-icon>
+                          </div>
+                          <div class="appt-info">
+                            <h5>{{ appt.service }}</h5>
+                            <div class="appt-meta">
+                              <span class="meta-item"><mat-icon>person</mat-icon> {{ appt.stylist }}</span>
+                              <span class="meta-item"><mat-icon>calendar_today</mat-icon> {{ appt.date | date:'EEE, MMM d' }}</span>
+                              <span class="meta-item"><mat-icon>schedule</mat-icon> {{ appt.time }}</span>
+                            </div>
+                          </div>
+                          <div class="appt-price">₹{{ appt.price | number }}</div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- Recent/Past Appointments -->
+                @if (recentAppointments.length > 0) {
+                  <div class="appointments-section">
+                    <h4 class="section-title">
+                      <div class="title-icon history">
+                        <mat-icon>history</mat-icon>
+                      </div>
+                      <span>Recent Appointments</span>
+                    </h4>
+                    <div class="appointments-list">
+                      @for (appt of recentAppointments; track appt._id; let i = $index) {
+                        <div class="appointment-card" [class]="appt.status" [style.--delay]="(i * 50) + 'ms'">
+                          <div class="appt-icon">
+                            <mat-icon>{{ getStatusIcon(appt.status) }}</mat-icon>
+                          </div>
+                          <div class="appt-info">
+                            <h5>{{ appt.service }}</h5>
+                            <div class="appt-meta">
+                              <span class="meta-item"><mat-icon>person</mat-icon> {{ appt.stylist }}</span>
+                              <span class="meta-item"><mat-icon>calendar_today</mat-icon> {{ appt.date | date:'EEE, MMM d' }}</span>
+                            </div>
+                          </div>
+                          <div class="appt-status-badge" [class]="appt.status">
+                            {{ getStatusLabel(appt.status) }}
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <a routerLink="/my-appointments" class="view-all-link">
+                  <span>View All Appointments</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="not-logged-in">
+        <div class="not-logged-icon">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <h3>Please Sign In</h3>
+        <p>You need to sign in to view your profile</p>
+        <a routerLink="/sign-in" class="sign-in-btn">
+          <mat-icon>login</mat-icon>
+          Sign In to Continue
+        </a>
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,21 @@
+:host { display: block; }
+
+// Time cell styling
+.time-cell {
+  font-weight: 500;
+  color: var(--brand);
+  font-size: 13px;
+}
+
+// Appointment-specific responsive
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    table { min-width: 600px; }
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-select { width: 100%; }
+}
