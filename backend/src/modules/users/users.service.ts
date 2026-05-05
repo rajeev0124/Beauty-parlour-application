@@ -1,18 +1,31 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { User, UserDocument } from '../../schemas/user.schema';
-import { Appointment, AppointmentDocument } from '../../schemas/appointment.schema';
+import {
+  Appointment,
+  AppointmentDocument,
+} from '../../schemas/appointment.schema';
 import { Order, OrderDocument } from '../../schemas/order.schema';
 import { Staff, StaffDocument } from '../../schemas/staff.schema';
-import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  ChangePasswordDto,
+} from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Appointment.name) private appointmentModel: Model<AppointmentDocument>,
+    @InjectModel(Appointment.name)
+    private appointmentModel: Model<AppointmentDocument>,
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
     @InjectModel(Staff.name) private staffModel: Model<StaffDocument>,
   ) {}
@@ -28,14 +41,16 @@ export class UsersService {
         { phone: { $regex: query.search, $options: 'i' } },
       ];
     }
-    return this.userModel.find(filter)
+    return this.userModel
+      .find(filter)
       .select('-password -refreshToken')
       .populate('assignedStaff', 'name email phone specialization')
       .sort({ createdAt: -1 });
   }
 
   async findById(id: string) {
-    const user = await this.userModel.findById(id)
+    const user = await this.userModel
+      .findById(id)
       .select('-password -refreshToken')
       .populate('assignedStaff', 'name email phone specialization');
     if (!user) throw new NotFoundException('User not found');
@@ -43,18 +58,24 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const existing = await this.userModel.findOne({ email: createUserDto.email });
+    const existing = await this.userModel.findOne({
+      email: createUserDto.email,
+    });
     if (existing) throw new ConflictException('Email already exists');
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
-    const user = await this.userModel.create({ ...createUserDto, password: hashedPassword });
-    const { password, refreshToken, ...result } = user.toObject();
+    const user = await this.userModel.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+    // Exclude sensitive fields from response
+    const { password: _, refreshToken: __, ...result } = user.toObject();
     return result;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel
-      .findByIdAndUpdate(id, updateUserDto, { new: true })
+      .findByIdAndUpdate(id, updateUserDto, { returnDocument: 'after' })
       .select('-password -refreshToken')
       .populate('assignedStaff', 'name email phone specialization');
     if (!user) throw new NotFoundException('User not found');
@@ -69,7 +90,11 @@ export class UsersService {
     }
 
     const user = await this.userModel
-      .findByIdAndUpdate(userId, { assignedStaff: staffIds }, { new: true })
+      .findByIdAndUpdate(
+        userId,
+        { assignedStaff: staffIds },
+        { returnDocument: 'after' },
+      )
       .select('-password -refreshToken')
       .populate('assignedStaff', 'name email phone specialization');
     if (!user) throw new NotFoundException('User not found');
@@ -81,7 +106,11 @@ export class UsersService {
     if (!staff) throw new NotFoundException('Staff not found');
 
     const user = await this.userModel
-      .findByIdAndUpdate(userId, { $addToSet: { assignedStaff: staffId } }, { new: true })
+      .findByIdAndUpdate(
+        userId,
+        { $addToSet: { assignedStaff: staffId } },
+        { returnDocument: 'after' },
+      )
       .select('-password -refreshToken')
       .populate('assignedStaff', 'name email phone specialization');
     if (!user) throw new NotFoundException('User not found');
@@ -90,7 +119,11 @@ export class UsersService {
 
   async removeStaff(userId: string, staffId: string) {
     const user = await this.userModel
-      .findByIdAndUpdate(userId, { $pull: { assignedStaff: staffId } }, { new: true })
+      .findByIdAndUpdate(
+        userId,
+        { $pull: { assignedStaff: staffId } },
+        { returnDocument: 'after' },
+      )
       .select('-password -refreshToken')
       .populate('assignedStaff', 'name email phone specialization');
     if (!user) throw new NotFoundException('User not found');
@@ -99,7 +132,11 @@ export class UsersService {
 
   async clearAllStaff(userId: string) {
     const user = await this.userModel
-      .findByIdAndUpdate(userId, { assignedStaff: [] }, { new: true })
+      .findByIdAndUpdate(
+        userId,
+        { assignedStaff: [] },
+        { returnDocument: 'after' },
+      )
       .select('-password -refreshToken');
     if (!user) throw new NotFoundException('User not found');
     return user;
@@ -119,5 +156,54 @@ export class UsersService {
   async getUserAppointments(id: string) {
     await this.findById(id); // verify user exists
     return this.appointmentModel.find({ userId: id }).sort({ createdAt: -1 });
+  }
+
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
+    const user = await this.userModel.findById(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    const isMatch = await bcrypt.compare(
+      changePasswordDto.oldPassword,
+      user.password,
+    );
+    if (!isMatch) throw new BadRequestException('Incorrect current password');
+
+    user.password = await bcrypt.hash(changePasswordDto.newPassword, 12);
+    await user.save();
+    return { message: 'Password updated successfully' };
+  }
+
+  async toggle2FA(userId: string, enabled: boolean) {
+    const user = await this.userModel.findByIdAndUpdate(
+      userId,
+      { is2FAEnabled: enabled },
+      { returnDocument: 'after' },
+    );
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  async getActiveSessions(userId: string) {
+    const user = await this.userModel.findById(userId);
+    if (!user) throw new NotFoundException('User not found');
+    return user.activeSessions || [];
+  }
+
+  async revokeSession(userId: string, sessionId: string) {
+    const user = await this.userModel.findByIdAndUpdate(
+      userId,
+      { $pull: { activeSessions: { sessionId } } },
+      { returnDocument: 'after' },
+    );
+    if (!user) throw new NotFoundException('User not found');
+    return user.activeSessions;
+  }
+
+  async addSession(userId: string, sessionData: any) {
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      { $push: { activeSessions: sessionData } },
+      { returnDocument: 'after' },
+    );
   }
 }

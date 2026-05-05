@@ -1,6 +1,22 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ForbiddenException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto, AssignStaffDto } from './dto/user.dto';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  AssignStaffDto,
+  ChangePasswordDto,
+} from './dto/user.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles, CurrentUser } from '../../common/decorators';
@@ -29,7 +45,10 @@ export class UsersController {
 
   @Post()
   @Roles('admin', 'superadmin')
-  async create(@Body() createUserDto: CreateUserDto, @CurrentUser() currentUser: any) {
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @CurrentUser() currentUser: any,
+  ) {
     // Only superadmin can create admin users
     if (createUserDto.role === 'admin' || createUserDto.role === 'superadmin') {
       if (currentUser.role !== 'superadmin') {
@@ -60,7 +79,10 @@ export class UsersController {
       }
     }
     // Prevent role elevation unless superadmin
-    if (updateUserDto.role && (updateUserDto.role === 'admin' || updateUserDto.role === 'superadmin')) {
+    if (
+      updateUserDto.role &&
+      (updateUserDto.role === 'admin' || updateUserDto.role === 'superadmin')
+    ) {
       if (currentUser.role !== 'superadmin') {
         throw new ForbiddenException('Only superadmin can assign admin roles');
       }
@@ -141,5 +163,31 @@ export class UsersController {
   @Roles('admin', 'superadmin')
   clearAllStaff(@Param('id') id: string) {
     return this.usersService.clearAllStaff(id);
+  }
+
+  @Post('change-password')
+  changePassword(
+    @CurrentUser() user: any,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.usersService.changePassword(user._id, changePasswordDto);
+  }
+
+  @Put(':id/2fa')
+  toggle2FA(@Param('id') id: string, @Body('enabled') enabled: boolean) {
+    return this.usersService.toggle2FA(id, enabled);
+  }
+
+  @Get(':id/sessions')
+  getActiveSessions(@Param('id') id: string) {
+    return this.usersService.getActiveSessions(id);
+  }
+
+  @Delete(':id/sessions/:sessionId')
+  revokeSession(
+    @Param('id') id: string,
+    @Param('sessionId') sessionId: string,
+  ) {
+    return this.usersService.revokeSession(id, sessionId);
   }
 }

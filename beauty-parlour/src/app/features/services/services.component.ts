@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, TitleCasePipe, DecimalPipe } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -24,7 +24,8 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
     MatTableModule, MatPaginatorModule, MatSortModule,
     MatCardModule, MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatDialogModule,
-    MatSnackBarModule, MatChipsModule, CurrencyPipe, MatProgressBarModule
+    MatSnackBarModule, MatChipsModule, CurrencyPipe, MatProgressBarModule,
+    TitleCasePipe, DecimalPipe
   ],
   templateUrl: './services.component.html',
   styleUrl: './services.component.scss',
@@ -33,7 +34,8 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
 export class ServicesComponent implements OnInit, AfterViewInit {
   displayedColumns = ['name', 'category', 'price', 'duration', 'status', 'actions'];
   dataSource = new MatTableDataSource<Service>();
-  loading = true; // Start with loading true
+  loading = true;
+  categoryFilter = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -75,6 +77,89 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  filterByCategory(category: string): void {
+    this.categoryFilter = category;
+    this.dataSource.filter = category.toLowerCase();
+  }
+
+  getActiveCount(): number {
+    return this.dataSource.data.filter(s => s.isActive).length;
+  }
+
+  getCategoryCount(): number {
+    return new Set(this.dataSource.data.map(s => s.category)).size;
+  }
+
+  getAveragePrice(): number {
+    if (this.dataSource.data.length === 0) return 0;
+    const total = this.dataSource.data.reduce((sum, s) => sum + s.price, 0);
+    return total / this.dataSource.data.length;
+  }
+
+  getCategories(): string[] {
+    return [...new Set(this.dataSource.data.map(s => s.category))].sort();
+  }
+
+  getCategoryIcon(category: string): string {
+    const icons: Record<string, string> = {
+      hair: '💇',
+      skin: '✨',
+      nails: '💅',
+      massage: '💆',
+      bridal: '👰',
+      makeup: '💄'
+    };
+    return icons[category?.toLowerCase()] || '🌟';
+  }
+
+  getCategoryMatIcon(category: string): string {
+    const icons: Record<string, string> = {
+      hair: 'content_cut',
+      skin: 'face_retouching_natural',
+      nails: 'back_hand',
+      massage: 'self_improvement',
+      bridal: 'favorite',
+      makeup: 'brush'
+    };
+    return icons[category?.toLowerCase()] || 'spa';
+  }
+
+  getCategoryColor(category: string): string {
+    const colors: Record<string, string> = {
+      hair: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+      skin: 'linear-gradient(135deg, #ec4899, #db2777)',
+      nails: 'linear-gradient(135deg, #f43f5e, #e11d48)',
+      massage: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+      bridal: 'linear-gradient(135deg, #f59e0b, #d97706)',
+      makeup: 'linear-gradient(135deg, #10b981, #059669)'
+    };
+    return colors[category?.toLowerCase()] || 'linear-gradient(135deg, #6b7280, #4b5563)';
+  }
+
+  getCategoryBg(category: string): string {
+    const colors: Record<string, string> = {
+      hair: '#ede9fe',
+      skin: '#fce7f3',
+      nails: '#ffe4e6',
+      massage: '#cffafe',
+      bridal: '#fef3c7',
+      makeup: '#d1fae5'
+    };
+    return colors[category?.toLowerCase()] || '#f3f4f6';
+  }
+
+  getCategoryTextColor(category: string): string {
+    const colors: Record<string, string> = {
+      hair: '#6d28d9',
+      skin: '#be185d',
+      nails: '#be123c',
+      massage: '#0e7490',
+      bridal: '#b45309',
+      makeup: '#047857'
+    };
+    return colors[category?.toLowerCase()] || '#4b5563';
   }
 
   openDialog(service?: Service): void {

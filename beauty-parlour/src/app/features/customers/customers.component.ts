@@ -38,6 +38,9 @@ export class CustomersComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSource = new MatTableDataSource<User>();
   loading = false;
   staffList: Staff[] = [];
+  activeFilter: 'all' | 'active' | 'blocked' = 'all';
+  filteredData: User[] = [];
+  private searchTerm = '';
   private destroy$ = new Subject<void>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -78,6 +81,7 @@ export class CustomersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.http.get<User[]>(`${environment.apiUrl}/users`).pipe(takeUntil(this.destroy$)).subscribe({
       next: (users) => {
         this.dataSource.data = users.filter(u => u.role === 'customer');
+        this.applyFilters();
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -89,8 +93,75 @@ export class CustomersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.searchTerm = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = this.searchTerm;
+    this.applyFilters();
+  }
+
+  filterCustomers(filter: 'all' | 'active' | 'blocked'): void {
+    this.activeFilter = filter;
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
+    let data = this.dataSource.data;
+    
+    // Apply search filter
+    if (this.searchTerm) {
+      data = data.filter(c => 
+        c.name?.toLowerCase().includes(this.searchTerm) ||
+        c.email?.toLowerCase().includes(this.searchTerm) ||
+        c.phone?.toLowerCase().includes(this.searchTerm)
+      );
+    }
+    
+    // Apply status filter
+    if (this.activeFilter === 'active') {
+      data = data.filter(c => c.status === 'active');
+    } else if (this.activeFilter === 'blocked') {
+      data = data.filter(c => c.status === 'blocked');
+    }
+    
+    this.filteredData = data;
+  }
+
+  clearFilters(): void {
+    this.activeFilter = 'all';
+    this.searchTerm = '';
+    this.dataSource.filter = '';
+    this.applyFilters();
+  }
+
+  getActiveCount(): number {
+    return this.dataSource.data.filter(c => c.status === 'active').length;
+  }
+
+  getBlockedCount(): number {
+    return this.dataSource.data.filter(c => c.status === 'blocked').length;
+  }
+
+  getNewThisMonthCount(): number {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    return this.dataSource.data.filter(c => {
+      const createdAt = new Date(c.createdAt);
+      return createdAt >= startOfMonth;
+    }).length;
+  }
+
+  getAvatarColor(name: string | undefined): string {
+    const colors = [
+      'linear-gradient(135deg, #3b82f6, #2563eb)',
+      'linear-gradient(135deg, #10b981, #059669)',
+      'linear-gradient(135deg, #f59e0b, #d97706)',
+      'linear-gradient(135deg, #ec4899, #db2777)',
+      'linear-gradient(135deg, #7c3aed, #9333ea)',
+      'linear-gradient(135deg, #06b6d4, #0891b2)',
+      'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+    ];
+    if (!name) return colors[0];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
   }
 
   toggleStatus(user: User): void {

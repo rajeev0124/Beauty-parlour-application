@@ -84,6 +84,25 @@ export class AppointmentsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dataSource.filter = status;
   }
 
+  getStatusCount(status: string): number {
+    return this.dataSource.data.filter(a => a.status === status).length;
+  }
+
+  getAvatarColor(name: string): string {
+    const colors = [
+      'linear-gradient(135deg, #7c3aed, #9333ea)',
+      'linear-gradient(135deg, #3b82f6, #2563eb)',
+      'linear-gradient(135deg, #10b981, #059669)',
+      'linear-gradient(135deg, #f59e0b, #d97706)',
+      'linear-gradient(135deg, #ec4899, #db2777)',
+      'linear-gradient(135deg, #06b6d4, #0891b2)',
+      'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+    ];
+    if (!name) return colors[0];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+  }
+
   updateStatus(id: string, status: string): void {
     this.appointmentService.updateStatus(id, status).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {

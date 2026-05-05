@@ -30,7 +30,8 @@ export class PackagesController {
     @Query('maxPrice') maxPrice?: string,
   ) {
     return this.packagesService.findAll({
-      isActive: isActive === 'true' ? true : isActive === 'false' ? false : undefined,
+      isActive:
+        isActive === 'true' ? true : isActive === 'false' ? false : undefined,
       category,
       search,
       minPrice: minPrice ? parseFloat(minPrice) : undefined,

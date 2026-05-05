@@ -26,7 +26,8 @@ export class WaitlistController {
   @Post()
   async join(
     @Request() req,
-    @Body() body: {
+    @Body()
+    body: {
       serviceId: string;
       serviceName: string;
       preferredDate: string;
@@ -54,7 +55,9 @@ export class WaitlistController {
    */
   @Get('my')
   async getMyWaitlist(@Request() req) {
-    const entries = await this.waitlistService.getMyWaitlist(req.user._id.toString());
+    const entries = await this.waitlistService.getMyWaitlist(
+      req.user._id.toString(),
+    );
     return {
       success: true,
       data: entries,

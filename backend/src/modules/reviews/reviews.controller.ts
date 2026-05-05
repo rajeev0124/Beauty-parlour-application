@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto, ReplyReviewDto } from './dto/review.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -25,7 +36,9 @@ export class ReviewsController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'superadmin')
-  findAll(@Query() query: { approved?: string; serviceId?: string; staffId?: string }) {
+  findAll(
+    @Query() query: { approved?: string; serviceId?: string; staffId?: string },
+  ) {
     return this.reviewsService.findAll(query);
   }
 
@@ -33,7 +46,11 @@ export class ReviewsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Request() req, @Body() createReviewDto: CreateReviewDto) {
-    return this.reviewsService.create(req.user._id.toString(), req.user.name, createReviewDto);
+    return this.reviewsService.create(
+      req.user._id.toString(),
+      req.user.name,
+      createReviewDto,
+    );
   }
 
   // Admin - Approve review

@@ -1,4 +1,13 @@
-import { Controller, Get, Put, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { UpdateInventoryDto, AddStockDto } from './dto/inventory.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -22,7 +31,10 @@ export class InventoryController {
   }
 
   @Put('update/:productId')
-  update(@Param('productId') productId: string, @Body() updateInventoryDto: UpdateInventoryDto) {
+  update(
+    @Param('productId') productId: string,
+    @Body() updateInventoryDto: UpdateInventoryDto,
+  ) {
     return this.inventoryService.update(productId, updateInventoryDto);
   }
 

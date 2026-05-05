@@ -1,4 +1,15 @@
-import { IsNumber, IsString, IsOptional, IsBoolean, IsEnum, Min, Max, IsArray, IsObject, MaxLength } from 'class-validator';
+import {
+  IsNumber,
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsEnum,
+  Min,
+  Max,
+  IsArray,
+  IsObject,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateFeedbackDto {
   @IsEnum(['appointment', 'order', 'general', 'service', 'staff'])

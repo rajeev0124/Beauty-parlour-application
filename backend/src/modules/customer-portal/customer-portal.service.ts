@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Appointment } from '../../schemas/appointment.schema';
@@ -31,7 +35,7 @@ export class CustomerPortalService {
     sortOrder?: 'asc' | 'desc';
   }) {
     const filter: any = { isActive: true };
-    
+
     if (query.category) filter.category = query.category;
     if (query.minPrice || query.maxPrice) {
       filter.price = {};
@@ -76,7 +80,7 @@ export class CustomerPortalService {
     sortOrder?: 'asc' | 'desc';
   }) {
     const filter: any = { isActive: true };
-    
+
     if (query.category) filter.category = query.category;
     if (query.inStock) filter.stock = { $gt: 0 };
     if (query.minPrice || query.maxPrice) {
@@ -113,24 +117,31 @@ export class CustomerPortalService {
   }
 
   // ============ STAFF ============
-  async getAvailableStaff(query: {
-    serviceId?: string;
-    date?: string;
-  }) {
+  async getAvailableStaff(query: { serviceId?: string; date?: string }) {
     const filter: any = { isActive: true };
-    
+
     if (query.serviceId) {
       filter.specializations = { $in: [new Types.ObjectId(query.serviceId)] };
     }
 
-    const staff = await this.staffModel.find(filter).select('name specializations availability image');
+    const staff = await this.staffModel
+      .find(filter)
+      .select('name specializations availability image');
 
     // If date provided, check availability
     if (query.date) {
       const date = new Date(query.date);
-      const dayOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][date.getDay()];
-      
-      return staff.filter(s => {
+      const dayOfWeek = [
+        'sunday',
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+      ][date.getDay()];
+
+      return staff.filter((s) => {
         const availability = s.availability as any;
         return availability?.[dayOfWeek]?.isAvailable !== false;
       });
@@ -146,19 +157,19 @@ export class CustomerPortalService {
   }
 
   // ============ APPOINTMENTS ============
-  async getMyAppointments(userId: string, query: {
-    status?: string;
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getMyAppointments(
+    userId: string,
+    query: {
+      status?: string;
+      startDate?: string;
+      endDate?: string;
+    },
+  ) {
     // Query with both ObjectId and string to handle legacy data
     const filter: any = {
-      $or: [
-        { userId: new Types.ObjectId(userId) },
-        { userId: userId }
-      ]
+      $or: [{ userId: new Types.ObjectId(userId) }, { userId: userId }],
     };
-    
+
     if (query.status) filter.status = query.status;
     if (query.startDate || query.endDate) {
       filter.date = {};
@@ -173,13 +184,16 @@ export class CustomerPortalService {
       .sort({ date: -1 });
   }
 
-  async bookAppointment(userId: string, data: {
-    serviceId: string;
-    staffId?: string;  // Optional - for "Any available staff" option
-    date: string;
-    time: string;
-    notes?: string;
-  }) {
+  async bookAppointment(
+    userId: string,
+    data: {
+      serviceId: string;
+      staffId?: string; // Optional - for "Any available staff" option
+      date: string;
+      time: string;
+      notes?: string;
+    },
+  ) {
     // Validate service exists
     const service = await this.serviceModel.findById(data.serviceId);
     if (!service) throw new NotFoundException('Service not found');
@@ -220,7 +234,8 @@ export class CustomerPortalService {
     // Create appointment
     const appointment = await this.appointmentModel.create(appointmentData);
 
-    return this.appointmentModel.findById(appointment._id)
+    return this.appointmentModel
+      .findById(appointment._id)
       .populate('serviceId')
       .populate('staffId');
   }
@@ -264,7 +279,10 @@ export class CustomerPortalService {
       throw new NotFoundException('Appointment not found');
     }
 
-    if (appointment.status === 'completed' || appointment.status === 'cancelled') {
+    if (
+      appointment.status === 'completed' ||
+      appointment.status === 'cancelled'
+    ) {
       throw new BadRequestException('Cannot reschedule this appointment');
     }
 
@@ -289,13 +307,16 @@ export class CustomerPortalService {
   }
 
   // ============ ORDERS ============
-  async getMyOrders(userId: string, query: {
-    status?: string;
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getMyOrders(
+    userId: string,
+    query: {
+      status?: string;
+      startDate?: string;
+      endDate?: string;
+    },
+  ) {
     const filter: any = { userId: new Types.ObjectId(userId) };
-    
+
     if (query.status) filter.status = query.status;
     if (query.startDate || query.endDate) {
       filter.createdAt = {};
@@ -306,11 +327,14 @@ export class CustomerPortalService {
     return this.orderModel.find(filter).sort({ createdAt: -1 });
   }
 
-  async createOrder(userId: string, data: {
-    items: { productId: string; quantity: number }[];
-    shippingAddress?: string;
-    notes?: string;
-  }) {
+  async createOrder(
+    userId: string,
+    data: {
+      items: { productId: string; quantity: number }[];
+      shippingAddress?: string;
+      notes?: string;
+    },
+  ) {
     // Validate products and calculate total
     let totalPrice = 0;
     const orderItems: any[] = [];
@@ -382,8 +406,10 @@ export class CustomerPortalService {
   // ============ PAYMENTS ============
   async getMyPayments(userId: string) {
     // Get orders for this user first, then get payments for those orders
-    const orders = await this.orderModel.find({ userId: new Types.ObjectId(userId) });
-    const orderIds = orders.map(o => o._id);
+    const orders = await this.orderModel.find({
+      userId: new Types.ObjectId(userId),
+    });
+    const orderIds = orders.map((o) => o._id);
     return this.paymentModel
       .find({ orderId: { $in: orderIds } })
       .sort({ createdAt: -1 });
@@ -418,15 +444,19 @@ export class CustomerPortalService {
         .limit(5),
       // Get total spent - need to get via orders first
       (async () => {
-        const userOrders = await this.orderModel.find({ userId: new Types.ObjectId(userId) });
-        const orderIds = userOrders.map(o => o._id);
+        const userOrders = await this.orderModel.find({
+          userId: new Types.ObjectId(userId),
+        });
+        const orderIds = userOrders.map((o) => o._id);
         const result = await this.paymentModel.aggregate([
           { $match: { orderId: { $in: orderIds }, status: 'completed' } },
           { $group: { _id: null, total: { $sum: '$amount' } } },
         ]);
         return result;
       })(),
-      this.appointmentModel.countDocuments({ userId: new Types.ObjectId(userId) }),
+      this.appointmentModel.countDocuments({
+        userId: new Types.ObjectId(userId),
+      }),
       this.orderModel.countDocuments({ userId: new Types.ObjectId(userId) }),
     ]);
 
@@ -441,17 +471,22 @@ export class CustomerPortalService {
 
   // ============ PROFILE ============
   async getProfile(userId: string) {
-    const user = await this.userModel.findById(userId).select('-password -refreshToken');
+    const user = await this.userModel
+      .findById(userId)
+      .select('-password -refreshToken');
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
 
-  async updateProfile(userId: string, data: {
-    name?: string;
-    phone?: string;
-    address?: string;
-    profileImage?: string;
-  }) {
+  async updateProfile(
+    userId: string,
+    data: {
+      name?: string;
+      phone?: string;
+      address?: string;
+      profileImage?: string;
+    },
+  ) {
     const user = await this.userModel
       .findByIdAndUpdate(userId, data, { new: true })
       .select('-password -refreshToken');
@@ -465,11 +500,23 @@ export class CustomerPortalService {
     if (!staff) throw new NotFoundException('Staff not found');
 
     const dateObj = new Date(date);
-    const dayOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dateObj.getDay()];
-    
+    const dayOfWeek = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+    ][dateObj.getDay()];
+
     const availability = staff.availability as any;
     if (!availability?.[dayOfWeek]?.isAvailable) {
-      return { available: false, slots: [], message: 'Staff not available on this day' };
+      return {
+        available: false,
+        slots: [],
+        message: 'Staff not available on this day',
+      };
     }
 
     // Get booked slots for this date
@@ -479,15 +526,26 @@ export class CustomerPortalService {
       status: { $nin: ['cancelled'] },
     });
 
-    const bookedTimes = bookedAppointments.map(a => a.time);
+    const bookedTimes = bookedAppointments.map((a) => a.time);
 
     // Generate available time slots (9 AM to 7 PM, hourly)
     const allSlots = [
-      '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', 
-      '15:00', '16:00', '17:00', '18:00', '19:00'
+      '09:00',
+      '10:00',
+      '11:00',
+      '12:00',
+      '13:00',
+      '14:00',
+      '15:00',
+      '16:00',
+      '17:00',
+      '18:00',
+      '19:00',
     ];
 
-    const availableSlots = allSlots.filter(slot => !bookedTimes.includes(slot));
+    const availableSlots = allSlots.filter(
+      (slot) => !bookedTimes.includes(slot),
+    );
 
     return {
       available: true,

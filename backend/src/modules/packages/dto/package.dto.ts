@@ -1,4 +1,13 @@
-import { IsString, IsNumber, IsArray, IsOptional, IsBoolean, IsEnum, IsDate, ValidateNested, Min } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsArray,
+  IsOptional,
+  IsBoolean,
+  IsEnum,
+  ValidateNested,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class PackageServiceDto {

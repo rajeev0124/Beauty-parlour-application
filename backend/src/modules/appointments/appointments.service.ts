@@ -1,13 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Appointment, AppointmentDocument } from '../../schemas/appointment.schema';
-import { CreateAppointmentDto, UpdateAppointmentDto, UpdateStatusDto } from './dto/appointment.dto';
+import {
+  Appointment,
+  AppointmentDocument,
+} from '../../schemas/appointment.schema';
+import {
+  CreateAppointmentDto,
+  UpdateAppointmentDto,
+  UpdateStatusDto,
+} from './dto/appointment.dto';
 
 @Injectable()
 export class AppointmentsService {
   constructor(
-    @InjectModel(Appointment.name) private appointmentModel: Model<AppointmentDocument>,
+    @InjectModel(Appointment.name)
+    private appointmentModel: Model<AppointmentDocument>,
   ) {}
 
   async findAll(query: { status?: string; date?: string }) {
@@ -25,12 +37,11 @@ export class AppointmentsService {
 
   async findByUser(userId: string) {
     // Query with both ObjectId and string to handle legacy data
-    return this.appointmentModel.find({
-      $or: [
-        { userId: new Types.ObjectId(userId) },
-        { userId: userId }
-      ]
-    }).sort({ createdAt: -1 });
+    return this.appointmentModel
+      .find({
+        $or: [{ userId: new Types.ObjectId(userId) }, { userId: userId }],
+      })
+      .sort({ createdAt: -1 });
   }
 
   async findByStaff(staffId: string) {
@@ -42,26 +53,49 @@ export class AppointmentsService {
     if (!createAppointmentDto.userId) {
       throw new Error('userId is required');
     }
-    
+
+    // Basic date validation
+    const appointmentDate = new Date(createAppointmentDto.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (appointmentDate < today) {
+      throw new BadRequestException('Cannot book appointments in the past');
+    }
+
+    // Basic time validation (expecting HH:MM or similar)
+    if (!createAppointmentDto.time || createAppointmentDto.time.length < 4) {
+      throw new BadRequestException('Invalid time format');
+    }
+
     // Convert string IDs to ObjectIds for proper schema compliance
     const appointmentData: any = {
       ...createAppointmentDto,
       userId: new Types.ObjectId(createAppointmentDto.userId),
+      status: 'pending', // Always set status to pending for new appointments
     };
-    
+
     // Convert optional IDs if provided
     if (createAppointmentDto.serviceId) {
-      appointmentData.serviceId = new Types.ObjectId(createAppointmentDto.serviceId);
+      appointmentData.serviceId = new Types.ObjectId(
+        createAppointmentDto.serviceId,
+      );
     }
     if (createAppointmentDto.staffId) {
-      appointmentData.staffId = new Types.ObjectId(createAppointmentDto.staffId);
+      appointmentData.staffId = new Types.ObjectId(
+        createAppointmentDto.staffId,
+      );
     }
-    
+
     return this.appointmentModel.create(appointmentData);
   }
 
   async update(id: string, updateAppointmentDto: UpdateAppointmentDto) {
-    const appointment = await this.appointmentModel.findByIdAndUpdate(id, updateAppointmentDto, { new: true });
+    const appointment = await this.appointmentModel.findByIdAndUpdate(
+      id,
+      updateAppointmentDto,
+      { returnDocument: 'after', runValidators: true },
+    );
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;
   }
@@ -70,7 +104,7 @@ export class AppointmentsService {
     const appointment = await this.appointmentModel.findByIdAndUpdate(
       id,
       { status: updateStatusDto.status },
-      { new: true },
+      { returnDocument: 'after', runValidators: true },
     );
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;

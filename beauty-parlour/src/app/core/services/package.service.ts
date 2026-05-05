@@ -8,19 +8,21 @@ export interface Package {
   name: string;
   description: string;
   category: string;
-  services: { service: { _id: string; name: string; price: number; duration: number }; quantity: number }[];
-  products?: { product: { _id: string; name: string; price: number }; quantity: number }[];
+  services: { service?: { _id: string; name: string; price: number; duration: number }; quantity: number }[];
+  products?: { product?: { _id: string; name: string; price: number }; quantity: number }[];
   originalPrice: number;
-  discountedPrice: number;
+  packagePrice: number; // This is what backend expects
+  discountedPrice?: number; // For display (computed)
   discountPercentage: number;
   validityDays: number;
-  maxUsage: number;
+  maxRedemptions?: number;
   terms?: string[];
   image?: string;
+  imageUrl?: string;
   isActive: boolean;
-  isFeatured: boolean;
-  popularity: number;
-  createdAt: Date;
+  isFeatured?: boolean;
+  popularity?: number;
+  createdAt?: Date;
 }
 
 export interface PackageStats {

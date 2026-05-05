@@ -20,15 +20,25 @@ export class LoyaltyPoints {
   @Prop({ default: 'bronze', enum: ['bronze', 'silver', 'gold', 'platinum'] })
   tier: string;
 
-  @Prop({ type: [{ 
-    type: { type: String, enum: ['earned', 'redeemed', 'expired', 'bonus'] },
-    points: Number,
-    description: String,
-    referenceType: { type: String, enum: ['appointment', 'order', 'referral', 'promotion', 'redemption'] },
-    referenceId: { type: Types.ObjectId, required: false },
-    date: { type: Date, default: Date.now },
-    expiresAt: Date
-  }] })
+  @Prop({
+    type: [
+      {
+        type: {
+          type: String,
+          enum: ['earned', 'redeemed', 'expired', 'bonus'],
+        },
+        points: Number,
+        description: String,
+        referenceType: {
+          type: String,
+          enum: ['appointment', 'order', 'referral', 'promotion', 'redemption'],
+        },
+        referenceId: { type: Types.ObjectId, required: false },
+        date: { type: Date, default: Date.now },
+        expiresAt: Date,
+      },
+    ],
+  })
   history: {
     type: string;
     points: number;

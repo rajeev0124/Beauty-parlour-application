@@ -1,9 +1,11 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProductService } from '../../../core/services/product.service';
+import { WishlistService } from '../../../core/services/wishlist.service';
 import { Product } from '../../../core/models/product.model';
 
 @Component({
@@ -100,7 +102,9 @@ export class UserProductsComponent implements OnInit {
   constructor(
     private snackBar: MatSnackBar,
     private productService: ProductService,
-    private cdr: ChangeDetectorRef
+    private wishlistService: WishlistService,
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -112,15 +116,53 @@ export class UserProductsComponent implements OnInit {
     this.errorMessage = '';
     this.productService.getAll().subscribe({
       next: (products) => {
-        this.products = products.map(p => ({ ...p, inWishlist: false }));
+        // Assign consistent images based on product ID
+        this.products = products.map((p, index) => ({ 
+          ...p, 
+          inWishlist: false,
+          displayImage: this.getConsistentImage(p._id, p.category, index)
+        }));
         this.updateCategoryCounts();
         this.loading = false;
         this.cdr.markForCheck();
+        
+        // Check which products are in wishlist
+        this.loadWishlistStatus();
       },
       error: () => {
         this.errorMessage = 'Failed to load products. Please try again later.';
         this.loading = false;
         this.cdr.markForCheck();
+      }
+    });
+  }
+
+  // Generate consistent image based on product ID hash
+  private getConsistentImage(productId: string, category: string, fallbackIndex: number): string {
+    const images = this.productImages[category?.toLowerCase()] || this.productImages['default'];
+    // Use simple hash of product ID to get consistent index
+    let hash = 0;
+    for (let i = 0; i < (productId || '').length; i++) {
+      hash = ((hash << 5) - hash) + productId.charCodeAt(i);
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    const index = Math.abs(hash || fallbackIndex) % images.length;
+    return images[index];
+  }
+
+  private loadWishlistStatus(): void {
+    this.wishlistService.getWishlist().subscribe({
+      next: (wishlist: any) => {
+        const items = Array.isArray(wishlist) ? wishlist : (wishlist?.items || []);
+        const wishlistIds = new Set(items.map((item: any) => item.itemId || item.item?._id));
+        
+        this.products.forEach(product => {
+          (product as any).inWishlist = wishlistIds.has(product._id);
+        });
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        // User not logged in or no wishlist - ignore
       }
     });
   }
@@ -179,20 +221,59 @@ export class UserProductsComponent implements OnInit {
         panelClass: ['info-snackbar']
       });
     } else {
-      this.snackBar.open(`${product.name} added to cart!`, 'View Cart', { 
+      this.snackBar.open(`🛒 ${product.name} added to cart!`, 'View Cart', { 
         duration: 3000,
-        panelClass: ['success-snackbar']
+        panelClass: ['cart-snackbar']
       });
     }
   }
 
   toggleWishlist(product: any): void {
+    const wasInWishlist = product.inWishlist;
     product.inWishlist = !product.inWishlist;
-    const message = product.inWishlist 
-      ? `${product.name} added to wishlist` 
-      : `${product.name} removed from wishlist`;
-    this.snackBar.open(message, 'Close', { duration: 2000 });
     this.cdr.markForCheck();
+    
+    if (product.inWishlist) {
+      // Add to wishlist via API
+      this.wishlistService.addItem('product', product._id).subscribe({
+        next: () => {
+          const snackBarRef = this.snackBar.open(`💖 ${product.name} added to wishlist!`, 'View', { 
+            duration: 3000,
+            panelClass: ['wishlist-snackbar']
+          });
+          snackBarRef.onAction().subscribe(() => this.router.navigate(['/wishlist']));
+        },
+        error: () => {
+          product.inWishlist = wasInWishlist;
+          this.snackBar.open('Failed to add to wishlist. Please login first.', 'Login', { 
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          }).onAction().subscribe(() => this.router.navigate(['/login']));
+          this.cdr.markForCheck();
+        }
+      });
+    } else {
+      // Remove from wishlist via API
+      this.wishlistService.removeItem(product._id).subscribe({
+        next: () => {
+          const snackBarRef = this.snackBar.open(`${product.name} removed from wishlist`, 'Undo', { 
+            duration: 3000,
+            panelClass: ['info-snackbar']
+          });
+          snackBarRef.onAction().subscribe(() => {
+            this.toggleWishlist(product); // Re-add
+          });
+        },
+        error: () => {
+          product.inWishlist = wasInWishlist;
+          this.snackBar.open('Failed to remove from wishlist', 'OK', { 
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+          this.cdr.markForCheck();
+        }
+      });
+    }
   }
 
   viewProduct(product: Product): void {

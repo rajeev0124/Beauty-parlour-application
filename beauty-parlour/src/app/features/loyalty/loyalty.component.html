@@ -1,0 +1,513 @@
+<div class="loyalty-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>stars</mat-icon>
+      </div>
+      <div class="header-text">
+        <h1>Loyalty Program</h1>
+        <p>Manage rewards, points, and customer tiers</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    @if (loading) {
+      @for (i of [1,2,3,4]; track i) {
+        <div class="stat-card skeleton-card">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="skeleton-content">
+            <div class="skeleton skeleton-value"></div>
+            <div class="skeleton skeleton-label"></div>
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="stat-card">
+        <div class="stat-icon members">
+          <mat-icon>groups</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalMembers | number }}</span>
+          <span class="stat-label">Total Members</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon points">
+          <mat-icon>diamond</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalPoints | number }}</span>
+          <span class="stat-label">Points Issued</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon redeemed">
+          <mat-icon>redeem</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ redeemedPoints | number }}</span>
+          <span class="stat-label">Points Redeemed</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon value">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">₹{{ pointsValue | number }}</span>
+          <span class="stat-label">Rewards Value</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'members'"
+      (click)="setActiveTab('members')">
+      <mat-icon>people</mat-icon>
+      <span>Members</span>
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'leaderboard'"
+      (click)="setActiveTab('leaderboard')">
+      <mat-icon>leaderboard</mat-icon>
+      <span>Leaderboard</span>
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'transactions'"
+      (click)="setActiveTab('transactions')">
+      <mat-icon>receipt_long</mat-icon>
+      <span>Transactions</span>
+    </button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Members Tab -->
+    @if (activeTab === 'members') {
+      <div class="members-tab">
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="search-box">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input 
+              type="text" 
+              placeholder="Search by name or email..." 
+              [(ngModel)]="searchTerm"
+              (input)="applyMemberFilter()"
+              [disabled]="loading">
+          </div>
+
+          <div class="filter-chips">
+            <button 
+              class="filter-chip" 
+              [class.active]="currentFilter === 'all'"
+              (click)="filterByTier('all')">
+              <mat-icon>apps</mat-icon>
+              All
+            </button>
+            <button 
+              class="filter-chip bronze" 
+              [class.active]="currentFilter === 'bronze'"
+              (click)="filterByTier('bronze')">
+              <mat-icon>shield</mat-icon>
+              Bronze
+            </button>
+            <button 
+              class="filter-chip silver" 
+              [class.active]="currentFilter === 'silver'"
+              (click)="filterByTier('silver')">
+              <mat-icon>military_tech</mat-icon>
+              Silver
+            </button>
+            <button 
+              class="filter-chip gold" 
+              [class.active]="currentFilter === 'gold'"
+              (click)="filterByTier('gold')">
+              <mat-icon>emoji_events</mat-icon>
+              Gold
+            </button>
+            <button 
+              class="filter-chip platinum" 
+              [class.active]="currentFilter === 'platinum'"
+              (click)="filterByTier('platinum')">
+              <mat-icon>workspace_premium</mat-icon>
+              Platinum
+            </button>
+          </div>
+        </div>
+
+        <!-- Content Container -->
+        <div class="content-container">
+          @if (loading) {
+            <div class="loading-state">
+              <mat-spinner diameter="48"></mat-spinner>
+              <p>Loading members...</p>
+            </div>
+          } @else if (filteredMembers.length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon">
+                <mat-icon>people_outline</mat-icon>
+              </div>
+              <h3>No Members Found</h3>
+              <p>{{ searchTerm || currentFilter !== 'all' ? 'Try adjusting your search or filters' : 'No loyalty members yet' }}</p>
+            </div>
+          } @else {
+            <!-- Desktop Table -->
+            <div class="desktop-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Points</th>
+                    <th>Tier</th>
+                    <th>Lifetime Points</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (member of paginatedMembers; track member._id) {
+                    <tr>
+                      <td>
+                        <div class="member-cell">
+                          <div class="member-avatar" [style.background]="getAvatarGradient(member.user.name || '')">
+                            {{ getInitials(member.user.name || '?') }}
+                          </div>
+                          <div class="member-info">
+                            <span class="member-name">{{ member.user.name }}</span>
+                            <span class="member-email">{{ member.user.email }}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="points-badge">
+                          <mat-icon>diamond</mat-icon>
+                          {{ member.points | number }}
+                        </div>
+                      </td>
+                      <td>
+                        <span class="tier-badge" [class]="getTierClass(member.tier)">
+                          <mat-icon>{{ getTierIcon(member.tier) }}</mat-icon>
+                          {{ member.tier }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="lifetime-points">{{ member.lifetimePoints | number }}</span>
+                      </td>
+                      <td>
+                        <div class="action-buttons">
+                          <button mat-icon-button class="action-btn bonus" (click)="addBonus(member)" matTooltip="Add Bonus Points">
+                            <mat-icon>add_circle</mat-icon>
+                          </button>
+                          <button mat-icon-button class="action-btn history" (click)="viewHistory(member)" matTooltip="View History">
+                            <mat-icon>history</mat-icon>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile Cards -->
+            <div class="mobile-cards">
+              @for (member of paginatedMembers; track member._id) {
+                <div class="member-card" [class]="getTierClass(member.tier) + '-border'">
+                  <div class="card-header">
+                    <div class="member-cell">
+                      <div class="member-avatar" [style.background]="getAvatarGradient(member.user.name || '')">
+                        {{ getInitials(member.user.name || '?') }}
+                      </div>
+                      <div class="member-info">
+                        <span class="member-name">{{ member.user.name }}</span>
+                        <span class="member-email">{{ member.user.email }}</span>
+                      </div>
+                    </div>
+                    <span class="tier-badge" [class]="getTierClass(member.tier)">
+                      <mat-icon>{{ getTierIcon(member.tier) }}</mat-icon>
+                      {{ member.tier }}
+                    </span>
+                  </div>
+
+                  <div class="card-body">
+                    <div class="card-row">
+                      <span class="row-label">Current Points</span>
+                      <div class="points-badge">
+                        <mat-icon>diamond</mat-icon>
+                        {{ member.points | number }}
+                      </div>
+                    </div>
+                    <div class="card-row">
+                      <span class="row-label">Lifetime Points</span>
+                      <span class="lifetime-points">{{ member.lifetimePoints | number }}</span>
+                    </div>
+                  </div>
+
+                  <div class="card-actions">
+                    <button mat-stroked-button class="bonus-btn" (click)="addBonus(member)">
+                      <mat-icon>add_circle</mat-icon>
+                      Add Bonus
+                    </button>
+                    <button mat-icon-button class="history-btn" (click)="viewHistory(member)">
+                      <mat-icon>history</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Pagination -->
+            @if (filteredMembers.length > pageSize) {
+              <div class="pagination">
+                <span class="page-info">
+                  Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredMembers.length) }} of {{ filteredMembers.length }}
+                </span>
+                <div class="page-controls">
+                  <button mat-icon-button [disabled]="currentPage === 1" (click)="goToPage(1)">
+                    <mat-icon>first_page</mat-icon>
+                  </button>
+                  <button mat-icon-button [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+                    <mat-icon>chevron_left</mat-icon>
+                  </button>
+                  <span class="page-number">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button mat-icon-button [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+                    <mat-icon>chevron_right</mat-icon>
+                  </button>
+                  <button mat-icon-button [disabled]="currentPage === totalPages" (click)="goToPage(totalPages)">
+                    <mat-icon>last_page</mat-icon>
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Leaderboard Tab -->
+    @if (activeTab === 'leaderboard') {
+      <div class="leaderboard-tab">
+        <div class="content-container">
+          @if (loading) {
+            <div class="loading-state">
+              <mat-spinner diameter="48"></mat-spinner>
+              <p>Loading leaderboard...</p>
+            </div>
+          } @else if (leaderboard.length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon">
+                <mat-icon>leaderboard</mat-icon>
+              </div>
+              <h3>No Leaderboard Data</h3>
+              <p>The leaderboard will populate as members earn points</p>
+            </div>
+          } @else {
+            <!-- Top 3 Podium -->
+            <div class="podium-section">
+              <h2 class="section-title">
+                <mat-icon>emoji_events</mat-icon>
+                Top Customers
+              </h2>
+              <div class="podium">
+                @if (leaderboard.length >= 2) {
+                  <div class="podium-place second">
+                    <div class="place-avatar" [style.background]="getAvatarGradient(leaderboard[1].user.name || '')">
+                      {{ getInitials(leaderboard[1].user.name || '?') }}
+                    </div>
+                    <span class="medal">🥈</span>
+                    <span class="place-name">{{ leaderboard[1].user.name }}</span>
+                    <span class="place-points">{{ leaderboard[1].points | number }} pts</span>
+                    <span class="tier-badge" [class]="getTierClass(leaderboard[1].tier)">{{ leaderboard[1].tier }}</span>
+                    <div class="podium-block"></div>
+                  </div>
+                }
+                @if (leaderboard.length >= 1) {
+                  <div class="podium-place first">
+                    <div class="crown">👑</div>
+                    <div class="place-avatar" [style.background]="getAvatarGradient(leaderboard[0].user.name || '')">
+                      {{ getInitials(leaderboard[0].user.name || '?') }}
+                    </div>
+                    <span class="medal">🥇</span>
+                    <span class="place-name">{{ leaderboard[0].user.name }}</span>
+                    <span class="place-points">{{ leaderboard[0].points | number }} pts</span>
+                    <span class="tier-badge" [class]="getTierClass(leaderboard[0].tier)">{{ leaderboard[0].tier }}</span>
+                    <div class="podium-block"></div>
+                  </div>
+                }
+                @if (leaderboard.length >= 3) {
+                  <div class="podium-place third">
+                    <div class="place-avatar" [style.background]="getAvatarGradient(leaderboard[2].user.name || '')">
+                      {{ getInitials(leaderboard[2].user.name || '?') }}
+                    </div>
+                    <span class="medal">🥉</span>
+                    <span class="place-name">{{ leaderboard[2].user.name }}</span>
+                    <span class="place-points">{{ leaderboard[2].points | number }} pts</span>
+                    <span class="tier-badge" [class]="getTierClass(leaderboard[2].tier)">{{ leaderboard[2].tier }}</span>
+                    <div class="podium-block"></div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Rest of Leaderboard -->
+            @if (leaderboard.length > 3) {
+              <div class="leaderboard-list">
+                @for (entry of leaderboard.slice(3); track entry.rank) {
+                  <div class="leaderboard-entry">
+                    <span class="rank">{{ entry.rank }}</span>
+                    <div class="entry-avatar" [style.background]="getAvatarGradient(entry.user.name || '')">
+                      {{ getInitials(entry.user.name || '?') }}
+                    </div>
+                    <div class="entry-info">
+                      <span class="entry-name">{{ entry.user.name }}</span>
+                      <span class="tier-badge small" [class]="getTierClass(entry.tier)">{{ entry.tier }}</span>
+                    </div>
+                    <span class="entry-points">{{ entry.points | number }} pts</span>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Transactions Tab -->
+    @if (activeTab === 'transactions') {
+      <div class="transactions-tab">
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="search-box">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input 
+              type="text" 
+              placeholder="Search transactions..." 
+              [(ngModel)]="transactionSearchTerm"
+              (input)="applyTransactionFilter()"
+              [disabled]="loading">
+          </div>
+        </div>
+
+        <div class="content-container">
+          @if (loading) {
+            <div class="loading-state">
+              <mat-spinner diameter="48"></mat-spinner>
+              <p>Loading transactions...</p>
+            </div>
+          } @else if (filteredTransactions.length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon">
+                <mat-icon>receipt_long</mat-icon>
+              </div>
+              <h3>No Transactions</h3>
+              <p>{{ transactionSearchTerm ? 'No matching transactions found' : 'Point transactions will appear here' }}</p>
+            </div>
+          } @else {
+            <!-- Desktop Table -->
+            <div class="desktop-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Points</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (tx of paginatedTransactions; track tx._id) {
+                    <tr [class]="tx.type + '-row'">
+                      <td>
+                        <span class="date-text">{{ tx.createdAt | date:'MMM d, y' }}</span>
+                        <span class="time-text">{{ tx.createdAt | date:'shortTime' }}</span>
+                      </td>
+                      <td>
+                        <span class="type-badge" [class]="tx.type">
+                          <mat-icon>{{ tx.type === 'earn' ? 'add_circle' : tx.type === 'redeem' ? 'remove_circle' : 'card_giftcard' }}</mat-icon>
+                          {{ tx.type | titlecase }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="points-change" [class]="tx.type">
+                          {{ tx.type === 'redeem' ? '-' : '+' }}{{ tx.points | number }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="description">{{ tx.description }}</span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile Cards -->
+            <div class="mobile-cards">
+              @for (tx of paginatedTransactions; track tx._id) {
+                <div class="transaction-card" [class]="tx.type + '-border'">
+                  <div class="tx-header">
+                    <span class="type-badge" [class]="tx.type">
+                      <mat-icon>{{ tx.type === 'earn' ? 'add_circle' : tx.type === 'redeem' ? 'remove_circle' : 'card_giftcard' }}</mat-icon>
+                      {{ tx.type | titlecase }}
+                    </span>
+                    <span class="points-change" [class]="tx.type">
+                      {{ tx.type === 'redeem' ? '-' : '+' }}{{ tx.points | number }}
+                    </span>
+                  </div>
+                  <p class="tx-description">{{ tx.description }}</p>
+                  <span class="tx-date">{{ tx.createdAt | date:'MMM d, y, h:mm a' }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Pagination -->
+            @if (filteredTransactions.length > txPageSize) {
+              <div class="pagination">
+                <span class="page-info">
+                  Showing {{ (txCurrentPage - 1) * txPageSize + 1 }} - {{ Math.min(txCurrentPage * txPageSize, filteredTransactions.length) }} of {{ filteredTransactions.length }}
+                </span>
+                <div class="page-controls">
+                  <button mat-icon-button [disabled]="txCurrentPage === 1" (click)="goToTxPage(1)">
+                    <mat-icon>first_page</mat-icon>
+                  </button>
+                  <button mat-icon-button [disabled]="txCurrentPage === 1" (click)="goToTxPage(txCurrentPage - 1)">
+                    <mat-icon>chevron_left</mat-icon>
+                  </button>
+                  <span class="page-number">Page {{ txCurrentPage }} of {{ txTotalPages }}</span>
+                  <button mat-icon-button [disabled]="txCurrentPage === txTotalPages" (click)="goToTxPage(txCurrentPage + 1)">
+                    <mat-icon>chevron_right</mat-icon>
+                  </button>
+                  <button mat-icon-button [disabled]="txCurrentPage === txTotalPages" (click)="goToTxPage(txTotalPages)">
+                    <mat-icon>last_page</mat-icon>
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Success Toast -->
+  @if (showSuccess) {
+    <div class="success-toast">
+      <div class="toast-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <span>{{ successMessage }}</span>
+    </div>
+  }
+</div>

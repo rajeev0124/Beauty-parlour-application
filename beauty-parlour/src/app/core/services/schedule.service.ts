@@ -5,17 +5,20 @@ import { environment } from '../../../environments/environment';
 
 export interface Schedule {
   _id: string;
-  staff: { _id: string; name: string; profileImage?: string };
+  staff: { _id: string; name: string; profileImage?: string; role?: string };
   date: Date;
   startTime: string; // HH:mm format
   endTime: string;
   breakStart?: string;
   breakEnd?: string;
-  isAvailable: boolean;
+  breaks?: { breakStart: string; breakEnd: string; breakType?: string }[];
+  isAvailable?: boolean; // Computed: !isLeave && status !== 'leave'
   isLeave: boolean;
   leaveReason?: string;
-  bookedSlots: { time: string; appointmentId: string }[];
-  createdAt: Date;
+  leaveType?: string;
+  status?: string;
+  bookedSlots?: { time: string; appointmentId: string }[];
+  createdAt?: Date;
 }
 
 export interface ScheduleStats {
@@ -80,8 +83,14 @@ export class ScheduleService {
     return this.http.post<Schedule[]>(`${this.apiUrl}/bulk`, { schedules });
   }
 
-  createLeave(staffId: string, date: string, reason: string): Observable<Schedule> {
-    return this.http.post<Schedule>(`${this.apiUrl}/leave`, { staffId, date, reason });
+  createLeave(staffId: string, date: string, leaveType: string, reason?: string): Observable<Schedule> {
+    return this.http.post<Schedule>(`${this.apiUrl}/leave`, { 
+      staff: staffId, 
+      startDate: date, 
+      endDate: date,
+      leaveType,
+      reason
+    });
   }
 
   update(id: string, schedule: Partial<Schedule>): Observable<Schedule> {

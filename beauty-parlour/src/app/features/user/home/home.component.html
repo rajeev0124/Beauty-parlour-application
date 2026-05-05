@@ -1,73 +1,66 @@
-<!-- Offers Banner -->
-@if (activeCoupons.length > 0) {
-  <section class="offers-banner">
-    <div class="offers-container">
-      <div class="offers-icon">
-        <mat-icon>local_offer</mat-icon>
+<!-- Stunning Hero Banner with Full Content -->
+<section class="hero-banner">
+  <div class="hero-banner-overlay"></div>
+  <div class="hero-banner-container">
+    <div class="hero-banner-left">
+      <span class="hero-banner-badge">
+        <mat-icon>auto_awesome</mat-icon>
+        Trusted by 10,000+ clients
+      </span>
+      <h1 class="hero-banner-title">Your Beauty, <br /><span>Our Passion</span></h1>
+      <p class="hero-banner-desc">Experience premium salon services with expert stylists. From everyday grooming to bridal transformations — we make you shine.</p>
+      <div class="hero-banner-actions">
+        <a routerLink="/book" class="hero-banner-btn primary">
+          <mat-icon>calendar_today</mat-icon>
+          Book Appointment
+        </a>
+        <a routerLink="/services" class="hero-banner-btn secondary">
+          Explore Services
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
       </div>
-      <div class="offers-content">
-        <span class="offers-title">Special Offers!</span>
-        <div class="offers-list">
-          @for (coupon of activeCoupons; track coupon.code) {
-            <span class="offer-tag">
-              Use code <strong>{{ coupon.code }}</strong> for 
-              @if (coupon.discountType === 'percentage') {
-                {{ coupon.discountValue }}% OFF
-              } @else {
-                ₹{{ coupon.discountValue }} OFF
-              }
-            </span>
-          }
+      <div class="hero-banner-stats">
+        <div class="hero-stat-item">
+          <span class="stat-value">10K+</span>
+          <span class="stat-label">Happy Clients</span>
+        </div>
+        <div class="hero-stat-item">
+          <span class="stat-value">50+</span>
+          <span class="stat-label">Expert Stylists</span>
+        </div>
+        <div class="hero-stat-item">
+          <span class="stat-value">120+</span>
+          <span class="stat-label">Services</span>
+        </div>
+        <div class="hero-stat-item">
+          <span class="stat-value">11+</span>
+          <span class="stat-label">Years Experience</span>
         </div>
       </div>
-      <a routerLink="/book" class="offers-btn">Book Now</a>
     </div>
-  </section>
-}
-
-<!-- Hero Section -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-content">
-    <span class="hero-badge">
-      <mat-icon>auto_awesome</mat-icon>
-      Trusted by 10,000+ clients
-    </span>
-    <h1 class="hero-title">Your Beauty, <br />Our <span class="hero-highlight">Passion</span></h1>
-    <p class="hero-desc">Experience premium salon services with expert stylists. From everyday grooming to bridal transformations — we make you shine.</p>
-    <div class="hero-actions">
-      <a routerLink="/book" class="hero-btn primary">
-        <mat-icon>calendar_today</mat-icon>
-        Book Appointment
-      </a>
-      <a routerLink="/services" class="hero-btn secondary">
-        Explore Services
-        <mat-icon>east</mat-icon>
-      </a>
-    </div>
-    <div class="hero-stats">
-      @for (stat of stats; track stat.label) {
-        <div class="hero-stat">
-          <span class="hero-stat-value">{{ stat.value }}</span>
-          <span class="hero-stat-label">{{ stat.label }}</span>
+    <div class="hero-banner-right">
+      <div class="hero-service-cards">
+        <div class="hero-service-card card-1">
+          <div class="card-icon">
+            <mat-icon>content_cut</mat-icon>
+          </div>
+          <span>Hair Styling</span>
         </div>
-      }
+        <div class="hero-service-card card-2">
+          <div class="card-icon">
+            <mat-icon>face_retouching_natural</mat-icon>
+          </div>
+          <span>Skin Care</span>
+        </div>
+        <div class="hero-service-card card-3">
+          <div class="card-icon">
+            <mat-icon>spa</mat-icon>
+          </div>
+          <span>Wellness</span>
+        </div>
+      </div>
+      <div class="hero-glow-effect"></div>
     </div>
-  </div>
-  <div class="hero-visual">
-    <div class="hero-card hero-card-1">
-      <mat-icon>content_cut</mat-icon>
-      <span>Hair Styling</span>
-    </div>
-    <div class="hero-card hero-card-2">
-      <mat-icon>face_retouching_natural</mat-icon>
-      <span>Skin Care</span>
-    </div>
-    <div class="hero-card hero-card-3">
-      <mat-icon>spa</mat-icon>
-      <span>Wellness</span>
-    </div>
-    <div class="hero-glow"></div>
   </div>
 </section>
 

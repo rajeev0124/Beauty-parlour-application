@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Body, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CustomerPortalService } from './customer-portal.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators';
@@ -106,7 +115,13 @@ export class CustomerPortalController {
   @UseGuards(JwtAuthGuard)
   updateProfile(
     @CurrentUser() user: any,
-    @Body() data: { name?: string; phone?: string; address?: string; profileImage?: string },
+    @Body()
+    data: {
+      name?: string;
+      phone?: string;
+      address?: string;
+      profileImage?: string;
+    },
   ) {
     return this.customerPortalService.updateProfile(user._id.toString(), data);
   }
@@ -130,21 +145,28 @@ export class CustomerPortalController {
   @UseGuards(JwtAuthGuard)
   bookAppointment(
     @CurrentUser() user: any,
-    @Body() data: {
+    @Body()
+    data: {
       serviceId: string;
-      staffId?: string;  // Optional - customer can select "Any available staff"
+      staffId?: string; // Optional - customer can select "Any available staff"
       date: string;
       time: string;
       notes?: string;
     },
   ) {
-    return this.customerPortalService.bookAppointment(user._id.toString(), data);
+    return this.customerPortalService.bookAppointment(
+      user._id.toString(),
+      data,
+    );
   }
 
   @Put('appointments/:id/cancel')
   @UseGuards(JwtAuthGuard)
   cancelAppointment(@CurrentUser() user: any, @Param('id') id: string) {
-    return this.customerPortalService.cancelAppointment(user._id.toString(), id);
+    return this.customerPortalService.cancelAppointment(
+      user._id.toString(),
+      id,
+    );
   }
 
   @Put('appointments/:id/reschedule')
@@ -181,7 +203,8 @@ export class CustomerPortalController {
   @UseGuards(JwtAuthGuard)
   createOrder(
     @CurrentUser() user: any,
-    @Body() data: {
+    @Body()
+    data: {
       items: { productId: string; quantity: number }[];
       shippingAddress?: string;
       notes?: string;

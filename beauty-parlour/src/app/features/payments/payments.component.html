@@ -1,97 +1,250 @@
-<div class="page-shell">
-  <div class="page-header">
-    <div class="page-header-left">
-      <h1 class="page-title">Payments</h1>
-      <p class="page-desc">Track all payment transactions</p>
+<div class="payments-page">
+  <!-- Header -->
+  <div class="payments-header">
+    <div class="payments-header-left">
+      <div class="payments-header-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="payments-header-text">
+        <h1>Payments</h1>
+        <p>Track all payment transactions</p>
+      </div>
     </div>
-    <div class="page-header-actions">
-      <button class="btn-outline">
+    <div class="payments-header-actions">
+      <button class="payments-btn secondary" (click)="loadPayments()">
+        <mat-icon>refresh</mat-icon>
+        <span class="btn-text">Refresh</span>
+      </button>
+      <button class="payments-btn primary">
         <mat-icon>download</mat-icon>
-        Export
+        <span class="btn-text">Export</span>
       </button>
     </div>
   </div>
 
-  <div class="data-card">
-    <div class="data-card-toolbar">
-      <div class="data-search">
+  <!-- Stats Grid -->
+  <div class="payments-stats">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ totalTransactions }}</span>
+        <span class="stat-label">Total Transactions</span>
+      </div>
+      <div class="stat-bg"></div>
+    </div>
+    
+    <div class="stat-card completed">
+      <div class="stat-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ completedCount }}</span>
+        <span class="stat-label">Completed</span>
+      </div>
+      <div class="stat-bg"></div>
+    </div>
+    
+    <div class="stat-card pending">
+      <div class="stat-icon">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ pendingCount }}</span>
+        <span class="stat-label">Pending</span>
+      </div>
+      <div class="stat-bg"></div>
+    </div>
+    
+    <div class="stat-card revenue">
+      <div class="stat-icon">
+        <mat-icon>currency_rupee</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">₹{{ totalAmount | number:'1.0-0' }}</span>
+        <span class="stat-label">Total Collected</span>
+      </div>
+      <div class="stat-bg"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="payments-main">
+    <!-- Toolbar -->
+    <div class="payments-toolbar">
+      <div class="payments-search">
         <mat-icon>search</mat-icon>
-        <input (keyup)="applyFilter($event)" placeholder="Search payments...">
+        <input type="text" placeholder="Search by transaction ID, order, method..." (input)="applyFilter($event)" #searchInput>
+        @if (searchInput.value) {
+          <button class="clear-btn" (click)="clearSearch(searchInput)">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+      <div class="payments-filters">
+        <button class="filter-chip" [class.active]="filterMode === 'all'" (click)="setFilter('all')">
+          All
+        </button>
+        <button class="filter-chip" [class.active]="filterMode === 'completed'" (click)="setFilter('completed')">
+          <span class="dot green"></span> Completed
+        </button>
+        <button class="filter-chip" [class.active]="filterMode === 'pending'" (click)="setFilter('pending')">
+          <span class="dot yellow"></span> Pending
+        </button>
+        <button class="filter-chip" [class.active]="filterMode === 'failed'" (click)="setFilter('failed')">
+          <span class="dot red"></span> Failed
+        </button>
+        <button class="filter-chip" [class.active]="filterMode === 'refunded'" (click)="setFilter('refunded')">
+          <span class="dot purple"></span> Refunded
+        </button>
       </div>
     </div>
 
+    <!-- Loading -->
     @if (loading) {
-      <div class="skeleton-table-loader">
-        @for (i of [1,2,3,4,5]; track i) {
-          <div class="skeleton-row">
-            <div class="skeleton-cell skeleton-medium"></div>
-            <div class="skeleton-cell skeleton-short"></div>
-            <div class="skeleton-cell skeleton-medium"></div>
-            <div class="skeleton-cell skeleton-short"></div>
-            <div class="skeleton-cell skeleton-short"></div>
-            <div class="skeleton-cell skeleton-medium"></div>
+      <div class="payments-loading">
+        <div class="loading-spinner"></div>
+        <p>Loading payments...</p>
+      </div>
+    } @else if (filteredData.length === 0) {
+      <div class="payments-empty">
+        <div class="empty-icon">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <h3>No payments found</h3>
+        <p>{{ allData.length === 0 ? 'Payment transactions will be recorded here.' : 'Try adjusting your search or filters' }}</p>
+        @if (allData.length > 0) {
+          <button class="payments-btn secondary" (click)="resetFilters(searchInput)">
+            <mat-icon>refresh</mat-icon> Reset Filters
+          </button>
+        }
+      </div>
+    } @else {
+      <!-- Desktop Table View -->
+      <div class="payments-table-wrap">
+        <table class="payments-table">
+          <thead>
+            <tr>
+              <th class="col-txn">Transaction ID</th>
+              <th class="col-order">Order</th>
+              <th class="col-method">Method</th>
+              <th class="col-amount">Amount</th>
+              <th class="col-status">Status</th>
+              <th class="col-date">Date & Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (payment of paginatedData; track payment._id) {
+              <tr [class.row-completed]="payment.status === 'completed'" 
+                  [class.row-pending]="payment.status === 'pending'"
+                  [class.row-failed]="payment.status === 'failed'"
+                  [class.row-refunded]="payment.status === 'refunded'">
+                <td class="col-txn">
+                  <span class="txn-id">{{ payment.transactionId || 'TXN-' + (payment._id | slice:0:6) }}</span>
+                </td>
+                <td class="col-order">
+                  <span class="order-id">#{{ payment.orderId | slice:0:8 }}</span>
+                </td>
+                <td class="col-method">
+                  <div class="method-badge" [style.background]="getMethodBg(payment.method)" [style.color]="getMethodColor(payment.method)">
+                    <mat-icon>{{ getMethodIcon(payment.method) }}</mat-icon>
+                    {{ payment.method | uppercase }}
+                  </div>
+                </td>
+                <td class="col-amount">
+                  <span class="amount-value">{{ payment.amount | currency:'INR':'symbol':'1.0-0' }}</span>
+                </td>
+                <td class="col-status">
+                  <span class="status-badge" [class]="'status-' + payment.status">
+                    @switch (payment.status) {
+                      @case ('completed') { <mat-icon>check_circle</mat-icon> }
+                      @case ('pending') { <mat-icon>schedule</mat-icon> }
+                      @case ('failed') { <mat-icon>error</mat-icon> }
+                      @case ('refunded') { <mat-icon>undo</mat-icon> }
+                    }
+                    {{ payment.status | titlecase }}
+                  </span>
+                </td>
+                <td class="col-date">
+                  <div class="date-cell">
+                    <span class="date-main">{{ payment.createdAt | date:'MMM d, y' }}</span>
+                    <span class="date-time">{{ payment.createdAt | date:'h:mm a' }}</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="payments-cards">
+        @for (payment of paginatedData; track payment._id) {
+          <div class="payment-card" [class]="'card-' + payment.status">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="txn-id">{{ payment.transactionId || 'TXN-' + (payment._id | slice:0:6) }}</span>
+                <span class="order-link">#{{ payment.orderId | slice:0:8 }}</span>
+              </div>
+              <span class="status-badge" [class]="'status-' + payment.status">
+                @switch (payment.status) {
+                  @case ('completed') { <mat-icon>check_circle</mat-icon> }
+                  @case ('pending') { <mat-icon>schedule</mat-icon> }
+                  @case ('failed') { <mat-icon>error</mat-icon> }
+                  @case ('refunded') { <mat-icon>undo</mat-icon> }
+                }
+                {{ payment.status | titlecase }}
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="card-row">
+                <div class="method-badge" [style.background]="getMethodBg(payment.method)" [style.color]="getMethodColor(payment.method)">
+                  <mat-icon>{{ getMethodIcon(payment.method) }}</mat-icon>
+                  {{ payment.method | uppercase }}
+                </div>
+                <span class="amount-value">{{ payment.amount | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+            <div class="card-footer">
+              <span class="date-info">
+                <mat-icon>calendar_today</mat-icon>
+                {{ payment.createdAt | date:'MMM d, y • h:mm a' }}
+              </span>
+            </div>
           </div>
         }
       </div>
-    }
 
-    <div class="table-responsive">
-    <table mat-table [dataSource]="dataSource" matSort class="full-width">
-      <ng-container matColumnDef="transactionId">
-        <th mat-header-cell *matHeaderCellDef>Transaction ID</th>
-        <td mat-cell *matCellDef="let row" class="cell-mono">{{ row.transactionId || 'N/A' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="orderId">
-        <th mat-header-cell *matHeaderCellDef>Order</th>
-        <td mat-cell *matCellDef="let row" class="cell-mono">#{{ row.orderId | slice:0:8 }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="method">
-        <th mat-header-cell *matHeaderCellDef>Method</th>
-        <td mat-cell *matCellDef="let row">
-          <div class="method-cell">
-            <mat-icon>{{ getMethodIcon(row.method) }}</mat-icon>
-            {{ row.method | uppercase }}
-          </div>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="amount">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
-        <td mat-cell *matCellDef="let row" class="amount-cell">{{ row.amount | currency:'INR':'symbol':'1.0-0' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let row">
-          <span class="status-badge" [class]="'status-' + row.status">{{ row.status }}</span>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date & Time</th>
-        <td mat-cell *matCellDef="let row">
-          <div class="date-time-cell">
-            <span class="date-full">{{ row.createdAt | date:'MMM d, y' }}</span>
-            <span class="time-full">{{ row.createdAt | date:'h:mm a' }}</span>
-          </div>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-    </div>
-
-    @if (dataSource.data.length === 0) {
-      <div class="empty-state">
-        <mat-icon>account_balance_wallet</mat-icon>
-        <h3>No payment records</h3>
-        <p>Payment transactions will be recorded here.</p>
+      <!-- Pagination -->
+      <div class="payments-pagination">
+        <div class="pagination-info">
+          Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredData.length) }} of {{ filteredData.length }} payments
+        </div>
+        <div class="pagination-controls">
+          <button class="page-btn" (click)="goToPage(1)" [disabled]="currentPage === 1">
+            <mat-icon>first_page</mat-icon>
+          </button>
+          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="page-num">{{ currentPage }} / {{ totalPages }}</span>
+          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+          <button class="page-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages">
+            <mat-icon>last_page</mat-icon>
+          </button>
+        </div>
+        <div class="page-size">
+          <span>Per page:</span>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option [value]="10">10</option>
+            <option [value]="25">25</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
       </div>
     }
-
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
   </div>
 </div>

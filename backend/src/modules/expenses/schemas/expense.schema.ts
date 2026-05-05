@@ -8,7 +8,19 @@ export class Expense {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true, enum: ['rent', 'utilities', 'salary', 'supplies', 'equipment', 'marketing', 'maintenance', 'other'] })
+  @Prop({
+    required: true,
+    enum: [
+      'rent',
+      'utilities',
+      'salary',
+      'supplies',
+      'equipment',
+      'marketing',
+      'maintenance',
+      'other',
+    ],
+  })
   category: string;
 
   @Prop({ required: true })

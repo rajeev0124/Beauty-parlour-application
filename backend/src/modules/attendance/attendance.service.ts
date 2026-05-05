@@ -1,6 +1,11 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Attendance } from './schemas/attendance.schema';
 import {
   CheckInDto,
@@ -34,10 +39,12 @@ export class AttendanceService {
       throw new BadRequestException('Already checked in today');
     }
 
-    const attendance = existing || new this.attendanceModel({
-      staffId: staffId,
-      date: today,
-    });
+    const attendance =
+      existing ||
+      new this.attendanceModel({
+        staffId: staffId,
+        date: today,
+      });
 
     attendance.checkInTime = new Date();
     attendance.status = 'present';
@@ -78,16 +85,18 @@ export class AttendanceService {
     const checkOut = new Date(attendance.checkOutTime).getTime();
     const breakMs = (dto.breakMinutes || 0) * 60 * 1000;
     const workingMs = checkOut - checkIn - breakMs;
-    attendance.workingHours = Math.round((workingMs / (1000 * 60 * 60)) * 100) / 100;
+    attendance.workingHours =
+      Math.round((workingMs / (1000 * 60 * 60)) * 100) / 100;
 
     // Calculate overtime (assuming 8 hours standard)
     if (attendance.workingHours > 8) {
-      attendance.overtimeHours = Math.round((attendance.workingHours - 8) * 100) / 100;
+      attendance.overtimeHours =
+        Math.round((attendance.workingHours - 8) * 100) / 100;
     }
 
     if (dto.notes) {
-      attendance.notes = attendance.notes 
-        ? `${attendance.notes}\n${dto.notes}` 
+      attendance.notes = attendance.notes
+        ? `${attendance.notes}\n${dto.notes}`
         : dto.notes;
     }
 
@@ -97,7 +106,10 @@ export class AttendanceService {
   /**
    * Request leave
    */
-  async requestLeave(staffId: string, dto: RequestLeaveDto): Promise<Attendance> {
+  async requestLeave(
+    staffId: string,
+    dto: RequestLeaveDto,
+  ): Promise<Attendance> {
     // Check if already has attendance for that date
     const existing = await this.attendanceModel.findOne({
       staffId: staffId,
@@ -106,7 +118,9 @@ export class AttendanceService {
 
     if (existing) {
       if (existing.checkInTime) {
-        throw new BadRequestException('Cannot request leave for a day already worked');
+        throw new BadRequestException(
+          'Cannot request leave for a day already worked',
+        );
       }
       // Update existing record
       existing.status = 'leave';
@@ -148,11 +162,11 @@ export class AttendanceService {
 
     attendance.isApproved = approved;
     attendance.approvedBy = approvedBy;
-    
+
     if (!approved) {
       attendance.status = 'absent'; // Mark as absent if leave rejected
     }
-    
+
     if (notes) {
       attendance.notes = notes;
     }
@@ -236,8 +250,12 @@ export class AttendanceService {
     }
 
     if (summary.presentDays + summary.halfDays > 0) {
-      summary.averageWorkingHours = 
-        Math.round((summary.totalWorkingHours / (summary.presentDays + summary.halfDays * 0.5)) * 100) / 100;
+      summary.averageWorkingHours =
+        Math.round(
+          (summary.totalWorkingHours /
+            (summary.presentDays + summary.halfDays * 0.5)) *
+            100,
+        ) / 100;
     }
 
     return {
@@ -315,7 +333,7 @@ export class AttendanceService {
       },
       { upsert: true, new: true },
     );
-    return result as any;
+    return result;
   }
 
   /**
@@ -323,15 +341,15 @@ export class AttendanceService {
    */
   async getTodayTeamAttendance() {
     const today = new Date().toISOString().split('T')[0];
-    
+
     const records = await this.attendanceModel
       .find({ date: today })
       .populate('staffId', 'name email role');
 
     return {
       date: today,
-      totalCheckedIn: records.filter(r => r.checkInTime).length,
-      totalOnLeave: records.filter(r => r.status === 'leave').length,
+      totalCheckedIn: records.filter((r) => r.checkInTime).length,
+      totalOnLeave: records.filter((r) => r.status === 'leave').length,
       records,
     };
   }

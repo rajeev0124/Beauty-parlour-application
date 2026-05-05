@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
-import { CreateFeedbackDto, RespondToFeedbackDto, UpdateFeedbackStatusDto } from './dto/feedback.dto';
+import { CreateFeedbackDto, RespondToFeedbackDto } from './dto/feedback.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';

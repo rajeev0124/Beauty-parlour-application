@@ -1,7 +1,14 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { ServicePackage, ServicePackageDocument } from './schemas/service-package.schema';
+import { Model } from 'mongoose';
+import {
+  ServicePackage,
+  ServicePackageDocument,
+} from './schemas/service-package.schema';
 import { CreatePackageDto, UpdatePackageDto } from './dto/package.dto';
 
 @Injectable()
@@ -13,9 +20,14 @@ export class PackagesService {
 
   async create(createPackageDto: CreatePackageDto): Promise<ServicePackage> {
     // Calculate discount percentage if not provided
-    if (!createPackageDto.discountPercentage && createPackageDto.originalPrice > 0) {
+    if (
+      !createPackageDto.discountPercentage &&
+      createPackageDto.originalPrice > 0
+    ) {
       createPackageDto.discountPercentage = Math.round(
-        ((createPackageDto.originalPrice - createPackageDto.packagePrice) / createPackageDto.originalPrice) * 100
+        ((createPackageDto.originalPrice - createPackageDto.packagePrice) /
+          createPackageDto.originalPrice) *
+          100,
       );
     }
 
@@ -103,20 +115,28 @@ export class PackagesService {
       .exec();
   }
 
-  async update(id: string, updatePackageDto: UpdatePackageDto): Promise<ServicePackage> {
+  async update(
+    id: string,
+    updatePackageDto: UpdatePackageDto,
+  ): Promise<ServicePackage> {
     // Recalculate discount if prices changed
-    if (updatePackageDto.originalPrice !== undefined || updatePackageDto.packagePrice !== undefined) {
+    if (
+      updatePackageDto.originalPrice !== undefined ||
+      updatePackageDto.packagePrice !== undefined
+    ) {
       const existingPackage = await this.packageModel.findById(id);
       if (!existingPackage) {
         throw new NotFoundException('Package not found');
       }
 
-      const originalPrice = updatePackageDto.originalPrice ?? existingPackage.originalPrice;
-      const packagePrice = updatePackageDto.packagePrice ?? existingPackage.packagePrice;
+      const originalPrice =
+        updatePackageDto.originalPrice ?? existingPackage.originalPrice;
+      const packagePrice =
+        updatePackageDto.packagePrice ?? existingPackage.packagePrice;
 
       if (originalPrice > 0) {
         updatePackageDto.discountPercentage = Math.round(
-          ((originalPrice - packagePrice) / originalPrice) * 100
+          ((originalPrice - packagePrice) / originalPrice) * 100,
         );
       }
     }
@@ -191,9 +211,9 @@ export class PackagesService {
                 activePackages: {
                   $sum: { $cond: ['$isActive', 1, 0] },
                 },
-                totalRedemptions: { $sum: '$redemptionCount' },
+                totalRedemptions: { $sum: '$currentRedemptions' },
                 revenueGenerated: {
-                  $sum: { $multiply: ['$packagePrice', '$redemptionCount'] },
+                  $sum: { $multiply: ['$packagePrice', '$currentRedemptions'] },
                 },
               },
             },
@@ -235,7 +255,7 @@ export class PackagesService {
     reason?: string;
   }> {
     const pkg = await this.packageModel.findById(id);
-    
+
     if (!pkg) {
       return { isAvailable: false, reason: 'Package not found' };
     }
@@ -254,7 +274,10 @@ export class PackagesService {
     }
 
     if (pkg.maxRedemptions && pkg.currentRedemptions >= pkg.maxRedemptions) {
-      return { isAvailable: false, reason: 'Package has reached maximum redemptions' };
+      return {
+        isAvailable: false,
+        reason: 'Package has reached maximum redemptions',
+      };
     }
 
     return { isAvailable: true };

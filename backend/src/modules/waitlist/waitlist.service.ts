@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
@@ -48,7 +53,9 @@ export class WaitlistService {
     });
 
     if (existing) {
-      throw new BadRequestException('Already on waitlist for this service and date');
+      throw new BadRequestException(
+        'Already on waitlist for this service and date',
+      );
     }
 
     const entry = new this.waitlistModel({
@@ -57,7 +64,9 @@ export class WaitlistService {
       status: 'waiting',
     });
 
-    this.logger.log(`Customer ${dto.customerName} joined waitlist for ${dto.serviceName} on ${dto.preferredDate}`);
+    this.logger.log(
+      `Customer ${dto.customerName} joined waitlist for ${dto.serviceName} on ${dto.preferredDate}`,
+    );
     return entry.save();
   }
 
@@ -65,10 +74,12 @@ export class WaitlistService {
    * Get user's waitlist entries
    */
   async getMyWaitlist(userId: string): Promise<WaitlistEntry[]> {
-    return this.waitlistModel.find({
-      userId: userId,
-      status: { $in: ['waiting', 'notified'] },
-    }).sort({ preferredDate: 1 });
+    return this.waitlistModel
+      .find({
+        userId: userId,
+        status: { $in: ['waiting', 'notified'] },
+      })
+      .sort({ preferredDate: 1 });
   }
 
   /**
@@ -98,17 +109,19 @@ export class WaitlistService {
     this.logger.log('Checking waitlist for available slots...');
 
     const today = new Date().toISOString().split('T')[0];
-    
+
     // Get waiting entries for today and upcoming days
-    const waitingEntries = await this.waitlistModel.find({
-      status: 'waiting',
-      preferredDate: { $gte: today },
-    }).sort({ priority: -1, createdAt: 1 }); // VIPs first, then FIFO
+    const waitingEntries = await this.waitlistModel
+      .find({
+        status: 'waiting',
+        preferredDate: { $gte: today },
+      })
+      .sort({ priority: -1, createdAt: 1 }); // VIPs first, then FIFO
 
     for (const entry of waitingEntries) {
       // Check if any preferred time slot is now available
       const availableSlot = await this.findAvailableSlot(entry);
-      
+
       if (availableSlot) {
         await this.notifyCustomer(entry, availableSlot);
       }
@@ -118,10 +131,21 @@ export class WaitlistService {
   /**
    * Find available slot matching waitlist preferences
    */
-  private async findAvailableSlot(entry: WaitlistEntry): Promise<string | null> {
-    const timeSlots = entry.preferredTimeSlots?.length 
-      ? entry.preferredTimeSlots 
-      : ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
+  private async findAvailableSlot(
+    entry: WaitlistEntry,
+  ): Promise<string | null> {
+    const timeSlots = entry.preferredTimeSlots?.length
+      ? entry.preferredTimeSlots
+      : [
+          '09:00',
+          '10:00',
+          '11:00',
+          '12:00',
+          '14:00',
+          '15:00',
+          '16:00',
+          '17:00',
+        ];
 
     for (const slot of timeSlots) {
       const existingAppointment = await this.appointmentModel.findOne({
@@ -143,11 +167,16 @@ export class WaitlistService {
   /**
    * Notify customer about available slot
    */
-  private async notifyCustomer(entry: WaitlistEntry, timeSlot: string): Promise<void> {
+  private async notifyCustomer(
+    entry: WaitlistEntry,
+    timeSlot: string,
+  ): Promise<void> {
     // Update entry status
     entry.status = 'notified';
     entry.notifiedAt = new Date();
-    entry.expiresAt = new Date(Date.now() + this.NOTIFICATION_EXPIRY_HOURS * 60 * 60 * 1000);
+    entry.expiresAt = new Date(
+      Date.now() + this.NOTIFICATION_EXPIRY_HOURS * 60 * 60 * 1000,
+    );
     await (entry as any).save();
 
     const message = `Great news! A slot is available for ${entry.serviceName} on ${entry.preferredDate} at ${timeSlot}. Book now - this slot is reserved for you for ${this.NOTIFICATION_EXPIRY_HOURS} hours!`;
@@ -216,7 +245,9 @@ export class WaitlistService {
     );
 
     if (expired.modifiedCount > 0) {
-      this.logger.log(`Expired ${expired.modifiedCount} waitlist notifications`);
+      this.logger.log(
+        `Expired ${expired.modifiedCount} waitlist notifications`,
+      );
     }
   }
 
@@ -229,12 +260,13 @@ export class WaitlistService {
     status?: string;
   }): Promise<WaitlistEntry[]> {
     const filter: any = {};
-    
+
     if (query.date) filter.preferredDate = query.date;
     if (query.serviceId) filter.serviceId = query.serviceId;
     if (query.status) filter.status = query.status;
 
-    return this.waitlistModel.find(filter)
+    return this.waitlistModel
+      .find(filter)
       .populate('userId', 'name email phone')
       .sort({ preferredDate: 1, priority: -1 });
   }
@@ -266,9 +298,9 @@ export class WaitlistService {
       else if (entry.status === 'notified') stats.totalNotified++;
       else if (entry.status === 'booked') stats.totalBooked++;
 
-      stats.byService[entry.serviceName] = 
+      stats.byService[entry.serviceName] =
         (stats.byService[entry.serviceName] || 0) + 1;
-      stats.byDate[entry.preferredDate] = 
+      stats.byDate[entry.preferredDate] =
         (stats.byDate[entry.preferredDate] || 0) + 1;
     }
 
@@ -278,16 +310,22 @@ export class WaitlistService {
   /**
    * Manually notify next in waitlist (admin)
    */
-  async notifyNext(serviceId: string, date: string, time: string): Promise<WaitlistEntry | null> {
-    const nextEntry = await this.waitlistModel.findOne({
-      serviceId,
-      preferredDate: date,
-      status: 'waiting',
-      $or: [
-        { preferredTimeSlots: { $size: 0 } },
-        { preferredTimeSlots: time },
-      ],
-    }).sort({ priority: -1, createdAt: 1 });
+  async notifyNext(
+    serviceId: string,
+    date: string,
+    time: string,
+  ): Promise<WaitlistEntry | null> {
+    const nextEntry = await this.waitlistModel
+      .findOne({
+        serviceId,
+        preferredDate: date,
+        status: 'waiting',
+        $or: [
+          { preferredTimeSlots: { $size: 0 } },
+          { preferredTimeSlots: time },
+        ],
+      })
+      .sort({ priority: -1, createdAt: 1 });
 
     if (nextEntry) {
       await this.notifyCustomer(nextEntry, time);
@@ -300,7 +338,10 @@ export class WaitlistService {
   /**
    * Update priority (admin - for VIP customers)
    */
-  async updatePriority(entryId: string, priority: number): Promise<WaitlistEntry> {
+  async updatePriority(
+    entryId: string,
+    priority: number,
+  ): Promise<WaitlistEntry> {
     const entry = await this.waitlistModel.findByIdAndUpdate(
       entryId,
       { priority },

@@ -6,7 +6,9 @@ import { GiftCardsController } from './gift-cards.controller';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: GiftCard.name, schema: GiftCardSchema }]),
+    MongooseModule.forFeature([
+      { name: GiftCard.name, schema: GiftCardSchema },
+    ]),
   ],
   controllers: [GiftCardsController],
   providers: [GiftCardsService],

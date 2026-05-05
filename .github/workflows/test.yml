@@ -1,0 +1,50 @@
+name: CI - Testing Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      
+      - name: Install Dependencies
+        working-directory: backend
+        run: npm ci
+      
+      - name: Run Unit Tests
+        working-directory: backend
+        run: npm test -- --coverage
+      
+      - name: Run E2E Tests
+        working-directory: backend
+        run: npm run test:e2e
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: beauty-parlour/package-lock.json
+      
+      - name: Install Dependencies
+        working-directory: beauty-parlour
+        run: npm ci
+      
+      - name: Run Unit Tests
+        working-directory: beauty-parlour
+        run: npm test -- --watch=false --browsers=ChromeHeadless

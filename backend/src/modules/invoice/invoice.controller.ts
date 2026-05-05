@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Res, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Res,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import type { Response } from 'express';
 import { InvoiceService, InvoiceData } from './invoice.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -16,7 +24,10 @@ export class InvoiceController {
 
   @Get('appointment/:id')
   @UseGuards(JwtAuthGuard)
-  async generateAppointmentInvoice(@Param('id') id: string, @Res() res: Response) {
+  async generateAppointmentInvoice(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
     try {
       const appointment = await this.appointmentModel
         .findById(id)
@@ -29,9 +40,9 @@ export class InvoiceController {
         throw new HttpException('Appointment not found', HttpStatus.NOT_FOUND);
       }
 
-      const user = appointment.userId as any;
-      const service = appointment.serviceId as any;
-      const staff = appointment.staffId as any;
+      const user = appointment.userId;
+      const service = appointment.serviceId;
+      const staff = appointment.staffId;
 
       const invoiceData: InvoiceData = {
         invoiceNumber: this.invoiceService.generateInvoiceNumber(),
@@ -40,22 +51,25 @@ export class InvoiceController {
         customerEmail: user?.email || '',
         customerPhone: user?.phone,
         customerAddress: user?.address,
-        items: [{
-          name: service?.name || appointment.serviceName || 'Service',
-          description: service?.description || '',
-          quantity: 1,
-          unitPrice: (appointment as any).totalAmount || service?.price || 0,
-          total: (appointment as any).totalAmount || service?.price || 0,
-        }],
-        subtotal: (appointment as any).totalAmount || 0,
-        discount: (appointment as any).discount || 0,
-        total: ((appointment as any).totalAmount || 0) - ((appointment as any).discount || 0),
-        paymentMethod: (appointment as any).paymentMethod || 'Cash',
-        paymentStatus: (appointment as any).paymentStatus || 'pending',
+        items: [
+          {
+            name: service?.name || appointment.serviceName || 'Service',
+            description: service?.description || '',
+            quantity: 1,
+            unitPrice: appointment.totalAmount || service?.price || 0,
+            total: appointment.totalAmount || service?.price || 0,
+          },
+        ],
+        subtotal: appointment.totalAmount || 0,
+        discount: appointment.discount || 0,
+        total: (appointment.totalAmount || 0) - (appointment.discount || 0),
+        paymentMethod: appointment.paymentMethod || 'Cash',
+        paymentStatus: appointment.paymentStatus || 'pending',
         notes: `Appointment Time: ${appointment.time}\nStaff: ${staff?.name || appointment.staffName || 'Any available'}`,
       };
 
-      const pdfBuffer = await this.invoiceService.generateInvoicePDF(invoiceData);
+      const pdfBuffer =
+        await this.invoiceService.generateInvoicePDF(invoiceData);
 
       res.set({
         'Content-Type': 'application/pdf',
@@ -65,7 +79,10 @@ export class InvoiceController {
 
       res.send(pdfBuffer);
     } catch (error) {
-      throw new HttpException(error.message || 'Failed to generate invoice', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Failed to generate invoice',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -83,10 +100,10 @@ export class InvoiceController {
         throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
       }
 
-      const user = order.userId as any;
+      const user = order.userId;
 
       const items = (order.items || []).map((item: any) => {
-        const product = item.productId as any;
+        const product = item.productId;
         return {
           name: product?.name || item.productName || 'Product',
           description: product?.description || '',
@@ -98,22 +115,23 @@ export class InvoiceController {
 
       const invoiceData: InvoiceData = {
         invoiceNumber: this.invoiceService.generateInvoiceNumber(),
-        date: (order as any).createdAt || new Date(),
-        customerName: user?.name || (order as any).userName || 'Customer',
+        date: order.createdAt || new Date(),
+        customerName: user?.name || order.userName || 'Customer',
         customerEmail: user?.email || '',
         customerPhone: user?.phone,
-        customerAddress: (order as any).shippingAddress || user?.address,
+        customerAddress: order.shippingAddress || user?.address,
         items,
-        subtotal: (order as any).subtotal || order.totalPrice || 0,
-        discount: (order as any).discount || 0,
-        tax: (order as any).tax || 0,
+        subtotal: order.subtotal || order.totalPrice || 0,
+        discount: order.discount || 0,
+        tax: order.tax || 0,
         total: order.totalPrice || 0,
-        paymentMethod: (order as any).paymentMethod || 'Cash',
-        paymentStatus: (order as any).paymentStatus || order.status || 'pending',
-        notes: (order as any).notes || '',
+        paymentMethod: order.paymentMethod || 'Cash',
+        paymentStatus: order.paymentStatus || order.status || 'pending',
+        notes: order.notes || '',
       };
 
-      const pdfBuffer = await this.invoiceService.generateInvoicePDF(invoiceData);
+      const pdfBuffer =
+        await this.invoiceService.generateInvoicePDF(invoiceData);
 
       res.set({
         'Content-Type': 'application/pdf',
@@ -123,7 +141,10 @@ export class InvoiceController {
 
       res.send(pdfBuffer);
     } catch (error) {
-      throw new HttpException(error.message || 'Failed to generate invoice', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Failed to generate invoice',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -135,7 +156,7 @@ export class InvoiceController {
         .findById(id)
         .populate({
           path: 'orderId',
-          populate: { path: 'userId', select: 'name email phone address' }
+          populate: { path: 'userId', select: 'name email phone address' },
         })
         .exec();
 
@@ -143,29 +164,33 @@ export class InvoiceController {
         throw new HttpException('Payment not found', HttpStatus.NOT_FOUND);
       }
 
-      const order = payment.orderId as any;
-      const user = order?.userId as any;
+      const order = payment.orderId;
+      const user = order?.userId;
 
       const invoiceData: InvoiceData = {
-        invoiceNumber: payment.transactionId || this.invoiceService.generateInvoiceNumber(),
-        date: (payment as any).createdAt || new Date(),
+        invoiceNumber:
+          payment.transactionId || this.invoiceService.generateInvoiceNumber(),
+        date: payment.createdAt || new Date(),
         customerName: user?.name || 'Customer',
         customerEmail: user?.email || '',
         customerPhone: user?.phone,
-        items: [{
-          name: 'Payment',
-          description: order ? 'Order Payment' : 'Service Payment',
-          quantity: 1,
-          unitPrice: payment.amount || 0,
-          total: payment.amount || 0,
-        }],
+        items: [
+          {
+            name: 'Payment',
+            description: order ? 'Order Payment' : 'Service Payment',
+            quantity: 1,
+            unitPrice: payment.amount || 0,
+            total: payment.amount || 0,
+          },
+        ],
         subtotal: payment.amount || 0,
         total: payment.amount || 0,
         paymentMethod: payment.method || 'Cash',
         paymentStatus: payment.status || 'completed',
       };
 
-      const pdfBuffer = await this.invoiceService.generateInvoicePDF(invoiceData);
+      const pdfBuffer =
+        await this.invoiceService.generateInvoicePDF(invoiceData);
 
       res.set({
         'Content-Type': 'application/pdf',
@@ -175,7 +200,10 @@ export class InvoiceController {
 
       res.send(pdfBuffer);
     } catch (error) {
-      throw new HttpException(error.message || 'Failed to generate receipt', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Failed to generate receipt',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

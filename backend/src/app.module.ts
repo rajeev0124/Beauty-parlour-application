@@ -48,15 +48,18 @@ import { NotificationsModule } from './common/notifications';
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       useFactory: () => ({
-        uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/beauty-parlour',
+        uri:
+          process.env.MONGODB_URI || 'mongodb://localhost:27017/beauty-parlour',
         retryAttempts: 3,
         retryDelay: 1000,
-        connectionFactory: (connection) => {
+        connectionFactory: (connection: {
+          on: (event: string, handler: (err?: Error) => void) => void;
+        }) => {
           connection.on('connected', () => {
             console.log('✅ MongoDB connected successfully');
           });
-          connection.on('error', (err) => {
-            console.error('❌ MongoDB connection error:', err.message);
+          connection.on('error', (err?: Error) => {
+            console.error('❌ MongoDB connection error:', err?.message);
           });
           connection.on('disconnected', () => {
             console.warn('⚠️ MongoDB disconnected');
@@ -67,9 +70,9 @@ import { NotificationsModule } from './common/notifications';
     }),
     // Rate limiting: 100 requests per minute for general, 10 for auth
     ThrottlerModule.forRoot([
-      { name: 'short', ttl: 1000, limit: 5 },     // 5 req/sec burst protection
-      { name: 'medium', ttl: 10000, limit: 30 },  // 30 req/10sec
-      { name: 'long', ttl: 60000, limit: 100 },   // 100 req/min
+      { name: 'short', ttl: 1000, limit: 5 }, // 5 req/sec burst protection
+      { name: 'medium', ttl: 10000, limit: 30 }, // 30 req/10sec
+      { name: 'long', ttl: 60000, limit: 100 }, // 100 req/min
     ]),
     LoggerModule,
     ServeStaticModule.forRoot({
@@ -108,10 +111,10 @@ import { NotificationsModule } from './common/notifications';
     NotificationsModule,
     // New modules for production-ready features
     NestScheduleModule.forRoot(), // Cron jobs
-    SchedulerModule,              // Appointment reminders
-    AttendanceModule,             // Staff attendance tracking
-    MarketingModule,              // Marketing campaigns
-    WaitlistManagementModule,     // Waitlist for full slots
+    SchedulerModule, // Appointment reminders
+    AttendanceModule, // Staff attendance tracking
+    MarketingModule, // Marketing campaigns
+    WaitlistManagementModule, // Waitlist for full slots
   ],
   controllers: [HealthController],
   providers: [

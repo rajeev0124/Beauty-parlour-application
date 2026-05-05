@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ReportsController } from './reports.controller';
 import { ReportsService } from './reports.service';
-import { Appointment, AppointmentSchema } from '../../schemas/appointment.schema';
+import {
+  Appointment,
+  AppointmentSchema,
+} from '../../schemas/appointment.schema';
 import { Order, OrderSchema } from '../../schemas/order.schema';
 import { Payment, PaymentSchema } from '../../schemas/payment.schema';
 import { User, UserSchema } from '../../schemas/user.schema';

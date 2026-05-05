@@ -1,10 +1,26 @@
-import { IsString, IsNumber, IsDateString, IsOptional, IsBoolean, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsDateString,
+  IsOptional,
+  IsBoolean,
+  IsEnum,
+} from 'class-validator';
 
 export class CreateExpenseDto {
   @IsString()
   title: string;
 
-  @IsEnum(['rent', 'utilities', 'salary', 'supplies', 'equipment', 'marketing', 'maintenance', 'other'])
+  @IsEnum([
+    'rent',
+    'utilities',
+    'salary',
+    'supplies',
+    'equipment',
+    'marketing',
+    'maintenance',
+    'other',
+  ])
   category: string;
 
   @IsNumber()

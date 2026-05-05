@@ -12,7 +12,12 @@ import {
   Req,
 } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
-import { CreateScheduleDto, UpdateScheduleDto, BulkScheduleDto, LeaveRequestDto } from './dto/schedule.dto';
+import {
+  CreateScheduleDto,
+  UpdateScheduleDto,
+  BulkScheduleDto,
+  LeaveRequestDto,
+} from './dto/schedule.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -67,21 +72,25 @@ export class ScheduleController {
   }
 
   @Get('calendar')
-  getCalendarData(
-    @Query('month') month: string,
-    @Query('year') year: string,
-  ) {
-    return this.scheduleService.getCalendarData(parseInt(month), parseInt(year));
+  getCalendarData(@Query('month') month: string, @Query('year') year: string) {
+    return this.scheduleService.getCalendarData(
+      parseInt(month),
+      parseInt(year),
+    );
   }
 
   @Get('stats')
   @UseGuards(RolesGuard)
   @Roles('admin')
-  getStats(
-    @Query('month') month: string,
-    @Query('year') year: string,
-  ) {
-    return this.scheduleService.getScheduleStats(parseInt(month), parseInt(year));
+  getStats(@Query('month') month?: string, @Query('year') year?: string) {
+    // If no month/year provided, return dashboard stats
+    if (!month || !year) {
+      return this.scheduleService.getDashboardStats();
+    }
+    return this.scheduleService.getScheduleStats(
+      parseInt(month),
+      parseInt(year),
+    );
   }
 
   @Get('range')
@@ -89,7 +98,10 @@ export class ScheduleController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
-    return this.scheduleService.findByDateRange(new Date(startDate), new Date(endDate));
+    return this.scheduleService.findByDateRange(
+      new Date(startDate),
+      new Date(endDate),
+    );
   }
 
   @Get('staff/:staffId')
@@ -121,7 +133,10 @@ export class ScheduleController {
   @Put(':id')
   @UseGuards(RolesGuard)
   @Roles('admin')
-  update(@Param('id') id: string, @Body() updateScheduleDto: UpdateScheduleDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateScheduleDto: UpdateScheduleDto,
+  ) {
     return this.scheduleService.update(id, updateScheduleDto);
   }
 

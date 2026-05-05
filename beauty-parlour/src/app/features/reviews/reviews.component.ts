@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -15,8 +15,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClient } from '@angular/common/http';
+import { Subject, takeUntil } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
 
 interface Review {
   _id: string;
@@ -37,272 +40,283 @@ interface Review {
     CommonModule, FormsModule, MatTableModule, MatPaginatorModule, MatSortModule,
     MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule,
     MatCardModule, MatDialogModule, MatSnackBarModule, MatChipsModule,
-    MatProgressSpinnerModule, MatTabsModule, MatMenuModule
+    MatProgressSpinnerModule, MatTabsModule, MatMenuModule, MatTooltipModule,
+    DatePipe, DecimalPipe
   ],
-  template: `
-    <div class="reviews-container">
-      <div class="header">
-        <h1>Reviews & Ratings</h1>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="stats-cards">
-        <mat-card class="stat-card">
-          <mat-card-content>
-            <div class="stat-icon rating">
-              <mat-icon>star</mat-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value">{{ stats.avgRating | number:'1.1-1' }}</span>
-              <span class="stat-label">Average Rating</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-        
-        <mat-card class="stat-card">
-          <mat-card-content>
-            <div class="stat-icon total">
-              <mat-icon>rate_review</mat-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value">{{ stats.totalReviews }}</span>
-              <span class="stat-label">Total Reviews</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-        
-        <mat-card class="stat-card">
-          <mat-card-content>
-            <div class="stat-icon pending">
-              <mat-icon>pending</mat-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value">{{ pendingCount }}</span>
-              <span class="stat-label">Pending Approval</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-
-      <mat-tab-group>
-        <mat-tab label="All Reviews">
-          <div class="table-container mat-elevation-z2">
-            <table mat-table [dataSource]="dataSource" matSort>
-              <ng-container matColumnDef="userName">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
-                <td mat-cell *matCellDef="let review">{{ review.userName }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="rating">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rating</th>
-                <td mat-cell *matCellDef="let review">
-                  <div class="stars">
-                    @for (star of [1,2,3,4,5]; track star) {
-                      <mat-icon [class.filled]="star <= review.rating">star</mat-icon>
-                    }
-                  </div>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="comment">
-                <th mat-header-cell *matHeaderCellDef>Comment</th>
-                <td mat-cell *matCellDef="let review">{{ review.comment | slice:0:50 }}...</td>
-              </ng-container>
-
-              <ng-container matColumnDef="serviceName">
-                <th mat-header-cell *matHeaderCellDef>Service</th>
-                <td mat-cell *matCellDef="let review">{{ review.serviceName || '-' }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef>Status</th>
-                <td mat-cell *matCellDef="let review">
-                  @if (review.isApproved) {
-                    <mat-chip color="primary">Approved</mat-chip>
-                  } @else {
-                    <mat-chip color="warn">Pending</mat-chip>
-                  }
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let review">
-                  <button mat-icon-button [matMenuTriggerFor]="menu">
-                    <mat-icon>more_vert</mat-icon>
-                  </button>
-                  <mat-menu #menu="matMenu">
-                    @if (!review.isApproved) {
-                      <button mat-menu-item (click)="approve(review)">
-                        <mat-icon>check</mat-icon> Approve
-                      </button>
-                    }
-                    <button mat-menu-item (click)="reply(review)">
-                      <mat-icon>reply</mat-icon> Reply
-                    </button>
-                    <button mat-menu-item (click)="delete(review)">
-                      <mat-icon>delete</mat-icon> Delete
-                    </button>
-                  </mat-menu>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-            <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
-          </div>
-        </mat-tab>
-
-        <mat-tab label="Pending ({{ pendingCount }})">
-          <div class="reviews-list">
-            @for (review of pendingReviews; track review._id) {
-              <mat-card class="review-card">
-                <mat-card-header>
-                  <div class="review-header">
-                    <span class="reviewer">{{ review.userName }}</span>
-                    <div class="stars">
-                      @for (star of [1,2,3,4,5]; track star) {
-                        <mat-icon [class.filled]="star <= review.rating">star</mat-icon>
-                      }
-                    </div>
-                  </div>
-                </mat-card-header>
-                <mat-card-content>
-                  <p>{{ review.comment }}</p>
-                  @if (review.serviceName) {
-                    <small>Service: {{ review.serviceName }}</small>
-                  }
-                </mat-card-content>
-                <mat-card-actions>
-                  <button mat-raised-button color="primary" (click)="approve(review)">
-                    <mat-icon>check</mat-icon> Approve
-                  </button>
-                  <button mat-raised-button color="warn" (click)="reject(review)">
-                    <mat-icon>close</mat-icon> Reject
-                  </button>
-                </mat-card-actions>
-              </mat-card>
-            }
-          </div>
-        </mat-tab>
-      </mat-tab-group>
-    </div>
-  `,
-  styles: [`
-    .reviews-container { padding: 24px; }
-    .header { margin-bottom: 24px; }
-    .header h1 { margin: 0; }
-    
-    .stats-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card mat-card-content { display: flex; align-items: center; gap: 16px; padding: 16px; }
-    .stat-icon { width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-    .stat-icon.rating { background: #fff3e0; color: #f57c00; }
-    .stat-icon.total { background: #e3f2fd; color: #1976d2; }
-    .stat-icon.pending { background: #fce4ec; color: #c2185b; }
-    .stat-icon mat-icon { font-size: 28px; width: 28px; height: 28px; }
-    .stat-info { display: flex; flex-direction: column; }
-    .stat-value { font-size: 24px; font-weight: 600; }
-    .stat-label { font-size: 14px; color: #666; }
-    
-    .table-container { margin-top: 16px; border-radius: 8px; overflow: hidden; }
-    table { width: 100%; }
-    
-    .stars { display: flex; }
-    .stars mat-icon { color: #ddd; font-size: 18px; width: 18px; height: 18px; }
-    .stars mat-icon.filled { color: #ffc107; }
-    
-    .reviews-list { display: grid; gap: 16px; margin-top: 16px; }
-    .review-card { border-radius: 12px; }
-    .review-header { display: flex; justify-content: space-between; width: 100%; align-items: center; }
-    .reviewer { font-weight: 600; }
-    
-    @media (max-width: 768px) {
-      .stats-cards { grid-template-columns: 1fr; }
-    }
-  `]
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  templateUrl: './reviews.component.html',
+  styleUrl: './reviews.component.scss'
 })
-export class ReviewsComponent implements OnInit, AfterViewInit {
-  displayedColumns = ['userName', 'rating', 'comment', 'serviceName', 'status', 'actions'];
-  dataSource = new MatTableDataSource<Review>([]);
+export class ReviewsComponent implements OnInit, OnDestroy {
+  // Data
+  allReviews: Review[] = [];
+  filteredReviews: Review[] = [];
+  paginatedReviews: Review[] = [];
   pendingReviews: Review[] = [];
-  pendingCount = 0;
-  stats = { avgRating: 0, totalReviews: 0 };
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  // Stats
+  stats = { avgRating: 0, totalReviews: 0, approvedCount: 0 };
+  pendingCount = 0;
+  ratingDistribution = [0, 0, 0, 0, 0]; // 5,4,3,2,1 stars
+
+  // State
+  loading = true;
+  showSuccess = false;
+  successMessage = '';
+  searchTerm = '';
+  currentFilter: 'all' | 'approved' | 'pending' | '5star' | '4star' | '3star' | 'low' = 'all';
+  replyingTo: Review | null = null;
+  replyText = '';
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
+  Math = Math;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private http: HttpClient,
+    private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.loadReviews();
-    this.loadStats();
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadReviews() {
-    this.http.get<Review[]>(`${environment.apiUrl}/reviews`).subscribe({
+    this.loading = true;
+    this.cdr.markForCheck();
+
+    this.http.get<Review[]>(`${environment.apiUrl}/reviews`).pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
-        this.dataSource.data = data;
-        this.pendingReviews = data.filter(r => !r.isApproved);
-        this.pendingCount = this.pendingReviews.length;
-        this.cdr.detectChanges();
+        this.allReviews = data;
+        this.calculateStats();
+        this.applyFilter();
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }
 
-  loadStats() {
-    this.http.get<any>(`${environment.apiUrl}/reviews/stats`).subscribe({
-      next: (data) => this.stats = data
+  calculateStats() {
+    const reviews = this.allReviews;
+    this.stats.totalReviews = reviews.length;
+    this.stats.approvedCount = reviews.filter(r => r.isApproved).length;
+    this.pendingCount = reviews.filter(r => !r.isApproved).length;
+    this.pendingReviews = reviews.filter(r => !r.isApproved);
+
+    if (reviews.length > 0) {
+      const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+      this.stats.avgRating = sum / reviews.length;
+    }
+
+    // Calculate rating distribution
+    this.ratingDistribution = [0, 0, 0, 0, 0];
+    reviews.forEach(r => {
+      if (r.rating >= 1 && r.rating <= 5) {
+        this.ratingDistribution[5 - r.rating]++;
+      }
     });
   }
 
+  getRatingPercent(index: number): number {
+    const total = this.stats.totalReviews;
+    if (total === 0) return 0;
+    return (this.ratingDistribution[index] / total) * 100;
+  }
+
+  applyFilter() {
+    let filtered = [...this.allReviews];
+
+    // Apply status/rating filter
+    switch (this.currentFilter) {
+      case 'approved':
+        filtered = filtered.filter(r => r.isApproved);
+        break;
+      case 'pending':
+        filtered = filtered.filter(r => !r.isApproved);
+        break;
+      case '5star':
+        filtered = filtered.filter(r => r.rating === 5);
+        break;
+      case '4star':
+        filtered = filtered.filter(r => r.rating === 4);
+        break;
+      case '3star':
+        filtered = filtered.filter(r => r.rating === 3);
+        break;
+      case 'low':
+        filtered = filtered.filter(r => r.rating <= 2);
+        break;
+    }
+
+    // Apply search
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(r =>
+        r.userName.toLowerCase().includes(term) ||
+        r.comment.toLowerCase().includes(term) ||
+        (r.serviceName && r.serviceName.toLowerCase().includes(term))
+      );
+    }
+
+    this.filteredReviews = filtered;
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  filterByStatus(status: typeof this.currentFilter) {
+    this.currentFilter = status;
+    this.applyFilter();
+  }
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredReviews.length / this.pageSize) || 1;
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedReviews = this.filteredReviews.slice(start, end);
+    this.cdr.markForCheck();
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  getInitials(name: string): string {
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  }
+
+  getAvatarGradient(name: string): string {
+    const colors = [
+      'linear-gradient(135deg, #ec4899 0%, #f472b6 100%)',
+      'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
+      'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
+      'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+      'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+      'linear-gradient(135deg, #ef4444 0%, #f87171 100%)'
+    ];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+  }
+
+  getRatingClass(rating: number): string {
+    if (rating >= 4) return 'excellent';
+    if (rating === 3) return 'good';
+    return 'poor';
+  }
+
+  showSuccessToast(message: string) {
+    this.successMessage = message;
+    this.showSuccess = true;
+    this.cdr.markForCheck();
+    setTimeout(() => {
+      this.showSuccess = false;
+      this.cdr.markForCheck();
+    }, 3000);
+  }
+
   approve(review: Review) {
-    this.http.put(`${environment.apiUrl}/reviews/${review._id}/approve`, {}).subscribe({
+    this.http.put(`${environment.apiUrl}/reviews/${review._id}/approve`, {}).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
-        this.snackBar.open('Review approved', 'Close', { duration: 3000 });
+        this.showSuccessToast('Review approved successfully!');
         this.loadReviews();
+      },
+      error: (err) => {
+        this.snackBar.open(err.error?.message || 'Failed to approve review', 'Close', { duration: 3000 });
       }
     });
   }
 
   reject(review: Review) {
-    this.http.put(`${environment.apiUrl}/reviews/${review._id}/reject`, {}).subscribe({
-      next: () => {
-        this.snackBar.open('Review rejected', 'Close', { duration: 3000 });
-        this.loadReviews();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Reject Review',
+        message: `Are you sure you want to reject this review from "${review.userName}"?`,
+        confirmText: 'Reject',
+        cancelText: 'Cancel',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(confirmed => {
+      if (confirmed) {
+        this.http.put(`${environment.apiUrl}/reviews/${review._id}/reject`, {}).pipe(takeUntil(this.destroy$)).subscribe({
+          next: () => {
+            this.showSuccessToast('Review rejected');
+            this.loadReviews();
+          }
+        });
       }
     });
   }
 
-  reply(review: Review) {
-    const reply = prompt('Enter your reply:');
-    if (reply) {
-      this.http.put(`${environment.apiUrl}/reviews/${review._id}/reply`, { adminReply: reply }).subscribe({
-        next: () => {
-          this.snackBar.open('Reply sent', 'Close', { duration: 3000 });
-          this.loadReviews();
-        }
-      });
-    }
+  openReplyDialog(review: Review) {
+    this.replyingTo = review;
+    this.replyText = review.adminReply || '';
+  }
+
+  cancelReply() {
+    this.replyingTo = null;
+    this.replyText = '';
+  }
+
+  submitReply() {
+    if (!this.replyingTo || !this.replyText.trim()) return;
+
+    this.http.put(`${environment.apiUrl}/reviews/${this.replyingTo._id}/reply`, { adminReply: this.replyText }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.showSuccessToast('Reply sent successfully!');
+        this.cancelReply();
+        this.loadReviews();
+      },
+      error: (err) => {
+        this.snackBar.open(err.error?.message || 'Failed to send reply', 'Close', { duration: 3000 });
+      }
+    });
   }
 
   delete(review: Review) {
-    if (confirm('Delete this review?')) {
-      this.http.delete(`${environment.apiUrl}/reviews/${review._id}`).subscribe({
-        next: () => {
-          this.snackBar.open('Review deleted', 'Close', { duration: 3000 });
-          this.loadReviews();
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Review',
+        message: `Are you sure you want to delete this review from "${review.userName}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(confirmed => {
+      if (confirmed) {
+        this.http.delete(`${environment.apiUrl}/reviews/${review._id}`).pipe(takeUntil(this.destroy$)).subscribe({
+          next: () => {
+            this.showSuccessToast('Review deleted successfully!');
+            this.loadReviews();
+          },
+          error: (err) => {
+            this.snackBar.open(err.error?.message || 'Failed to delete review', 'Close', { duration: 3000 });
+          }
+        });
+      }
+    });
   }
 }

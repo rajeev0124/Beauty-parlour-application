@@ -28,7 +28,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
-            router.navigate(['/auth/signin']);
+            router.navigate(['/login']);
             break;
           case 403:
             errorMessage = 'You do not have permission to perform this action.';

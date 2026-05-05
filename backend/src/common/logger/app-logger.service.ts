@@ -1,6 +1,7 @@
 import { Injectable, LoggerService, Scope } from '@nestjs/common';
-import { createWriteStream, existsSync, mkdirSync } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, WriteStream } from 'fs';
 import { join } from 'path';
+import { Request, Response } from 'express';
 
 export enum LogLevel {
   ERROR = 'ERROR',
@@ -9,12 +10,16 @@ export enum LogLevel {
   DEBUG = 'DEBUG',
 }
 
+interface AuthenticatedRequest extends Request {
+  user?: { sub?: string };
+}
+
 interface LogEntry {
   timestamp: string;
   level: LogLevel;
   context?: string;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   traceId?: string;
 }
 
@@ -29,7 +34,7 @@ export class AppLoggerService implements LoggerService {
     if (!existsSync(this.logsDir)) {
       mkdirSync(this.logsDir, { recursive: true });
     }
-    
+
     // Create daily log file
     const date = new Date().toISOString().split('T')[0];
     const logFile = join(this.logsDir, `app-${date}.log`);
@@ -62,7 +67,12 @@ export class AppLoggerService implements LoggerService {
     this.writeLog(LogLevel.DEBUG, message, context);
   }
 
-  private writeLog(level: LogLevel, message: any, context?: string, data?: any): void {
+  private writeLog(
+    level: LogLevel,
+    message: string | Record<string, unknown>,
+    context?: string,
+    data?: Record<string, unknown>,
+  ): void {
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level,
@@ -74,44 +84,54 @@ export class AppLoggerService implements LoggerService {
     // Console output with colors
     const colors = {
       [LogLevel.ERROR]: '\x1b[31m', // Red
-      [LogLevel.WARN]: '\x1b[33m',  // Yellow
-      [LogLevel.INFO]: '\x1b[32m',  // Green
+      [LogLevel.WARN]: '\x1b[33m', // Yellow
+      [LogLevel.INFO]: '\x1b[32m', // Green
       [LogLevel.DEBUG]: '\x1b[36m', // Cyan
     };
     const reset = '\x1b[0m';
-    
+
     console.log(
       `${colors[level]}[${entry.timestamp}] [${entry.level}] [${entry.context}]${reset} ${entry.message}`,
-      data ? JSON.stringify(data) : ''
+      data ? JSON.stringify(data) : '',
     );
 
     // File output (JSON for easy parsing)
-    this.logStream.write(JSON.stringify(entry) + '\n');
+    (this.logStream as WriteStream).write(JSON.stringify(entry) + '\n');
   }
 
   // Request logging helper
-  logRequest(req: any, res: any, duration: number): void {
+  logRequest(req: AuthenticatedRequest, res: Response, duration: number): void {
     const logData = {
       method: req.method,
       url: req.url,
       statusCode: res.statusCode,
       duration: `${duration}ms`,
       userAgent: req.headers['user-agent'],
-      ip: req.ip || req.connection?.remoteAddress,
+      ip: req.ip || req.socket?.remoteAddress,
       userId: req.user?.sub,
     };
 
     const level = res.statusCode >= 400 ? LogLevel.ERROR : LogLevel.INFO;
-    this.writeLog(level, `${req.method} ${req.url} ${res.statusCode}`, 'HTTP', logData);
+    this.writeLog(
+      level,
+      `${req.method} ${req.url} ${res.statusCode}`,
+      'HTTP',
+      logData,
+    );
   }
 
   // Database operation logging
-  logDatabaseOperation(operation: string, collection: string, duration: number, success: boolean): void {
+  logDatabaseOperation(
+    operation: string,
+    collection: string,
+    duration: number,
+    success: boolean,
+  ): void {
     this.writeLog(
       success ? LogLevel.DEBUG : LogLevel.ERROR,
       `${operation} on ${collection}`,
       'Database',
-      { duration: `${duration}ms`, success }
+      { duration: `${duration}ms`, success },
     );
   }
 

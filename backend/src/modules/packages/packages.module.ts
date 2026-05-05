@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PackagesController } from './packages.controller';
 import { PackagesService } from './packages.service';
-import { ServicePackage, ServicePackageSchema } from './schemas/service-package.schema';
+import {
+  ServicePackage,
+  ServicePackageSchema,
+} from './schemas/service-package.schema';
 
 @Module({
   imports: [

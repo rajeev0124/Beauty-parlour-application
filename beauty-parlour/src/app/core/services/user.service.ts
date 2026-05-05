@@ -45,4 +45,20 @@ export class UserService {
   toggleStatus(id: string, status: 'active' | 'blocked'): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/${id}`, { status });
   }
+
+  changePassword(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-password`, data);
+  }
+
+  toggle2FA(id: string, enabled: boolean): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/${id}/2fa`, { enabled });
+  }
+
+  getSessions(id: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${id}/sessions`);
+  }
+
+  revokeSession(id: string, sessionId: string): Observable<any[]> {
+    return this.http.delete<any[]>(`${this.apiUrl}/${id}/sessions/${sessionId}`);
+  }
 }

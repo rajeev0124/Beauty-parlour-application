@@ -1,4 +1,12 @@
-import { IsString, IsBoolean, IsOptional, IsArray, IsDate, IsEnum, ValidateNested, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsBoolean,
+  IsOptional,
+  IsArray,
+  IsEnum,
+  ValidateNested,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class BreakDto {
@@ -169,8 +177,13 @@ export class LeaveRequestDto {
   @IsString()
   staff: string;
 
-  startDate: Date;
-  endDate: Date;
+  @IsOptional()
+  @Type(() => Date)
+  startDate?: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  endDate?: Date;
 
   @IsString()
   leaveType: string;

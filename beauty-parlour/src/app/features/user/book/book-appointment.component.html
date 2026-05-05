@@ -269,30 +269,97 @@
     } @else {
       <!-- Success State -->
       <div class="success-state">
-        <div class="success-icon">
-          <mat-icon>check_circle</mat-icon>
-        </div>
-        <h2>Booking Confirmed!</h2>
-        <p>Your appointment has been booked successfully. We've sent a confirmation to <strong>{{ bookingForm.get('email')?.value }}</strong>.</p>
-
-        <div class="booking-summary">
-          <div class="summary-row">
-            <span>Service</span>
-            <strong>{{ bookingForm.get('service')?.value }}</strong>
-          </div>
-          <div class="summary-row">
-            <span>Date</span>
-            <strong>{{ bookingForm.get('date')?.value | date:'mediumDate' }}</strong>
-          </div>
-          <div class="summary-row">
-            <span>Time</span>
-            <strong>{{ bookingForm.get('time')?.value }}</strong>
+        <div class="success-animation">
+          <div class="success-checkmark">
+            <div class="check-icon">
+              <span class="icon-line line-tip"></span>
+              <span class="icon-line line-long"></span>
+              <div class="icon-circle"></div>
+              <div class="icon-fix"></div>
+            </div>
           </div>
         </div>
-
-        <div class="success-actions">
-          <button mat-flat-button color="primary" (click)="bookAnother()">Book Another</button>
-          <a mat-stroked-button routerLink="/">Back to Home</a>
+        
+        <div class="success-content">
+          <h2>Booking Confirmed!</h2>
+          <p class="success-message">Your appointment has been successfully scheduled. We've sent a confirmation to <strong>{{ bookingForm.get('email')?.value }}</strong></p>
+          
+          <div class="confirmation-card">
+            <div class="confirmation-header">
+              <mat-icon>event_available</mat-icon>
+              <span>Appointment Details</span>
+            </div>
+            <div class="confirmation-body">
+              <div class="detail-row">
+                <div class="detail-icon">
+                  <mat-icon>spa</mat-icon>
+                </div>
+                <div class="detail-info">
+                  <span class="detail-label">Service</span>
+                  <strong class="detail-value">{{ bookingForm.get('service')?.value }}</strong>
+                </div>
+              </div>
+              
+              @if (bookingForm.get('stylist')?.value) {
+                <div class="detail-row">
+                  <div class="detail-icon">
+                    <mat-icon>person</mat-icon>
+                  </div>
+                  <div class="detail-info">
+                    <span class="detail-label">Stylist</span>
+                    <strong class="detail-value">{{ bookingForm.get('stylist')?.value }}</strong>
+                  </div>
+                </div>
+              }
+              
+              <div class="detail-row">
+                <div class="detail-icon">
+                  <mat-icon>calendar_today</mat-icon>
+                </div>
+                <div class="detail-info">
+                  <span class="detail-label">Date</span>
+                  <strong class="detail-value">{{ bookingForm.get('date')?.value | date:'EEEE, MMMM d, y' }}</strong>
+                </div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-icon">
+                  <mat-icon>schedule</mat-icon>
+                </div>
+                <div class="detail-info">
+                  <span class="detail-label">Time</span>
+                  <strong class="detail-value">{{ bookingForm.get('time')?.value }}</strong>
+                </div>
+              </div>
+              
+              @if (selectedService) {
+                <div class="detail-total">
+                  <span>Estimated Total</span>
+                  <strong>₹{{ selectedService.price }}</strong>
+                </div>
+              }
+            </div>
+          </div>
+          
+          <div class="success-note">
+            <mat-icon>info</mat-icon>
+            <p>Please arrive 10 minutes before your scheduled time. If you need to reschedule, you can do so from your profile.</p>
+          </div>
+          
+          <div class="success-actions">
+            <button mat-flat-button color="primary" (click)="bookAnother()" class="book-another-btn">
+              <mat-icon>add</mat-icon>
+              Book Another Service
+            </button>
+            <a mat-stroked-button routerLink="/profile" class="view-bookings-btn">
+              <mat-icon>calendar_month</mat-icon>
+              View My Bookings
+            </a>
+            <a mat-button routerLink="/" class="home-link">
+              <mat-icon>home</mat-icon>
+              Back to Home
+            </a>
+          </div>
         </div>
       </div>
     }

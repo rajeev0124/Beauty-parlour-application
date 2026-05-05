@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
@@ -6,7 +11,11 @@ import { Campaign, CampaignDocument } from './schemas/campaign.schema';
 import { User } from '../../schemas/user.schema';
 import { EmailService } from '../email/email.service';
 import { SmsService } from '../sms/sms.service';
-import { CreateCampaignDto, UpdateCampaignDto, QueryCampaignsDto } from './dto/campaign.dto';
+import {
+  CreateCampaignDto,
+  UpdateCampaignDto,
+  QueryCampaignsDto,
+} from './dto/campaign.dto';
 
 @Injectable()
 export class MarketingService {
@@ -100,7 +109,9 @@ export class MarketingService {
     }
 
     if (!['draft', 'scheduled'].includes(campaign.status)) {
-      throw new BadRequestException('Can only edit draft or scheduled campaigns');
+      throw new BadRequestException(
+        'Can only edit draft or scheduled campaigns',
+      );
     }
 
     Object.assign(campaign, dto);
@@ -159,7 +170,7 @@ export class MarketingService {
     await campaign.save();
 
     // Execute campaign asynchronously
-    this.executeCampaign(campaign._id.toString()).catch(err => {
+    this.executeCampaign(campaign._id.toString()).catch((err) => {
       this.logger.error(`Campaign execution failed: ${err.message}`);
     });
 
@@ -198,7 +209,7 @@ export class MarketingService {
     await campaign.save();
 
     // Continue execution
-    this.executeCampaign(campaign._id.toString()).catch(err => {
+    this.executeCampaign(campaign._id.toString()).catch((err) => {
       this.logger.error(`Campaign resume failed: ${err.message}`);
     });
 
@@ -210,7 +221,7 @@ export class MarketingService {
    */
   async getTargetAudience(campaign: Campaign): Promise<any[]> {
     const audience = campaign.targetAudience || { segment: 'all' };
-    const filter: any = { 
+    const filter: any = {
       role: 'customer',
       isActive: { $ne: false },
     };
@@ -232,7 +243,9 @@ export class MarketingService {
       case 'custom':
         if (audience.customFilter) {
           if (audience.customFilter.membershipTier?.length) {
-            filter['membershipTier'] = { $in: audience.customFilter.membershipTier };
+            filter['membershipTier'] = {
+              $in: audience.customFilter.membershipTier,
+            };
           }
           if (audience.customFilter.tags?.length) {
             filter['tags'] = { $in: audience.customFilter.tags };
@@ -242,7 +255,9 @@ export class MarketingService {
     }
 
     if (audience.customerIds?.length) {
-      filter['_id'] = { $in: audience.customerIds.map(id => new Types.ObjectId(id)) };
+      filter['_id'] = {
+        $in: audience.customerIds.map((id) => new Types.ObjectId(id)),
+      };
     }
 
     return this.userModel.find(filter).select('name email phone');
@@ -259,7 +274,9 @@ export class MarketingService {
     campaign.stats.totalRecipients = recipients.length;
     await campaign.save();
 
-    this.logger.log(`Executing campaign ${campaign.name} to ${recipients.length} recipients`);
+    this.logger.log(
+      `Executing campaign ${campaign.name} to ${recipients.length} recipients`,
+    );
 
     for (const user of recipients) {
       // Reload campaign status to check if paused
@@ -278,10 +295,17 @@ export class MarketingService {
         }
 
         // Send SMS
-        if (['sms', 'combined'].includes(campaign.type) && user.phone && campaign.smsContent) {
+        if (
+          ['sms', 'combined'].includes(campaign.type) &&
+          user.phone &&
+          campaign.smsContent
+        ) {
           await this.smsService.sendSms({
             to: user.phone,
-            message: campaign.smsContent.replace('{{name}}', user.name || 'Customer'),
+            message: campaign.smsContent.replace(
+              '{{name}}',
+              user.name || 'Customer',
+            ),
           });
           campaign.stats.sent++;
         }
@@ -302,7 +326,9 @@ export class MarketingService {
     campaign.completedAt = new Date();
     await campaign.save();
 
-    this.logger.log(`Campaign ${campaign.name} completed. Sent: ${campaign.stats.sent}, Failed: ${campaign.stats.failed}`);
+    this.logger.log(
+      `Campaign ${campaign.name} completed. Sent: ${campaign.stats.sent}, Failed: ${campaign.stats.failed}`,
+    );
   }
 
   /**
@@ -311,7 +337,7 @@ export class MarketingService {
   @Cron('* * * * *', { name: 'campaign-scheduler' })
   async processScheduledCampaigns(): Promise<void> {
     const now = new Date();
-    
+
     const dueCampaigns = await this.campaignModel.find({
       status: 'scheduled',
       scheduledAt: { $lte: now },
@@ -323,7 +349,7 @@ export class MarketingService {
       campaign.startedAt = now;
       await campaign.save();
 
-      this.executeCampaign(campaign._id.toString()).catch(err => {
+      this.executeCampaign(campaign._id.toString()).catch((err) => {
         this.logger.error(`Scheduled campaign failed: ${err.message}`);
       });
     }
@@ -361,9 +387,8 @@ export class MarketingService {
       byStatus,
       totalSent,
       totalDelivered,
-      overallDeliveryRate: totalSent > 0 
-        ? Math.round((totalDelivered / totalSent) * 100) 
-        : 0,
+      overallDeliveryRate:
+        totalSent > 0 ? Math.round((totalDelivered / totalSent) * 100) : 0,
       recentCampaigns,
     };
   }
@@ -391,7 +416,7 @@ export class MarketingService {
    */
   async duplicate(id: string, userId: string): Promise<Campaign> {
     const original = await this.findById(id);
-    
+
     const newCampaign = new this.campaignModel({
       name: `${original.name} (Copy)`,
       description: original.description,

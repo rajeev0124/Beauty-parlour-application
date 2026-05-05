@@ -1,0 +1,340 @@
+<div class="expenses-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="header-text">
+        <h1>Expense Tracking</h1>
+        <p>Monitor and manage all business expenses</p>
+      </div>
+    </div>
+    <button class="add-btn" (click)="openDialog()">
+      <mat-icon>add</mat-icon>
+      <span>Add Expense</span>
+    </button>
+  </header>
+
+  <!-- Stats Cards -->
+  <section class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">₹{{ stats.total | number:'1.0-0' }}</span>
+        <span class="stat-label">Total Expenses</span>
+      </div>
+      <div class="stat-trend down">
+        <mat-icon>trending_down</mat-icon>
+      </div>
+    </div>
+
+    <div class="stat-card month">
+      <div class="stat-icon">
+        <mat-icon>calendar_month</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">₹{{ thisMonthTotal | number:'1.0-0' }}</span>
+        <span class="stat-label">This Month</span>
+      </div>
+      <div class="stat-trend">
+        <mat-icon>show_chart</mat-icon>
+      </div>
+    </div>
+
+    <div class="stat-card count">
+      <div class="stat-icon">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.count }}</span>
+        <span class="stat-label">Total Entries</span>
+      </div>
+      <div class="stat-trend">
+        <mat-icon>format_list_numbered</mat-icon>
+      </div>
+    </div>
+
+    <div class="stat-card avg">
+      <div class="stat-icon">
+        <mat-icon>analytics</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">₹{{ avgExpense | number:'1.0-0' }}</span>
+        <span class="stat-label">Average Expense</span>
+      </div>
+      <div class="stat-trend">
+        <mat-icon>equalizer</mat-icon>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Breakdown -->
+  @if (stats.byCategory.length > 0) {
+    <section class="category-breakdown">
+      <div class="section-header">
+        <h2>
+          <mat-icon>pie_chart</mat-icon>
+          Expenses by Category
+        </h2>
+      </div>
+      <div class="category-grid">
+        @for (cat of stats.byCategory; track cat._id) {
+          <div class="category-card" [class.active]="filterCategory === cat._id" (click)="setCategory(cat._id)">
+            <div class="category-header">
+              <div class="category-icon" [style.background]="getCategoryColor(cat._id) + '20'" [style.color]="getCategoryColor(cat._id)">
+                <mat-icon>{{ getCategoryIcon(cat._id) }}</mat-icon>
+              </div>
+              <span class="category-name">{{ getCategoryName(cat._id) }}</span>
+            </div>
+            <div class="category-amount">₹{{ cat.total | number:'1.0-0' }}</div>
+            <div class="category-bar">
+              <div class="bar-fill" [style.width.%]="getCategoryPercentage(cat)" [style.background]="getCategoryColor(cat._id)"></div>
+            </div>
+            <div class="category-meta">
+              <span class="percentage">{{ getCategoryPercentage(cat) | number:'1.1-1' }}%</span>
+              <span class="count">{{ cat.count }} entries</span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Filters & Table Section -->
+  <section class="data-section">
+    <div class="section-header">
+      <h2>
+        <mat-icon>list_alt</mat-icon>
+        All Expenses
+      </h2>
+      <span class="result-count">{{ filteredExpenses.length }} results</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Search expenses..." [(ngModel)]="searchQuery" (input)="applyFilter()">
+        @if (searchQuery) {
+          <button class="clear-btn" (click)="searchQuery = ''; applyFilter()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+
+      <div class="filter-group">
+        <div class="date-filters">
+          <div class="date-input">
+            <mat-icon>event</mat-icon>
+            <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate" (dateChange)="loadExpenses()" placeholder="Start Date">
+            <mat-datepicker-toggle [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </div>
+          <span class="date-separator">to</span>
+          <div class="date-input">
+            <mat-icon>event</mat-icon>
+            <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate" (dateChange)="loadExpenses()" placeholder="End Date">
+            <mat-datepicker-toggle [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </div>
+        </div>
+
+        @if (filterCategory || startDate || endDate || searchQuery) {
+          <button class="clear-all-btn" (click)="clearFilters()">
+            <mat-icon>filter_alt_off</mat-icon>
+            Clear Filters
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Category Chips -->
+    <div class="category-chips">
+      <button class="chip" [class.active]="!filterCategory" (click)="setCategory('')">
+        <mat-icon>apps</mat-icon>
+        All
+      </button>
+      @for (cat of categories; track cat.id) {
+        <button class="chip" [class.active]="filterCategory === cat.id" (click)="setCategory(cat.id)" [style.--chip-color]="cat.color">
+          <mat-icon>{{ cat.icon }}</mat-icon>
+          {{ cat.name }}
+        </button>
+      }
+    </div>
+
+    <!-- Loading State -->
+    @if (loading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Loading expenses...</span>
+      </div>
+    }
+
+    <!-- Desktop Table -->
+    @if (!loading && filteredExpenses.length > 0) {
+      <div class="table-container desktop-only">
+        <table mat-table [dataSource]="dataSource">
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let expense">
+              <div class="date-cell">
+                <span class="date-day">{{ expense.date | date:'dd' }}</span>
+                <div class="date-details">
+                  <span class="date-month">{{ expense.date | date:'MMM yyyy' }}</span>
+                  <span class="date-weekday">{{ expense.date | date:'EEEE' }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Details</th>
+            <td mat-cell *matCellDef="let expense">
+              <div class="title-cell">
+                <span class="expense-title">{{ expense.title }}</span>
+                @if (expense.description) {
+                  <span class="expense-desc">{{ expense.description }}</span>
+                }
+                @if (expense.vendor) {
+                  <span class="expense-vendor">
+                    <mat-icon>store</mat-icon>
+                    {{ expense.vendor }}
+                  </span>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Category</th>
+            <td mat-cell *matCellDef="let expense">
+              <span class="category-badge" [style.--cat-color]="getCategoryColor(expense.category)">
+                <mat-icon>{{ getCategoryIcon(expense.category) }}</mat-icon>
+                {{ getCategoryName(expense.category) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Amount</th>
+            <td mat-cell *matCellDef="let expense">
+              <span class="amount-value">₹{{ expense.amount | number:'1.0-0' }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="paymentMethod">
+            <th mat-header-cell *matHeaderCellDef>Payment</th>
+            <td mat-cell *matCellDef="let expense">
+              <span class="payment-badge">
+                <mat-icon>{{ getPaymentIcon(expense.paymentMethod) }}</mat-icon>
+                {{ expense.paymentMethod | titlecase }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let expense">
+              <div class="action-buttons">
+                <button class="action-btn edit" matTooltip="Edit" (click)="openDialog(expense)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button class="action-btn delete" matTooltip="Delete" (click)="delete(expense)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="mobile-cards mobile-only">
+        @for (expense of dataSource.data; track expense._id) {
+          <div class="expense-card" [style.--border-color]="getCategoryColor(expense.category)">
+            <div class="card-header">
+              <div class="card-date">
+                <span class="day">{{ expense.date | date:'dd' }}</span>
+                <span class="month">{{ expense.date | date:'MMM' }}</span>
+              </div>
+              <div class="card-title">
+                <h3>{{ expense.title }}</h3>
+                @if (expense.description) {
+                  <p>{{ expense.description }}</p>
+                }
+              </div>
+              <span class="card-amount">₹{{ expense.amount | number:'1.0-0' }}</span>
+            </div>
+            <div class="card-meta">
+              <span class="category-badge" [style.--cat-color]="getCategoryColor(expense.category)">
+                <mat-icon>{{ getCategoryIcon(expense.category) }}</mat-icon>
+                {{ getCategoryName(expense.category) }}
+              </span>
+              <span class="payment-badge">
+                <mat-icon>{{ getPaymentIcon(expense.paymentMethod) }}</mat-icon>
+                {{ expense.paymentMethod | titlecase }}
+              </span>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn edit" (click)="openDialog(expense)">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button class="action-btn delete" (click)="delete(expense)">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="page-size">
+          <label>Show:</label>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            @for (size of pageSizeOptions; track size) {
+              <option [value]="size">{{ size }}</option>
+            }
+          </select>
+        </div>
+        <div class="page-info">
+          {{ startIndex }} - {{ endIndex }} of {{ filteredExpenses.length }}
+        </div>
+        <div class="page-nav">
+          <button class="nav-btn" [disabled]="currentPage === 0" (click)="previousPage()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="page-number">{{ currentPage + 1 }} / {{ totalPages || 1 }}</span>
+          <button class="nav-btn" [disabled]="currentPage >= totalPages - 1" (click)="nextPage()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!loading && filteredExpenses.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <h3>No expenses found</h3>
+        <p>{{ searchQuery || filterCategory ? 'Try adjusting your filters' : 'Start by adding your first expense' }}</p>
+        @if (!searchQuery && !filterCategory) {
+          <button class="add-btn" (click)="openDialog()">
+            <mat-icon>add</mat-icon>
+            Add Expense
+          </button>
+        }
+      </div>
+    }
+  </section>
+</div>

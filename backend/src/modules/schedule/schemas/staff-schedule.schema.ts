@@ -20,7 +20,10 @@ export class StaffSchedule {
   @Prop({ default: false })
   isLeave: boolean;
 
-  @Prop({ enum: ['scheduled', 'working', 'completed', 'absent', 'leave'], default: 'scheduled' })
+  @Prop({
+    enum: ['scheduled', 'working', 'completed', 'absent', 'leave'],
+    default: 'scheduled',
+  })
   status: string;
 
   @Prop()
@@ -45,11 +48,13 @@ export class StaffSchedule {
   approvedAt?: Date;
 
   @Prop({
-    type: [{
-      breakStart: String,
-      breakEnd: String,
-      breakType: String, // lunch, tea, etc.
-    }],
+    type: [
+      {
+        breakStart: String,
+        breakEnd: String,
+        breakType: String, // lunch, tea, etc.
+      },
+    ],
     default: [],
   })
   breaks: {
@@ -95,22 +100,25 @@ StaffScheduleSchema.index({ date: 1 });
 StaffScheduleSchema.index({ status: 1 });
 
 // Virtual to calculate total hours
-StaffScheduleSchema.pre('save', function() {
+StaffScheduleSchema.pre('save', function () {
   if (this.startTime && this.endTime) {
     const start = this.startTime.split(':').map(Number);
     const end = this.endTime.split(':').map(Number);
     const startMinutes = start[0] * 60 + start[1];
     const endMinutes = end[0] * 60 + end[1];
-    
+
     let breakMinutes = 0;
     if (this.breaks && this.breaks.length > 0) {
-      this.breaks.forEach(brk => {
+      this.breaks.forEach((brk) => {
         const bStart = brk.breakStart.split(':').map(Number);
         const bEnd = brk.breakEnd.split(':').map(Number);
-        breakMinutes += (bEnd[0] * 60 + bEnd[1]) - (bStart[0] * 60 + bStart[1]);
+        breakMinutes += bEnd[0] * 60 + bEnd[1] - (bStart[0] * 60 + bStart[1]);
       });
     }
-    
-    this.totalHours = Math.max(0, (endMinutes - startMinutes - breakMinutes) / 60);
+
+    this.totalHours = Math.max(
+      0,
+      (endMinutes - startMinutes - breakMinutes) / 60,
+    );
   }
 });

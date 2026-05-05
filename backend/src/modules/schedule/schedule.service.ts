@@ -1,8 +1,21 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { StaffSchedule, StaffScheduleDocument } from './schemas/staff-schedule.schema';
-import { CreateScheduleDto, UpdateScheduleDto, BulkScheduleDto, LeaveRequestDto } from './dto/schedule.dto';
+import {
+  StaffSchedule,
+  StaffScheduleDocument,
+} from './schemas/staff-schedule.schema';
+import {
+  CreateScheduleDto,
+  UpdateScheduleDto,
+  BulkScheduleDto,
+  LeaveRequestDto,
+} from './dto/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -19,7 +32,9 @@ export class ScheduleService {
     });
 
     if (existing) {
-      throw new ConflictException('Schedule already exists for this staff on this date');
+      throw new ConflictException(
+        'Schedule already exists for this staff on this date',
+      );
     }
 
     const schedule = new this.scheduleModel({
@@ -30,22 +45,28 @@ export class ScheduleService {
     return schedule.save();
   }
 
-  async createRecurring(createScheduleDto: CreateScheduleDto): Promise<StaffSchedule[]> {
+  async createRecurring(
+    createScheduleDto: CreateScheduleDto,
+  ): Promise<StaffSchedule[]> {
     if (!createScheduleDto.isRecurring || !createScheduleDto.recurringConfig) {
-      throw new BadRequestException('Recurring config is required for recurring schedules');
+      throw new BadRequestException(
+        'Recurring config is required for recurring schedules',
+      );
     }
 
     const schedules: StaffSchedule[] = [];
     const config = createScheduleDto.recurringConfig;
     const startDate = new Date(createScheduleDto.date);
-    const endDate = config.endDate ? new Date(config.endDate) : new Date(startDate.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days default
+    const endDate = config.endDate
+      ? new Date(config.endDate)
+      : new Date(startDate.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days default
 
     // Create parent schedule
     const parentSchedule = await this.create(createScheduleDto);
     schedules.push(parentSchedule);
 
     // Generate recurring schedules
-    let currentDate = new Date(startDate);
+    const currentDate = new Date(startDate);
     currentDate.setDate(currentDate.getDate() + 1);
 
     while (currentDate <= endDate) {
@@ -80,7 +101,7 @@ export class ScheduleService {
             status: 'scheduled',
           });
           schedules.push(childSchedule);
-        } catch (error) {
+        } catch {
           // Skip if conflict
         }
       }
@@ -124,7 +145,10 @@ export class ScheduleService {
       .exec();
   }
 
-  async findByDateRange(startDate: Date, endDate: Date): Promise<StaffSchedule[]> {
+  async findByDateRange(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<StaffSchedule[]> {
     return this.scheduleModel
       .find({
         date: { $gte: startDate, $lte: endDate },
@@ -134,7 +158,11 @@ export class ScheduleService {
       .exec();
   }
 
-  async findByStaff(staffId: string, month?: number, year?: number): Promise<StaffSchedule[]> {
+  async findByStaff(
+    staffId: string,
+    month?: number,
+    year?: number,
+  ): Promise<StaffSchedule[]> {
     const filter: any = { staff: new Types.ObjectId(staffId) };
 
     if (month !== undefined && year !== undefined) {
@@ -143,10 +171,7 @@ export class ScheduleService {
       filter.date = { $gte: startDate, $lte: endDate };
     }
 
-    return this.scheduleModel
-      .find(filter)
-      .sort({ date: 1 })
-      .exec();
+    return this.scheduleModel.find(filter).sort({ date: 1 }).exec();
   }
 
   async findOne(id: string): Promise<StaffSchedule> {
@@ -177,7 +202,7 @@ export class ScheduleService {
     // Group by date
     const calendarData: { [key: string]: any[] } = {};
 
-    schedules.forEach(schedule => {
+    schedules.forEach((schedule) => {
       const dateKey = schedule.date.toISOString().split('T')[0];
       if (!calendarData[dateKey]) {
         calendarData[dateKey] = [];
@@ -200,7 +225,10 @@ export class ScheduleService {
     }));
   }
 
-  async update(id: string, updateScheduleDto: UpdateScheduleDto): Promise<StaffSchedule> {
+  async update(
+    id: string,
+    updateScheduleDto: UpdateScheduleDto,
+  ): Promise<StaffSchedule> {
     const schedule = await this.scheduleModel
       .findByIdAndUpdate(id, updateScheduleDto, { new: true })
       .populate('staff', 'name email phone role')
@@ -242,13 +270,15 @@ export class ScheduleService {
     return schedule.save();
   }
 
-  async createBulkSchedules(bulkDto: BulkScheduleDto): Promise<StaffSchedule[]> {
+  async createBulkSchedules(
+    bulkDto: BulkScheduleDto,
+  ): Promise<StaffSchedule[]> {
     const schedules: StaffSchedule[] = [];
     const startDate = new Date(bulkDto.startDate);
     const endDate = new Date(bulkDto.endDate);
 
     for (const staffId of bulkDto.staffIds) {
-      let currentDate = new Date(startDate);
+      const currentDate = new Date(startDate);
 
       while (currentDate <= endDate) {
         // Check if day should be included
@@ -264,7 +294,7 @@ export class ScheduleService {
               status: 'scheduled',
             });
             schedules.push(schedule);
-          } catch (error) {
+          } catch {
             // Skip conflicts
           }
         }
@@ -276,12 +306,21 @@ export class ScheduleService {
     return schedules;
   }
 
-  async requestLeave(leaveRequestDto: LeaveRequestDto, approverId?: string): Promise<StaffSchedule[]> {
+  async requestLeave(
+    leaveRequestDto: LeaveRequestDto,
+    approverId?: string,
+  ): Promise<StaffSchedule[]> {
     const leaves: StaffSchedule[] = [];
-    const startDate = new Date(leaveRequestDto.startDate);
-    const endDate = new Date(leaveRequestDto.endDate);
 
-    let currentDate = new Date(startDate);
+    // Handle single date or date range
+    const startDate = leaveRequestDto.startDate
+      ? new Date(leaveRequestDto.startDate)
+      : new Date();
+    const endDate = leaveRequestDto.endDate
+      ? new Date(leaveRequestDto.endDate)
+      : startDate;
+
+    const currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
       // Update existing schedule or create new leave entry
@@ -323,7 +362,10 @@ export class ScheduleService {
     return leaves;
   }
 
-  async getStaffAvailability(staffId: string, date: Date): Promise<{
+  async getStaffAvailability(
+    staffId: string,
+    date: Date,
+  ): Promise<{
     isAvailable: boolean;
     schedule?: StaffSchedule;
     availableSlots: { start: string; end: string }[];
@@ -334,7 +376,11 @@ export class ScheduleService {
     });
 
     if (!schedule || schedule.isLeave || schedule.isHoliday) {
-      return { isAvailable: false, schedule: schedule ?? undefined, availableSlots: [] };
+      return {
+        isAvailable: false,
+        schedule: schedule ?? undefined,
+        availableSlots: [],
+      };
     }
 
     // Calculate available slots (excluding breaks)
@@ -342,8 +388,8 @@ export class ScheduleService {
     let currentStart = schedule.startTime;
 
     if (schedule.breaks && schedule.breaks.length > 0) {
-      const sortedBreaks = [...schedule.breaks].sort((a, b) => 
-        a.breakStart.localeCompare(b.breakStart)
+      const sortedBreaks = [...schedule.breaks].sort((a, b) =>
+        a.breakStart.localeCompare(b.breakStart),
       );
 
       for (const brk of sortedBreaks) {
@@ -361,7 +407,10 @@ export class ScheduleService {
     return { isAvailable: true, schedule, availableSlots };
   }
 
-  async getScheduleStats(month: number, year: number): Promise<{
+  async getScheduleStats(
+    month: number,
+    year: number,
+  ): Promise<{
     totalSchedules: number;
     totalHours: number;
     leaveCount: number;
@@ -465,8 +514,65 @@ export class ScheduleService {
       .find({
         date: { $gte: today, $lt: tomorrow },
       })
-      .populate('staff', 'name email phone role')
+      .populate('staff', 'name email phone role profileImage')
       .sort({ startTime: 1 })
       .exec();
+  }
+
+  async getDashboardStats(): Promise<{
+    totalStaff: number;
+    availableToday: number;
+    onLeaveToday: number;
+    upcomingLeaves: { staff: string; date: Date; reason: string }[];
+  }> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Get today's schedules
+    const todaySchedules = await this.scheduleModel
+      .find({ date: { $gte: today, $lt: tomorrow } })
+      .populate('staff', 'name')
+      .exec();
+
+    // Count available and on leave today
+    const availableToday = todaySchedules.filter(
+      (s) => !s.isLeave && s.status !== 'leave',
+    ).length;
+    const onLeaveToday = todaySchedules.filter(
+      (s) => s.isLeave || s.status === 'leave',
+    ).length;
+
+    // Get upcoming leaves (next 30 days)
+    const futureDate = new Date(today);
+    futureDate.setDate(futureDate.getDate() + 30);
+
+    const upcomingLeavesData = await this.scheduleModel
+      .find({
+        date: { $gt: today, $lte: futureDate },
+        $or: [{ isLeave: true }, { status: 'leave' }],
+      })
+      .populate('staff', 'name')
+      .sort({ date: 1 })
+      .limit(10)
+      .exec();
+
+    const upcomingLeaves = upcomingLeavesData.map((leave) => ({
+      staff: (leave.staff as any)?.name || 'Unknown',
+      date: leave.date,
+      reason: leave.leaveReason || leave.leaveType || 'Leave',
+    }));
+
+    // Get total unique staff with schedules
+    const uniqueStaff = await this.scheduleModel.distinct('staff');
+    const totalStaff = uniqueStaff.length;
+
+    return {
+      totalStaff,
+      availableToday,
+      onLeaveToday,
+      upcomingLeaves,
+    };
   }
 }

@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { Error as MongooseError } from 'mongoose';
 
 interface ErrorResponse {
   statusCode: number;
@@ -34,7 +35,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      
+
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object') {
@@ -42,6 +43,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = (responseObj.message as string | string[]) || message;
         error = (responseObj.error as string) || exception.name;
       }
+    } else if (exception instanceof MongooseError.CastError) {
+      // Handle invalid MongoDB ObjectId
+      status = HttpStatus.BAD_REQUEST;
+      message = `Invalid ${exception.path}: ${exception.value}`;
+      error = 'Bad Request';
+    } else if (exception instanceof MongooseError.ValidationError) {
+      // Handle Mongoose validation errors
+      status = HttpStatus.BAD_REQUEST;
+      message = Object.values(exception.errors).map(
+        (err: { message?: string }) => err.message ?? 'Validation error',
+      );
+      error = 'Validation Error';
     } else if (exception instanceof Error) {
       message = exception.message;
       error = exception.name;

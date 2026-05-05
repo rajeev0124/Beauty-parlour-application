@@ -52,13 +52,18 @@ export class AuditController {
     @Query('userId') userId: string,
     @Query('limit') limit?: string,
   ) {
-    return this.auditService.getUserActivity(userId, limit ? parseInt(limit) : 50);
+    return this.auditService.getUserActivity(
+      userId,
+      limit ? parseInt(limit) : 50,
+    );
   }
 
   @Get('admin-actions')
   @ApiOperation({ summary: 'Get recent admin actions' })
   async getRecentAdminActions(@Query('limit') limit?: string) {
-    return this.auditService.getRecentAdminActions(limit ? parseInt(limit) : 100);
+    return this.auditService.getRecentAdminActions(
+      limit ? parseInt(limit) : 100,
+    );
   }
 
   @Get('stats')

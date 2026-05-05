@@ -1,0 +1,360 @@
+<div class="coupons-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>local_offer</mat-icon>
+      </div>
+      <div class="header-text">
+        <h1>Coupons & Offers</h1>
+        <p>Manage discount codes and special promotions</p>
+      </div>
+    </div>
+    <button mat-raised-button class="create-btn" (click)="openDialog()">
+      <mat-icon>add</mat-icon>
+      Create Coupon
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    @if (loading) {
+      @for (i of [1,2,3,4]; track i) {
+        <div class="stat-card skeleton-card">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="skeleton-content">
+            <div class="skeleton skeleton-value"></div>
+            <div class="skeleton skeleton-label"></div>
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <mat-icon>local_offer</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalCoupons }}</span>
+          <span class="stat-label">Total Coupons</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon active">
+          <mat-icon>verified</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ activeCoupons }}</span>
+          <span class="stat-label">Active Coupons</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon expired">
+          <mat-icon>event_busy</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ expiredCoupons }}</span>
+          <span class="stat-label">Expired</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon redemptions">
+          <mat-icon>redeem</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalUsage | number }}</span>
+          <span class="stat-label">Total Redemptions</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input 
+        type="text" 
+        placeholder="Search by code or description..." 
+        [(ngModel)]="searchTerm"
+        (input)="applyFilter()"
+        [disabled]="loading">
+    </div>
+
+    <div class="filter-chips">
+      <button 
+        class="filter-chip" 
+        [class.active]="currentFilter === 'all'"
+        (click)="filterByStatus('all')">
+        <mat-icon>apps</mat-icon>
+        All
+      </button>
+      <button 
+        class="filter-chip" 
+        [class.active]="currentFilter === 'active'"
+        (click)="filterByStatus('active')">
+        <mat-icon>check_circle</mat-icon>
+        Active
+      </button>
+      <button 
+        class="filter-chip" 
+        [class.active]="currentFilter === 'inactive'"
+        (click)="filterByStatus('inactive')">
+        <mat-icon>pause_circle</mat-icon>
+        Inactive
+      </button>
+      <button 
+        class="filter-chip" 
+        [class.active]="currentFilter === 'expired'"
+        (click)="filterByStatus('expired')">
+        <mat-icon>schedule</mat-icon>
+        Expired
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table Container -->
+  <div class="table-container">
+    @if (loading) {
+      <!-- Loading State -->
+      <div class="loading-state">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Loading coupons...</p>
+      </div>
+    } @else if (filteredCoupons.length === 0) {
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <mat-icon>local_offer</mat-icon>
+        </div>
+        <h3>No Coupons Found</h3>
+        <p>{{ searchTerm || currentFilter !== 'all' ? 'Try adjusting your search or filters' : 'Create your first coupon to start offering discounts' }}</p>
+        @if (!searchTerm && currentFilter === 'all') {
+          <button mat-raised-button class="create-btn" (click)="openDialog()">
+            <mat-icon>add</mat-icon>
+            Create Coupon
+          </button>
+        }
+      </div>
+    } @else {
+      <!-- Desktop Table View -->
+      <div class="desktop-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Coupon Code</th>
+              <th>Discount</th>
+              <th>Validity</th>
+              <th>Usage</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (coupon of paginatedCoupons; track coupon._id) {
+              <tr [class.expired-row]="isExpired(coupon)" [class.inactive-row]="!coupon.isActive && !isExpired(coupon)">
+                <td>
+                  <div class="coupon-code-cell">
+                    <div class="code-icon" [class]="getDiscountClass(coupon)">
+                      <mat-icon>{{ coupon.discountType === 'percentage' ? 'percent' : 'currency_rupee' }}</mat-icon>
+                    </div>
+                    <div class="code-info">
+                      <span class="code-text">{{ coupon.code }}</span>
+                      @if (coupon.description) {
+                        <span class="code-desc">{{ coupon.description }}</span>
+                      }
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="discount-badge" [class]="getDiscountClass(coupon)">
+                    @if (coupon.discountType === 'percentage') {
+                      {{ coupon.discountValue }}% OFF
+                    } @else {
+                      ₹{{ coupon.discountValue | number }} OFF
+                    }
+                  </span>
+                  @if (coupon.minOrderAmount) {
+                    <div class="min-order">Min: ₹{{ coupon.minOrderAmount | number }}</div>
+                  }
+                </td>
+                <td>
+                  <div class="validity-cell">
+                    <div class="date-range">
+                      <mat-icon>date_range</mat-icon>
+                      <span>{{ coupon.startDate | date:'MMM d' }} - {{ coupon.endDate | date:'MMM d, y' }}</span>
+                    </div>
+                    @if (getDaysRemaining(coupon) !== null) {
+                      <div class="days-badge" [class]="getDaysClass(coupon)">
+                        {{ getDaysRemaining(coupon) }} days left
+                      </div>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <div class="usage-cell">
+                    <div class="usage-bar">
+                      <div class="usage-fill" [style.width.%]="getUsagePercent(coupon)"></div>
+                    </div>
+                    <span class="usage-text">{{ coupon.usageCount }}{{ coupon.maxUsage ? '/' + coupon.maxUsage : '' }} uses</span>
+                  </div>
+                </td>
+                <td>
+                  @if (isExpired(coupon)) {
+                    <span class="status-badge expired">
+                      <mat-icon>schedule</mat-icon>
+                      Expired
+                    </span>
+                  } @else if (coupon.isActive) {
+                    <span class="status-badge active">
+                      <mat-icon>check_circle</mat-icon>
+                      Active
+                    </span>
+                  } @else {
+                    <span class="status-badge inactive">
+                      <mat-icon>pause_circle</mat-icon>
+                      Inactive
+                    </span>
+                  }
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <mat-slide-toggle
+                      [checked]="coupon.isActive"
+                      (change)="toggleActive(coupon)"
+                      [disabled]="isExpired(coupon)"
+                      matTooltip="{{ coupon.isActive ? 'Deactivate' : 'Activate' }}">
+                    </mat-slide-toggle>
+                    <button mat-icon-button class="action-btn edit" (click)="openDialog(coupon)" matTooltip="Edit">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button class="action-btn delete" (click)="delete(coupon)" matTooltip="Delete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="mobile-cards">
+        @for (coupon of paginatedCoupons; track coupon._id) {
+          <div class="coupon-card" [class]="getCardStatusClass(coupon)">
+            <div class="card-header">
+              <div class="coupon-code-cell">
+                <div class="code-icon" [class]="getDiscountClass(coupon)">
+                  <mat-icon>{{ coupon.discountType === 'percentage' ? 'percent' : 'currency_rupee' }}</mat-icon>
+                </div>
+                <div class="code-info">
+                  <span class="code-text">{{ coupon.code }}</span>
+                  @if (coupon.description) {
+                    <span class="code-desc">{{ coupon.description }}</span>
+                  }
+                </div>
+              </div>
+              @if (isExpired(coupon)) {
+                <span class="status-badge expired">
+                  <mat-icon>schedule</mat-icon>
+                  Expired
+                </span>
+              } @else if (coupon.isActive) {
+                <span class="status-badge active">
+                  <mat-icon>check_circle</mat-icon>
+                  Active
+                </span>
+              } @else {
+                <span class="status-badge inactive">
+                  <mat-icon>pause_circle</mat-icon>
+                  Inactive
+                </span>
+              }
+            </div>
+
+            <div class="card-body">
+              <div class="card-row">
+                <span class="row-label">Discount</span>
+                <span class="discount-badge" [class]="getDiscountClass(coupon)">
+                  @if (coupon.discountType === 'percentage') {
+                    {{ coupon.discountValue }}% OFF
+                  } @else {
+                    ₹{{ coupon.discountValue | number }} OFF
+                  }
+                </span>
+              </div>
+
+              <div class="card-row">
+                <span class="row-label">Valid Until</span>
+                <span class="row-value">{{ coupon.endDate | date:'MMM d, y' }}</span>
+              </div>
+
+              <div class="card-row">
+                <span class="row-label">Usage</span>
+                <div class="usage-cell">
+                  <div class="usage-bar">
+                    <div class="usage-fill" [style.width.%]="getUsagePercent(coupon)"></div>
+                  </div>
+                  <span class="usage-text">{{ coupon.usageCount }}{{ coupon.maxUsage ? '/' + coupon.maxUsage : '' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <mat-slide-toggle
+                [checked]="coupon.isActive"
+                (change)="toggleActive(coupon)"
+                [disabled]="isExpired(coupon)">
+              </mat-slide-toggle>
+              <div class="action-group">
+                <button mat-icon-button class="action-btn edit" (click)="openDialog(coupon)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button class="action-btn delete" (click)="delete(coupon)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (filteredCoupons.length > pageSize) {
+        <div class="pagination">
+          <span class="page-info">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredCoupons.length) }} of {{ filteredCoupons.length }}
+          </span>
+          <div class="page-controls">
+            <button mat-icon-button [disabled]="currentPage === 1" (click)="goToPage(1)" matTooltip="First page">
+              <mat-icon>first_page</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)" matTooltip="Previous page">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <span class="page-number">Page {{ currentPage }} of {{ totalPages }}</span>
+            <button mat-icon-button [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)" matTooltip="Next page">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="currentPage === totalPages" (click)="goToPage(totalPages)" matTooltip="Last page">
+              <mat-icon>last_page</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Success Toast -->
+  @if (showSuccess) {
+    <div class="success-toast">
+      <div class="toast-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <span>{{ successMessage }}</span>
+    </div>
+  }
+</div>

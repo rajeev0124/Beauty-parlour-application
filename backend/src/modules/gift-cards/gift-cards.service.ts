@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  Logger,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as crypto from 'crypto';
@@ -71,14 +76,17 @@ export class GiftCardsService {
     expiresAt: Date;
     isValid: boolean;
   }> {
-    const giftCard = await this.giftCardModel.findOne({ code: code.toUpperCase() });
+    const giftCard = await this.giftCardModel.findOne({
+      code: code.toUpperCase(),
+    });
 
     if (!giftCard) {
       throw new NotFoundException('Gift card not found');
     }
 
     const isExpired = new Date() > giftCard.expiresAt;
-    const isValid = !isExpired && giftCard.balance > 0 && giftCard.status === 'active';
+    const isValid =
+      !isExpired && giftCard.balance > 0 && giftCard.status === 'active';
 
     return {
       code: giftCard.code,
@@ -99,7 +107,9 @@ export class GiftCardsService {
     remainingBalance: number;
     amountUsed: number;
   }> {
-    const giftCard = await this.giftCardModel.findOne({ code: dto.code.toUpperCase() });
+    const giftCard = await this.giftCardModel.findOne({
+      code: dto.code.toUpperCase(),
+    });
 
     if (!giftCard) {
       throw new NotFoundException('Gift card not found');
@@ -193,7 +203,9 @@ export class GiftCardsService {
    * Get gift card by code (admin)
    */
   async findByCode(code: string): Promise<GiftCardDocument> {
-    const giftCard = await this.giftCardModel.findOne({ code: code.toUpperCase() });
+    const giftCard = await this.giftCardModel.findOne({
+      code: code.toUpperCase(),
+    });
     if (!giftCard) {
       throw new NotFoundException('Gift card not found');
     }
@@ -250,13 +262,15 @@ export class GiftCardsService {
       },
     ]);
 
-    return stats[0] || {
-      totalSold: 0,
-      totalValue: 0,
-      totalRedeemed: 0,
-      activeCards: 0,
-      expiredCards: 0,
-    };
+    return (
+      stats[0] || {
+        totalSold: 0,
+        totalValue: 0,
+        totalRedeemed: 0,
+        activeCards: 0,
+        expiredCards: 0,
+      }
+    );
   }
 
   /**

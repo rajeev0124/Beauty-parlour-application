@@ -11,6 +11,8 @@ export interface User {
   status: 'active' | 'blocked';
   assignedStaff?: Staff[];
   createdAt: Date;
+  is2FAEnabled?: boolean;
+  activeSessions?: any[];
 }
 
 export interface LoginRequest {

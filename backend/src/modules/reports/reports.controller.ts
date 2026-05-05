@@ -49,11 +49,23 @@ export class ReportsController {
     @Query('endDate') endDate: string,
     @Res() res: Response,
   ) {
-    const data = await this.reportsService.getAppointmentReport(startDate, endDate);
-    const buffer = await this.reportsService.generateExcel('Appointments', data.map(d => d.toObject()));
-    
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=appointments-${Date.now()}.xlsx`);
+    const data = await this.reportsService.getAppointmentReport(
+      startDate,
+      endDate,
+    );
+    const buffer = await this.reportsService.generateExcel(
+      'Appointments',
+      data.map((d) => d.toObject()),
+    );
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=appointments-${Date.now()}.xlsx`,
+    );
     res.send(buffer);
   }
 
@@ -63,11 +75,20 @@ export class ReportsController {
     @Query('endDate') endDate: string,
     @Res() res: Response,
   ) {
-    const data = await this.reportsService.getAppointmentReport(startDate, endDate);
-    const buffer = await this.reportsService.generatePdf('Appointments', data.map(d => d.toObject()));
-    
+    const data = await this.reportsService.getAppointmentReport(
+      startDate,
+      endDate,
+    );
+    const buffer = await this.reportsService.generatePdf(
+      'Appointments',
+      data.map((d) => d.toObject()),
+    );
+
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=appointments-${Date.now()}.pdf`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=appointments-${Date.now()}.pdf`,
+    );
     res.send(buffer);
   }
 
@@ -78,10 +99,19 @@ export class ReportsController {
     @Res() res: Response,
   ) {
     const data = await this.reportsService.getSalesReport(startDate, endDate);
-    const buffer = await this.reportsService.generateExcel('Sales', data.orders.map(d => d.toObject()));
-    
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=sales-${Date.now()}.xlsx`);
+    const buffer = await this.reportsService.generateExcel(
+      'Sales',
+      data.orders.map((d) => d.toObject()),
+    );
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=sales-${Date.now()}.xlsx`,
+    );
     res.send(buffer);
   }
 
@@ -92,10 +122,16 @@ export class ReportsController {
     @Res() res: Response,
   ) {
     const data = await this.reportsService.getSalesReport(startDate, endDate);
-    const buffer = await this.reportsService.generatePdf('Sales', data.orders.map(d => d.toObject()));
-    
+    const buffer = await this.reportsService.generatePdf(
+      'Sales',
+      data.orders.map((d) => d.toObject()),
+    );
+
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=sales-${Date.now()}.pdf`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=sales-${Date.now()}.pdf`,
+    );
     res.send(buffer);
   }
 
@@ -105,11 +141,20 @@ export class ReportsController {
     @Query('endDate') endDate: string,
     @Res() res: Response,
   ) {
-    const data = await this.reportsService.getCustomerReport(startDate, endDate);
+    const data = await this.reportsService.getCustomerReport(
+      startDate,
+      endDate,
+    );
     const buffer = await this.reportsService.generateExcel('Customers', data);
-    
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=customers-${Date.now()}.xlsx`);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=customers-${Date.now()}.xlsx`,
+    );
     res.send(buffer);
   }
 
@@ -119,11 +164,17 @@ export class ReportsController {
     @Query('endDate') endDate: string,
     @Res() res: Response,
   ) {
-    const data = await this.reportsService.getCustomerReport(startDate, endDate);
+    const data = await this.reportsService.getCustomerReport(
+      startDate,
+      endDate,
+    );
     const buffer = await this.reportsService.generatePdf('Customers', data);
-    
+
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=customers-${Date.now()}.pdf`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=customers-${Date.now()}.pdf`,
+    );
     res.send(buffer);
   }
 }

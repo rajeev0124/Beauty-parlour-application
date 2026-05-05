@@ -1,4 +1,10 @@
-import { IsString, IsBoolean, IsOptional, IsEnum, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsBoolean,
+  IsOptional,
+  IsEnum,
+  IsNumber,
+} from 'class-validator';
 
 export class AddToWishlistDto {
   @IsEnum(['product', 'service', 'package'])
@@ -42,6 +48,10 @@ export class UpdateWishlistItemDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @IsOptional()
+  @IsEnum(['low', 'medium', 'high'])
+  priority?: string;
 
   @IsOptional()
   @IsBoolean()

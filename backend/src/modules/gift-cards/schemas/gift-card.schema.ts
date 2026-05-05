@@ -35,7 +35,10 @@ export class GiftCard {
   @Prop()
   personalMessage: string;
 
-  @Prop({ default: 'active', enum: ['active', 'partially_used', 'exhausted', 'expired', 'cancelled'] })
+  @Prop({
+    default: 'active',
+    enum: ['active', 'partially_used', 'exhausted', 'expired', 'cancelled'],
+  })
   status: string;
 
   @Prop({ required: true })
@@ -50,12 +53,16 @@ export class GiftCard {
   @Prop({ default: 'email', enum: ['email', 'sms', 'print'] })
   deliveryMethod: string;
 
-  @Prop({ type: [{ 
-    date: Date, 
-    amount: Number, 
-    orderId: Types.ObjectId,
-    description: String 
-  }] })
+  @Prop({
+    type: [
+      {
+        date: Date,
+        amount: Number,
+        orderId: Types.ObjectId,
+        description: String,
+      },
+    ],
+  })
   usageHistory: {
     date: Date;
     amount: number;

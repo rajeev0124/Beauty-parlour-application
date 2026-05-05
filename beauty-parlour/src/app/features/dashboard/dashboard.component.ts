@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -37,6 +37,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   errorMessage = '';
   dateRange = 'month';
   private destroy$ = new Subject<void>();
+  private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  @HostListener('window:resize')
+  onResize(): void {
+    // Debounce resize to avoid excessive rebuilds
+    if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      this.serviceChartOptions = this.buildServiceOptions();
+      this.appointmentChartOptions = this.buildAppointmentOptions();
+      this.cdr.detectChanges();
+    }, 200);
+  }
 
   constructor(
     private authService: AuthService,
@@ -143,11 +155,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return {
       responsive: true,
       maintainAspectRatio: true,
-      aspectRatio: isMobile ? 1.2 : 1.5,
-      cutout: '68%',
+      aspectRatio: isMobile ? 1 : 1.5,
+      cutout: '60%',
       plugins: {
         legend: {
-          position: 'right',
+          position: isMobile ? 'bottom' : 'right',
           labels: {
             usePointStyle: true,
             pointStyle: 'circle',
@@ -245,6 +257,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
   }
 
   onDateRangeChange(): void {

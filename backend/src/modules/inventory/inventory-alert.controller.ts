@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -59,7 +52,8 @@ export class InventoryAlertController {
    */
   @Patch('config')
   updateConfig(
-    @Body() body: {
+    @Body()
+    body: {
       lowStockThreshold?: number;
       criticalStockThreshold?: number;
       expiryWarningDays?: number;

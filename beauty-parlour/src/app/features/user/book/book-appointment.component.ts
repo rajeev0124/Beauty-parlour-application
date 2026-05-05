@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
@@ -29,7 +29,8 @@ import { Staff } from '../../../core/models/staff.model';
   ],
   templateUrl: './book-appointment.component.html',
   styleUrl: './book-appointment.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class BookAppointmentComponent implements OnInit {
   step = 1;
@@ -129,15 +130,19 @@ export class BookAppointmentComponent implements OnInit {
     const selectedSvc = this.selectedService;
     const selectedStaff = this.stylists.find(s => s.name === formVal.stylist);
 
+    // Format date to YYYY-MM-DD for backend compatibility
+    const dateObj = new Date(formVal.date);
+    const formattedDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+
     const appointmentData: any = {
       userId: user?._id || '',
       userName: formVal.name,
       serviceId: selectedSvc?._id || '',
       serviceName: selectedSvc?.name || formVal.service,
-      date: new Date(formVal.date).toISOString(),
+      date: formattedDate,
       time: formVal.time,
-      notes: formVal.notes || '',
-      status: 'pending'
+      notes: formVal.notes || ''
+      // Note: status is set automatically by backend to 'pending'
     };
 
     // Only add staff fields if a stylist was selected
@@ -151,13 +156,23 @@ export class BookAppointmentComponent implements OnInit {
         this.submitting = false;
         this.submitted = true;
         this.cdr.markForCheck();
-        this.snackBar.open('Appointment booked successfully!', 'Close', { duration: 4000 });
+        this.snackBar.open('🎉 Appointment booked successfully!', 'OK', { 
+          duration: 6000,
+          panelClass: ['success-snackbar'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
       },
       error: (err) => {
         this.submitting = false;
         this.cdr.markForCheck();
         console.error('Booking error:', err);
-        this.snackBar.open('Failed to book appointment. Please try again.', 'Close', { duration: 4000 });
+        this.snackBar.open('Failed to book appointment. Please try again.', 'Retry', { 
+          duration: 6000,
+          panelClass: ['error-snackbar'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
       }
     });
   }

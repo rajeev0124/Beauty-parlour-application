@@ -8,7 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { GiftCardsService } from './gift-cards.service';
-import { CreateGiftCardDto, RedeemGiftCardDto, CheckBalanceDto } from './dto/gift-card.dto';
+import {
+  CreateGiftCardDto,
+  RedeemGiftCardDto,
+  CheckBalanceDto,
+} from './dto/gift-card.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';

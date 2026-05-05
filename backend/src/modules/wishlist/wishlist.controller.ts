@@ -10,7 +10,11 @@ import {
   Req,
 } from '@nestjs/common';
 import { WishlistService } from './wishlist.service';
-import { AddToWishlistDto, UpdateWishlistDto, UpdateWishlistItemDto } from './dto/wishlist.dto';
+import {
+  AddToWishlistDto,
+  UpdateWishlistDto,
+  UpdateWishlistItemDto,
+} from './dto/wishlist.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
 @Controller('wishlist')

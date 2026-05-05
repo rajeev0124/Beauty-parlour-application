@@ -22,7 +22,9 @@ export class NotificationsGateway {
   private connectedUsers = new Map<string, ConnectedUser>();
 
   constructor(private jwtService: JwtService) {
-    this.logger.log('NotificationsGateway initialized (WebSocket support pending package installation)');
+    this.logger.log(
+      'NotificationsGateway initialized (WebSocket support pending package installation)',
+    );
   }
 
   /**
@@ -30,22 +32,25 @@ export class NotificationsGateway {
    * Note: Requires @nestjs/websockets and socket.io packages for real-time support
    * Install: npm install @nestjs/websockets @nestjs/platform-socket.io socket.io
    */
-  sendToUser(userId: string, event: string, data: any) {
-    this.logger.debug(`[Notification] Event: ${event}, User: ${userId}, Data: ${JSON.stringify(data)}`);
+  sendToUser(userId: string, event: string, data: unknown) {
+    this.logger.debug(
+      `[Notification] Event: ${event}, User: ${userId}, Data: ${JSON.stringify(data)}`,
+    );
     // WebSocket implementation pending - notifications are logged for now
   }
 
   /**
    * Send notification to all users with a specific role
    */
-  sendToRole(role: string, event: string, data: any) {
+
+  sendToRole(role: string, event: string, _data: unknown) {
     this.logger.debug(`[Placeholder] Would send ${event} to role ${role}`);
   }
 
   /**
    * Send notification to all admin users
    */
-  sendToAdmins(event: string, data: any) {
+  sendToAdmins(event: string, data: unknown) {
     this.sendToRole('admin', event, data);
     this.sendToRole('superadmin', event, data);
   }
@@ -53,7 +58,8 @@ export class NotificationsGateway {
   /**
    * Send notification to all connected users
    */
-  broadcast(event: string, data: any) {
+
+  broadcast(event: string, _data: unknown) {
     this.logger.debug(`[Placeholder] Would broadcast ${event} to all users`);
   }
 

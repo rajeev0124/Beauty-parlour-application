@@ -59,4 +59,7 @@ AuditLogSchema.index({ entity: 1, entityId: 1 });
 AuditLogSchema.index({ action: 1, createdAt: -1 });
 AuditLogSchema.index({ createdAt: -1 });
 // TTL index - auto-delete logs older than 90 days
-AuditLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
+AuditLogSchema.index(
+  { createdAt: 1 },
+  { expireAfterSeconds: 90 * 24 * 60 * 60 },
+);

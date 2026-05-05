@@ -30,7 +30,7 @@ describe('CouponsService', () => {
       ...dto,
       save: jest.fn().mockResolvedValue({ ...mockCoupon, ...dto }),
     }));
-    
+
     mockCouponModel.findOne = jest.fn();
     mockCouponModel.findById = jest.fn();
     mockCouponModel.find = jest.fn().mockReturnValue({
@@ -78,7 +78,9 @@ describe('CouponsService', () => {
     it('should throw BadRequestException if coupon code exists', async () => {
       mockCouponModel.findOne.mockResolvedValue(mockCoupon);
 
-      await expect(service.create(createDto)).rejects.toThrow(BadRequestException);
+      await expect(service.create(createDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -109,15 +111,22 @@ describe('CouponsService', () => {
     it('should throw NotFoundException if coupon not found', async () => {
       mockCouponModel.findById.mockResolvedValue(null);
 
-      await expect(service.findOne('invalidId')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('invalidId')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('update', () => {
     it('should update a coupon', async () => {
-      mockCouponModel.findByIdAndUpdate.mockResolvedValue({ ...mockCoupon, discountValue: 25 });
+      mockCouponModel.findByIdAndUpdate.mockResolvedValue({
+        ...mockCoupon,
+        discountValue: 25,
+      });
 
-      const result = await service.update('507f1f77bcf86cd799439011', { discountValue: 25 });
+      const result = await service.update('507f1f77bcf86cd799439011', {
+        discountValue: 25,
+      });
 
       expect(result.discountValue).toBe(25);
     });
@@ -125,7 +134,9 @@ describe('CouponsService', () => {
     it('should throw NotFoundException if coupon not found', async () => {
       mockCouponModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(service.update('invalidId', {})).rejects.toThrow(NotFoundException);
+      await expect(service.update('invalidId', {})).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -135,7 +146,9 @@ describe('CouponsService', () => {
 
       await service.delete('507f1f77bcf86cd799439011');
 
-      expect(mockCouponModel.findByIdAndDelete).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
+      expect(mockCouponModel.findByIdAndDelete).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+      );
     });
   });
 
@@ -155,21 +168,26 @@ describe('CouponsService', () => {
     it('should throw BadRequestException for invalid coupon', async () => {
       mockCouponModel.findOne.mockResolvedValue(null);
 
-      await expect(service.validate({ code: 'INVALID', orderAmount: 1000 }))
-        .rejects.toThrow(BadRequestException);
+      await expect(
+        service.validate({ code: 'INVALID', orderAmount: 1000 }),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for minimum order amount', async () => {
       mockCouponModel.findOne.mockResolvedValue(mockCoupon);
 
-      await expect(service.validate({ code: 'SAVE20', orderAmount: 100 }))
-        .rejects.toThrow(BadRequestException);
+      await expect(
+        service.validate({ code: 'SAVE20', orderAmount: 100 }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
   describe('applyCoupon', () => {
     it('should increment usage count', async () => {
-      mockCouponModel.findOneAndUpdate.mockResolvedValue({ ...mockCoupon, usageCount: 6 });
+      mockCouponModel.findOneAndUpdate.mockResolvedValue({
+        ...mockCoupon,
+        usageCount: 6,
+      });
 
       const result = await service.applyCoupon('SAVE20');
 
@@ -177,7 +195,7 @@ describe('CouponsService', () => {
       expect(mockCouponModel.findOneAndUpdate).toHaveBeenCalledWith(
         { code: 'SAVE20' },
         { $inc: { usageCount: 1 } },
-        { new: true }
+        { returnDocument: 'after' },
       );
     });
   });

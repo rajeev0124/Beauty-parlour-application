@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Payment, PaymentDocument } from '../../schemas/payment.schema';
@@ -43,20 +47,30 @@ export class PaymentsService {
 
     // Update order status if payment completed
     if (createPaymentDto.method === 'cash') {
-      await this.paymentModel.findByIdAndUpdate(payment._id, { status: 'completed' });
-      await this.orderModel.findByIdAndUpdate(createPaymentDto.orderId, { status: 'processing' });
+      await this.paymentModel.findByIdAndUpdate(payment._id, {
+        status: 'completed',
+      });
+      await this.orderModel.findByIdAndUpdate(createPaymentDto.orderId, {
+        status: 'processing',
+      });
     }
 
     return payment;
   }
 
   async update(id: string, updatePaymentDto: UpdatePaymentDto) {
-    const payment = await this.paymentModel.findByIdAndUpdate(id, updatePaymentDto, { new: true });
+    const payment = await this.paymentModel.findByIdAndUpdate(
+      id,
+      updatePaymentDto,
+      { new: true },
+    );
     if (!payment) throw new NotFoundException('Payment not found');
 
     // Update order status when payment is completed
     if (updatePaymentDto.status === 'completed') {
-      await this.orderModel.findByIdAndUpdate(payment.orderId, { status: 'processing' });
+      await this.orderModel.findByIdAndUpdate(payment.orderId, {
+        status: 'processing',
+      });
     }
 
     return payment;

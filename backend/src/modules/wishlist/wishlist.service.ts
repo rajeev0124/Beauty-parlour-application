@@ -1,8 +1,17 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Wishlist, WishlistDocument } from './schemas/wishlist.schema';
-import { AddToWishlistDto, UpdateWishlistDto, UpdateWishlistItemDto } from './dto/wishlist.dto';
+import {
+  AddToWishlistDto,
+  UpdateWishlistDto,
+  UpdateWishlistItemDto,
+} from './dto/wishlist.dto';
 import { randomBytes } from 'crypto';
 
 @Injectable()
@@ -26,7 +35,9 @@ export class WishlistService {
   }
 
   async getOrCreateWishlist(userId: string): Promise<WishlistDocument> {
-    let wishlist = await this.wishlistModel.findOne({ user: new Types.ObjectId(userId) });
+    let wishlist = await this.wishlistModel.findOne({
+      user: new Types.ObjectId(userId),
+    });
 
     if (!wishlist) {
       wishlist = await this.wishlistModel.create({
@@ -43,7 +54,8 @@ export class WishlistService {
       .findOne({ user: new Types.ObjectId(userId) })
       .populate({
         path: 'items.item',
-        select: 'name description price imageUrl images isActive',
+        select:
+          'name description price category image imageUrl images isActive',
       })
       .exec();
 
@@ -54,12 +66,17 @@ export class WishlistService {
     return wishlist;
   }
 
-  async addItem(userId: string, addDto: AddToWishlistDto): Promise<WishlistDocument> {
+  async addItem(
+    userId: string,
+    addDto: AddToWishlistDto,
+  ): Promise<WishlistDocument> {
     const wishlist = await this.getOrCreateWishlist(userId);
 
     // Check if item already exists
     const existingItem = wishlist.items.find(
-      (item) => item.item.toString() === addDto.itemId && item.itemType === addDto.itemType
+      (item) =>
+        item.item.toString() === addDto.itemId &&
+        item.itemType === addDto.itemType,
     );
 
     if (existingItem) {
@@ -83,7 +100,9 @@ export class WishlistService {
   }
 
   async removeItem(userId: string, itemId: string): Promise<WishlistDocument> {
-    const wishlist = await this.wishlistModel.findOne({ user: new Types.ObjectId(userId) });
+    const wishlist = await this.wishlistModel.findOne({
+      user: new Types.ObjectId(userId),
+    });
 
     if (!wishlist) {
       throw new NotFoundException('Wishlist not found');
@@ -91,7 +110,7 @@ export class WishlistService {
 
     const initialLength = wishlist.items.length;
     wishlist.items = wishlist.items.filter(
-      (item) => item.item.toString() !== itemId
+      (item) => item.item.toString() !== itemId,
     );
 
     if (wishlist.items.length === initialLength) {
@@ -104,15 +123,20 @@ export class WishlistService {
     return updated!;
   }
 
-  async updateItem(userId: string, updateDto: UpdateWishlistItemDto): Promise<WishlistDocument> {
-    const wishlist = await this.wishlistModel.findOne({ user: new Types.ObjectId(userId) });
+  async updateItem(
+    userId: string,
+    updateDto: UpdateWishlistItemDto,
+  ): Promise<WishlistDocument> {
+    const wishlist = await this.wishlistModel.findOne({
+      user: new Types.ObjectId(userId),
+    });
 
     if (!wishlist) {
       throw new NotFoundException('Wishlist not found');
     }
 
     const item = wishlist.items.find(
-      (item) => item.item.toString() === updateDto.itemId
+      (item) => item.item.toString() === updateDto.itemId,
     );
 
     if (!item) {
@@ -121,6 +145,9 @@ export class WishlistService {
 
     if (updateDto.notes !== undefined) {
       item.notes = updateDto.notes;
+    }
+    if (updateDto.priority !== undefined) {
+      item.priority = updateDto.priority;
     }
     if (updateDto.notifyOnSale !== undefined) {
       item.notifyOnSale = updateDto.notifyOnSale;
@@ -132,8 +159,13 @@ export class WishlistService {
     return updated!;
   }
 
-  async updateWishlist(userId: string, updateDto: UpdateWishlistDto): Promise<WishlistDocument> {
-    const wishlist = await this.wishlistModel.findOne({ user: new Types.ObjectId(userId) });
+  async updateWishlist(
+    userId: string,
+    updateDto: UpdateWishlistDto,
+  ): Promise<WishlistDocument> {
+    const wishlist = await this.wishlistModel.findOne({
+      user: new Types.ObjectId(userId),
+    });
 
     if (!wishlist) {
       throw new NotFoundException('Wishlist not found');
@@ -144,7 +176,7 @@ export class WishlistService {
     }
     if (updateDto.isPublic !== undefined) {
       wishlist.isPublic = updateDto.isPublic;
-      
+
       // Generate share token if making public
       if (updateDto.isPublic && !wishlist.shareToken) {
         wishlist.shareToken = randomBytes(16).toString('hex');
@@ -157,7 +189,9 @@ export class WishlistService {
   }
 
   async clearWishlist(userId: string): Promise<Wishlist> {
-    const wishlist = await this.wishlistModel.findOne({ user: new Types.ObjectId(userId) });
+    const wishlist = await this.wishlistModel.findOne({
+      user: new Types.ObjectId(userId),
+    });
 
     if (!wishlist) {
       throw new NotFoundException('Wishlist not found');
@@ -195,11 +229,16 @@ export class WishlistService {
   }
 
   async getWishlistCount(userId: string): Promise<number> {
-    const wishlist = await this.wishlistModel.findOne({ user: new Types.ObjectId(userId) });
+    const wishlist = await this.wishlistModel.findOne({
+      user: new Types.ObjectId(userId),
+    });
     return wishlist?.items.length ?? 0;
   }
 
-  async moveToCart(userId: string, itemId: string): Promise<{
+  async moveToCart(
+    userId: string,
+    itemId: string,
+  ): Promise<{
     itemType: string;
     item: any;
   }> {
@@ -212,14 +251,18 @@ export class WishlistService {
       throw new NotFoundException('Wishlist not found');
     }
 
-    const item = wishlist.items.find((i) => i.item['_id'].toString() === itemId);
+    const item = wishlist.items.find(
+      (i) => i.item['_id'].toString() === itemId,
+    );
 
     if (!item) {
       throw new NotFoundException('Item not found in wishlist');
     }
 
     // Remove from wishlist
-    wishlist.items = wishlist.items.filter((i) => i.item['_id'].toString() !== itemId);
+    wishlist.items = wishlist.items.filter(
+      (i) => i.item['_id'].toString() !== itemId,
+    );
     await wishlist.save();
 
     // Return item info for cart addition
@@ -232,30 +275,39 @@ export class WishlistService {
   async getItemsOnSale(userId: string): Promise<any[]> {
     const wishlist = await this.getWishlist(userId);
     if (!wishlist) return [];
-    
+
     // Filter items that have price drops
-    return wishlist.items.filter(item => {
-      if (!item.priceAtAdd || !item.item) return false;
-      const currentPrice = item.item['price'] || item.item['packagePrice'];
-      return currentPrice && currentPrice < item.priceAtAdd;
-    }).map(item => ({
-      ...item,
-      currentPrice: item.item['price'] || item.item['packagePrice'],
-      priceDrop: (item.priceAtAdd ?? 0) - (item.item['price'] || item.item['packagePrice']),
-    }));
+    return wishlist.items
+      .filter((item) => {
+        if (!item.priceAtAdd || !item.item) return false;
+        const currentPrice = item.item['price'] || item.item['packagePrice'];
+        return currentPrice && currentPrice < item.priceAtAdd;
+      })
+      .map((item) => ({
+        ...item,
+        currentPrice: item.item['price'] || item.item['packagePrice'],
+        priceDrop:
+          (item.priceAtAdd ?? 0) -
+          (item.item['price'] || item.item['packagePrice']),
+      }));
   }
 
-  async getUsersForSaleNotification(itemId: string, newPrice: number): Promise<string[]> {
-    const wishlists = await this.wishlistModel.find({
-      'items.item': new Types.ObjectId(itemId),
-      'items.notifyOnSale': true,
-    }).exec();
+  async getUsersForSaleNotification(
+    itemId: string,
+    newPrice: number,
+  ): Promise<string[]> {
+    const wishlists = await this.wishlistModel
+      .find({
+        'items.item': new Types.ObjectId(itemId),
+        'items.notifyOnSale': true,
+      })
+      .exec();
 
     return wishlists
-      .filter(wishlist => {
-        const item = wishlist.items.find(i => i.item.toString() === itemId);
+      .filter((wishlist) => {
+        const item = wishlist.items.find((i) => i.item.toString() === itemId);
         return item && item.priceAtAdd && newPrice < item.priceAtAdd;
       })
-      .map(wishlist => wishlist.user.toString());
+      .map((wishlist) => wishlist.user.toString());
   }
 }

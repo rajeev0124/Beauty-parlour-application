@@ -9,35 +9,46 @@ export class HealthController {
 
   @Get()
   healthCheck() {
-    const dbStates = ['disconnected', 'connected', 'connecting', 'disconnecting'];
-    return { 
-      status: 'ok', 
+    const dbStates = [
+      'disconnected',
+      'connected',
+      'connecting',
+      'disconnecting',
+    ];
+    return {
+      status: 'ok',
       message: 'Beauty Parlour API is running',
       timestamp: new Date().toISOString(),
       database: {
         status: dbStates[this.connection.readyState] || 'unknown',
         connected: this.connection.readyState === 1,
-        name: this.connection.name
-      }
+        name: this.connection.name,
+      },
     };
   }
 
   @Get('health')
   detailedHealth() {
-    const dbStates = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+    const dbStates = [
+      'disconnected',
+      'connected',
+      'connecting',
+      'disconnecting',
+    ];
     return {
       api: { status: 'healthy', uptime: process.uptime() },
       database: {
         status: dbStates[this.connection.readyState] || 'unknown',
         connected: this.connection.readyState === 1,
         host: this.connection.host,
-        name: this.connection.name
+        name: this.connection.name,
       },
       memory: {
         used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB',
-        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + ' MB'
+        total:
+          Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + ' MB',
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -54,7 +65,7 @@ export class HealthController {
       status: 'running',
       docs: '/api/docs',
       health: '/health',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }

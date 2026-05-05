@@ -1,7 +1,10 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { LoyaltyPoints, LoyaltyPointsDocument } from './schemas/loyalty-points.schema';
+import {
+  LoyaltyPoints,
+  LoyaltyPointsDocument,
+} from './schemas/loyalty-points.schema';
 
 // Points configuration
 const POINTS_CONFIG = {
@@ -18,9 +21,26 @@ const POINTS_CONFIG = {
   // Tier thresholds
   TIERS: {
     bronze: { min: 0, multiplier: 1, benefits: ['1x points on all services'] },
-    silver: { min: 1000, multiplier: 1.25, benefits: ['1.25x points', '5% extra discount'] },
-    gold: { min: 5000, multiplier: 1.5, benefits: ['1.5x points', '10% extra discount', 'Priority booking'] },
-    platinum: { min: 10000, multiplier: 2, benefits: ['2x points', '15% extra discount', 'Priority booking', 'Free birthday service'] },
+    silver: {
+      min: 1000,
+      multiplier: 1.25,
+      benefits: ['1.25x points', '5% extra discount'],
+    },
+    gold: {
+      min: 5000,
+      multiplier: 1.5,
+      benefits: ['1.5x points', '10% extra discount', 'Priority booking'],
+    },
+    platinum: {
+      min: 10000,
+      multiplier: 2,
+      benefits: [
+        '2x points',
+        '15% extra discount',
+        'Priority booking',
+        'Free birthday service',
+      ],
+    },
   },
   // Bonus points
   REFERRAL_BONUS: 200,
@@ -33,12 +53,17 @@ export class LoyaltyService {
   private readonly logger = new Logger(LoyaltyService.name);
 
   constructor(
-    @InjectModel(LoyaltyPoints.name) private loyaltyModel: Model<LoyaltyPointsDocument>,
+    @InjectModel(LoyaltyPoints.name)
+    private loyaltyModel: Model<LoyaltyPointsDocument>,
   ) {}
 
-  async getOrCreateLoyaltyAccount(userId: string): Promise<LoyaltyPointsDocument> {
-    let account = await this.loyaltyModel.findOne({ user: new Types.ObjectId(userId) });
-    
+  async getOrCreateLoyaltyAccount(
+    userId: string,
+  ): Promise<LoyaltyPointsDocument> {
+    let account = await this.loyaltyModel.findOne({
+      user: new Types.ObjectId(userId),
+    });
+
     if (!account) {
       account = await this.loyaltyModel.create({
         user: new Types.ObjectId(userId),
@@ -49,7 +74,7 @@ export class LoyaltyService {
         history: [],
       });
     }
-    
+
     return account;
   }
 
@@ -57,7 +82,7 @@ export class LoyaltyService {
     const account = await this.getOrCreateLoyaltyAccount(userId);
     const tierInfo = POINTS_CONFIG.TIERS[account.tier];
     const nextTier = this.getNextTier(account.tier);
-    
+
     return {
       ...account.toObject(),
       tierInfo: {
@@ -65,20 +90,24 @@ export class LoyaltyService {
         multiplier: tierInfo.multiplier,
         benefits: tierInfo.benefits,
       },
-      nextTier: nextTier ? {
-        name: nextTier.name,
-        pointsNeeded: nextTier.threshold - account.totalPoints,
-        threshold: nextTier.threshold,
-      } : null,
+      nextTier: nextTier
+        ? {
+            name: nextTier.name,
+            pointsNeeded: nextTier.threshold - account.totalPoints,
+            threshold: nextTier.threshold,
+          }
+        : null,
       pointValue: POINTS_CONFIG.POINT_VALUE,
       redeemableValue: account.availablePoints * POINTS_CONFIG.POINT_VALUE,
     };
   }
 
-  private getNextTier(currentTier: string): { name: string; threshold: number } | null {
+  private getNextTier(
+    currentTier: string,
+  ): { name: string; threshold: number } | null {
     const tierOrder = ['bronze', 'silver', 'gold', 'platinum'];
     const currentIndex = tierOrder.indexOf(currentTier);
-    
+
     if (currentIndex < tierOrder.length - 1) {
       const nextTierName = tierOrder[currentIndex + 1];
       return {
@@ -86,7 +115,7 @@ export class LoyaltyService {
         threshold: POINTS_CONFIG.TIERS[nextTierName].min,
       };
     }
-    
+
     return null;
   }
 
@@ -105,7 +134,10 @@ export class LoyaltyService {
     description: string,
   ): Promise<{ pointsEarned: number; account: LoyaltyPointsDocument }> {
     if (amount < POINTS_CONFIG.MIN_AMOUNT_FOR_POINTS) {
-      return { pointsEarned: 0, account: await this.getOrCreateLoyaltyAccount(userId) };
+      return {
+        pointsEarned: 0,
+        account: await this.getOrCreateLoyaltyAccount(userId),
+      };
     }
 
     const account = await this.getOrCreateLoyaltyAccount(userId);
@@ -133,7 +165,9 @@ export class LoyaltyService {
 
     await account.save();
 
-    this.logger.log(`User ${userId} earned ${pointsEarned} points for ${referenceType}`);
+    this.logger.log(
+      `User ${userId} earned ${pointsEarned} points for ${referenceType}`,
+    );
 
     return { pointsEarned, account };
   }
@@ -167,7 +201,9 @@ export class LoyaltyService {
 
     await account.save();
 
-    this.logger.log(`User ${userId} received ${points} bonus points for ${bonusType}`);
+    this.logger.log(
+      `User ${userId} received ${points} bonus points for ${bonusType}`,
+    );
 
     return account;
   }
@@ -178,11 +214,17 @@ export class LoyaltyService {
     referenceType: string,
     referenceId: string,
     description: string,
-  ): Promise<{ redeemed: boolean; discountAmount: number; account: LoyaltyPointsDocument }> {
+  ): Promise<{
+    redeemed: boolean;
+    discountAmount: number;
+    account: LoyaltyPointsDocument;
+  }> {
     const account = await this.getOrCreateLoyaltyAccount(userId);
 
     if (points < POINTS_CONFIG.MIN_REDEMPTION_POINTS) {
-      throw new BadRequestException(`Minimum ${POINTS_CONFIG.MIN_REDEMPTION_POINTS} points required for redemption`);
+      throw new BadRequestException(
+        `Minimum ${POINTS_CONFIG.MIN_REDEMPTION_POINTS} points required for redemption`,
+      );
     }
 
     if (account.availablePoints < points) {
@@ -206,7 +248,9 @@ export class LoyaltyService {
 
     await account.save();
 
-    this.logger.log(`User ${userId} redeemed ${points} points for ₹${discountAmount} discount`);
+    this.logger.log(
+      `User ${userId} redeemed ${points} points for ₹${discountAmount} discount`,
+    );
 
     return { redeemed: true, discountAmount, account };
   }
@@ -218,7 +262,10 @@ export class LoyaltyService {
       .slice(0, limit);
   }
 
-  async processReferral(referrerId: string, referredUserId: string): Promise<void> {
+  async processReferral(
+    referrerId: string,
+    referredUserId: string,
+  ): Promise<void> {
     // Give bonus to referrer
     await this.addBonusPoints(
       referrerId,

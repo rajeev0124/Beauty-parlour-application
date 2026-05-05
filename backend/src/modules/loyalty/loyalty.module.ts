@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LoyaltyController } from './loyalty.controller';
 import { LoyaltyService } from './loyalty.service';
-import { LoyaltyPoints, LoyaltyPointsSchema } from './schemas/loyalty-points.schema';
+import {
+  LoyaltyPoints,
+  LoyaltyPointsSchema,
+} from './schemas/loyalty-points.schema';
 
 @Module({
   imports: [

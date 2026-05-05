@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ExpensesService } from './expenses.service';
 import { CreateExpenseDto, UpdateExpenseDto } from './dto/expense.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -12,7 +23,9 @@ export class ExpensesController {
   constructor(private readonly expensesService: ExpensesService) {}
 
   @Get()
-  findAll(@Query() query: { category?: string; startDate?: string; endDate?: string }) {
+  findAll(
+    @Query() query: { category?: string; startDate?: string; endDate?: string },
+  ) {
     return this.expensesService.findAll(query);
   }
 
@@ -33,7 +46,11 @@ export class ExpensesController {
 
   @Post()
   create(@Request() req, @Body() createExpenseDto: CreateExpenseDto) {
-    return this.expensesService.create(req.user._id.toString(), req.user.name, createExpenseDto);
+    return this.expensesService.create(
+      req.user._id.toString(),
+      req.user.name,
+      createExpenseDto,
+    );
   }
 
   @Put(':id')

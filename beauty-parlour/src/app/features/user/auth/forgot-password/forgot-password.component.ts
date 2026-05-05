@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,7 +18,8 @@ import { environment } from '../../../../../environments/environment';
     MatButtonModule, MatIconModule, MatProgressSpinnerModule
   ],
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss'
+  styleUrl: './forgot-password.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class ForgotPasswordComponent {
   forgotForm: FormGroup;
@@ -50,7 +51,7 @@ export class ForgotPasswordComponent {
       next: (res: any) => {
         this.loading = false;
         this.emailSent = true;
-        this.successMessage = res.message || 'If the email exists, a password reset link has been sent.';
+        this.successMessage = res.message || 'Password reset link has been sent to your email.';
         // In development, show the reset link directly
         if (this.isDev && res.devResetLink) {
           this.devResetLink = res.devResetLink;
@@ -58,9 +59,8 @@ export class ForgotPasswordComponent {
       },
       error: (err) => {
         this.loading = false;
-        // Don't reveal if email exists or not for security
-        this.emailSent = true;
-        this.successMessage = 'If the email exists in our system, a password reset link has been sent.';
+        // Show error message if email doesn't exist
+        this.errorMessage = err.error?.message || 'This email address is not registered.';
       }
     });
   }

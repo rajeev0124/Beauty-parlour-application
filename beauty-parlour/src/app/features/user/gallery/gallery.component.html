@@ -1,8 +1,8 @@
 <div class="gallery-page">
-  <!-- Hero Section -->
+  <!-- Hero Section with Image -->
   <section class="hero-section">
-    <div class="hero-bg-pattern"></div>
-    <div class="hero-bg-glow"></div>
+    <div class="hero-bg-image"></div>
+    <div class="hero-overlay"></div>
     <div class="hero-content">
       <div class="hero-badge">
         <mat-icon>auto_awesome</mat-icon>
@@ -185,15 +185,15 @@
     <div class="lightbox-backdrop"></div>
     
     <!-- Navigation -->
-    <button class="lightbox-nav prev" (click)="navigateLightbox('prev'); $event.stopPropagation()">
+    <button class="lightbox-nav prev" (click)="navigateLightbox('prev'); $event.stopPropagation()" aria-label="Previous image">
       <mat-icon>chevron_left</mat-icon>
     </button>
-    <button class="lightbox-nav next" (click)="navigateLightbox('next'); $event.stopPropagation()">
+    <button class="lightbox-nav next" (click)="navigateLightbox('next'); $event.stopPropagation()" aria-label="Next image">
       <mat-icon>chevron_right</mat-icon>
     </button>
     
     <!-- Close Button -->
-    <button class="lightbox-close" (click)="closeLightbox()">
+    <button class="lightbox-close" (click)="closeLightbox()" aria-label="Close lightbox">
       <mat-icon>close</mat-icon>
     </button>
     

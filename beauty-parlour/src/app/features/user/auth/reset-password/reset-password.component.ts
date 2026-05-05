@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -6,18 +6,21 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule, RouterLink,
     MatFormFieldModule, MatInputModule,
     MatButtonModule, MatIconModule, MatProgressSpinnerModule
   ],
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss'
+  styleUrl: './reset-password.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class ResetPasswordComponent implements OnInit {
   resetForm: FormGroup;
@@ -29,6 +32,10 @@ export class ResetPasswordComponent implements OnInit {
   resetSuccess = false;
   token = '';
   invalidToken = false;
+  
+  // Focus states
+  passwordFocused = false;
+  confirmFocused = false;
 
   constructor(
     private fb: FormBuilder,
@@ -50,6 +57,37 @@ export class ResetPasswordComponent implements OnInit {
         this.errorMessage = 'Invalid or missing reset token. Please request a new password reset link.';
       }
     });
+  }
+
+  // Password strength calculation
+  get passwordStrength(): number {
+    const password = this.resetForm.get('password')?.value || '';
+    let strength = 0;
+    
+    if (password.length >= 6) strength++;
+    if (password.length >= 8) strength++;
+    if (/[a-zA-Z]/.test(password) && /[0-9]/.test(password)) strength++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+    
+    return strength;
+  }
+
+  get passwordStrengthText(): string {
+    const strength = this.passwordStrength;
+    if (strength <= 1) return 'Weak';
+    if (strength === 2) return 'Fair';
+    if (strength === 3) return 'Good';
+    return 'Strong';
+  }
+
+  get hasLetter(): boolean {
+    const password = this.resetForm.get('password')?.value || '';
+    return /[a-zA-Z]/.test(password);
+  }
+
+  get hasNumber(): boolean {
+    const password = this.resetForm.get('password')?.value || '';
+    return /[0-9]/.test(password);
   }
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {

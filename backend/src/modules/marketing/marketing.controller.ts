@@ -14,7 +14,11 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { MarketingService } from './marketing.service';
-import { CreateCampaignDto, UpdateCampaignDto, QueryCampaignsDto } from './dto/campaign.dto';
+import {
+  CreateCampaignDto,
+  UpdateCampaignDto,
+  QueryCampaignsDto,
+} from './dto/campaign.dto';
 
 @Controller('marketing')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -27,7 +31,10 @@ export class MarketingController {
    */
   @Post('campaigns')
   async create(@Request() req, @Body() dto: CreateCampaignDto) {
-    const campaign = await this.marketingService.create(dto, req.user._id.toString());
+    const campaign = await this.marketingService.create(
+      dto,
+      req.user._id.toString(),
+    );
     return {
       success: true,
       data: campaign,
@@ -121,7 +128,10 @@ export class MarketingController {
     @Param('id') id: string,
     @Body('scheduledAt') scheduledAt: string,
   ) {
-    const campaign = await this.marketingService.schedule(id, new Date(scheduledAt));
+    const campaign = await this.marketingService.schedule(
+      id,
+      new Date(scheduledAt),
+    );
     return {
       success: true,
       data: campaign,
@@ -173,7 +183,10 @@ export class MarketingController {
    */
   @Post('campaigns/:id/duplicate')
   async duplicate(@Request() req, @Param('id') id: string) {
-    const campaign = await this.marketingService.duplicate(id, req.user._id.toString());
+    const campaign = await this.marketingService.duplicate(
+      id,
+      req.user._id.toString(),
+    );
     return {
       success: true,
       data: campaign,

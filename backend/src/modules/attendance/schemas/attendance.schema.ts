@@ -17,9 +17,9 @@ export class Attendance {
   @Prop()
   checkOutTime?: Date;
 
-  @Prop({ 
+  @Prop({
     enum: ['present', 'absent', 'half-day', 'leave', 'holiday'],
-    default: 'present' 
+    default: 'present',
   })
   status: string;
 
@@ -47,13 +47,13 @@ export class Attendance {
   @Prop()
   notes?: string;
 
-  @Prop({ 
+  @Prop({
     type: {
       latitude: { type: Number },
       longitude: { type: Number },
-      address: { type: String }
+      address: { type: String },
     },
-    required: false
+    required: false,
   })
   location?: {
     latitude: number;

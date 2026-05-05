@@ -23,13 +23,15 @@ export class ProductsService {
     sortOrder?: string;
   }) {
     const filter: any = {};
-    
+
     if (query.category) filter.category = query.category;
-    if (query.isActive !== undefined) filter.isActive = query.isActive === 'true';
-    if (query.bestseller !== undefined) filter.bestseller = query.bestseller === 'true';
+    if (query.isActive !== undefined)
+      filter.isActive = query.isActive === 'true';
+    if (query.bestseller !== undefined)
+      filter.bestseller = query.bestseller === 'true';
     if (query.brand) filter.brand = { $regex: query.brand, $options: 'i' };
     if (query.inStock === 'true') filter.stock = { $gt: 0 };
-    
+
     // Search in name, description, and brand
     if (query.search) {
       filter.$or = [
@@ -38,14 +40,14 @@ export class ProductsService {
         { brand: { $regex: query.search, $options: 'i' } },
       ];
     }
-    
+
     // Price range filter
     if (query.minPrice || query.maxPrice) {
       filter.price = {};
       if (query.minPrice) filter.price.$gte = parseFloat(query.minPrice);
       if (query.maxPrice) filter.price.$lte = parseFloat(query.maxPrice);
     }
-    
+
     // Sorting
     const sortOptions: any = {};
     if (query.sortBy) {
@@ -53,7 +55,7 @@ export class ProductsService {
     } else {
       sortOptions.createdAt = -1;
     }
-    
+
     return this.productModel.find(filter).sort(sortOptions);
   }
 
@@ -76,7 +78,11 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    const product = await this.productModel.findByIdAndUpdate(id, updateProductDto, { new: true });
+    const product = await this.productModel.findByIdAndUpdate(
+      id,
+      updateProductDto,
+      { new: true },
+    );
     if (!product) throw new NotFoundException('Product not found');
     return product;
   }

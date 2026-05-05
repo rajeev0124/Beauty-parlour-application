@@ -1,23 +1,58 @@
 <div class="page-shell">
-  <div class="dashboard-header">
-    <div class="dashboard-header-left">
-      <h1 class="dashboard-title">Dashboard</h1>
-      <p class="dashboard-subtitle">{{ greeting }}, {{ adminName }}</p>
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="welcome-bg">
+      <div class="welcome-gradient"></div>
+      <div class="welcome-pattern"></div>
     </div>
-    <div class="dashboard-header-right">
-      <div class="date-display">
+    <div class="welcome-content">
+      <div class="welcome-text">
+        <span class="welcome-badge">
+          <mat-icon>verified</mat-icon>
+          Admin Dashboard
+        </span>
+        <h1>{{ greeting }}, {{ adminName }}!</h1>
+        <p>Here's what's happening with your beauty parlour today.</p>
+      </div>
+      <div class="welcome-actions">
+        <button class="action-btn primary" routerLink="/admin/appointments">
+          <mat-icon>add</mat-icon>
+          New Appointment
+        </button>
+        <button class="action-btn secondary" routerLink="/admin/services">
+          <mat-icon>auto_awesome</mat-icon>
+          Add Service
+        </button>
+      </div>
+    </div>
+    <div class="welcome-illustration">
+      <div class="welcome-date">
         <mat-icon>calendar_today</mat-icon>
-        <span>{{ today | date:'EEE, MMM d, y' }}</span>
+        <span>{{ today | date:'EEEE, MMMM d, y' }}</span>
       </div>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="filter-left">
+      <h2 class="section-title">Overview</h2>
+    </div>
+    <div class="filter-right">
       <div class="filter-group">
-        <button class="filter-btn" [class.active]="dateRange === 'today'" (click)="dateRange = 'today'; onDateRangeChange()">Today</button>
-        <button class="filter-btn" [class.active]="dateRange === 'week'" (click)="dateRange = 'week'; onDateRangeChange()">Week</button>
-        <button class="filter-btn" [class.active]="dateRange === 'month'" (click)="dateRange = 'month'; onDateRangeChange()">Month</button>
+        <button class="filter-btn" [class.active]="dateRange === 'today'" (click)="dateRange = 'today'; onDateRangeChange()">
+          <mat-icon>today</mat-icon>
+          Today
+        </button>
+        <button class="filter-btn" [class.active]="dateRange === 'week'" (click)="dateRange = 'week'; onDateRangeChange()">
+          <mat-icon>date_range</mat-icon>
+          Week
+        </button>
+        <button class="filter-btn" [class.active]="dateRange === 'month'" (click)="dateRange = 'month'; onDateRangeChange()">
+          <mat-icon>calendar_month</mat-icon>
+          Month
+        </button>
       </div>
-      <button class="action-btn" routerLink="/admin/appointments">
-        <mat-icon>add</mat-icon>
-        New Appointment
-      </button>
     </div>
   </div>
 
@@ -28,31 +63,36 @@
     </div>
   }
 
-  <!-- Stats -->
+  <!-- Stats Grid -->
   @if (loading) {
-    <div class="stat-row">
+    <div class="stat-grid">
       @for (i of [1,2,3,4]; track i) {
-        <div class="stat-card skeleton-stat">
-          <div class="skeleton-stat-label skeleton"></div>
-          <div class="skeleton-stat-value skeleton"></div>
-          <div class="skeleton-stat-trend skeleton"></div>
+        <div class="stat-card skeleton-card">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="skeleton skeleton-label"></div>
+          <div class="skeleton skeleton-value"></div>
+          <div class="skeleton skeleton-trend"></div>
         </div>
       }
     </div>
   } @else {
-    <div class="stat-row">
+    <div class="stat-grid">
       @for (stat of stats; track stat.title; let i = $index) {
-        <a class="stat-card" [routerLink]="stat.link">
-          <div class="stat-top">
+        <a class="stat-card" [class]="'stat-' + stat.accent" [routerLink]="stat.link">
+          <div class="stat-glow"></div>
+          <div class="stat-icon-wrap">
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-info">
             <span class="stat-label">{{ stat.title }}</span>
-            <div class="stat-icon" [class]="stat.accent">
-              <mat-icon>{{ stat.icon }}</mat-icon>
+            <div class="stat-value">{{ stat.value }}</div>
+            <div class="stat-trend" [class.up]="stat.trend.startsWith('+')" [class.down]="stat.trend.startsWith('-')">
+              <mat-icon>{{ stat.trend.startsWith('+') ? 'trending_up' : 'trending_down' }}</mat-icon>
+              <span>{{ stat.trend }} vs last period</span>
             </div>
           </div>
-          <div class="stat-value">{{ stat.value }}</div>
-          <div class="stat-trend" [class.up]="stat.trend.startsWith('+')">
-            <mat-icon>{{ stat.trend.startsWith('+') ? 'trending_up' : 'trending_down' }}</mat-icon>
-            {{ stat.trend }} from last month
+          <div class="stat-arrow">
+            <mat-icon>arrow_forward</mat-icon>
           </div>
         </a>
       }
@@ -60,56 +100,82 @@
   }
 
   <!-- Quick Actions -->
-  <div class="quick-actions">
-    <a class="quick-action" routerLink="/admin/appointments">
-      <div class="qa-icon purple"><mat-icon>event_note</mat-icon></div>
-      <span>Appointments</span>
-    </a>
-    <a class="quick-action" routerLink="/admin/customers">
-      <div class="qa-icon blue"><mat-icon>person_add</mat-icon></div>
-      <span>Customers</span>
-    </a>
-    <a class="quick-action" routerLink="/admin/services">
-      <div class="qa-icon amber"><mat-icon>auto_awesome</mat-icon></div>
-      <span>Services</span>
-    </a>
-    <a class="quick-action" routerLink="/admin/orders">
-      <div class="qa-icon green"><mat-icon>receipt_long</mat-icon></div>
-      <span>Orders</span>
-    </a>
+  <div class="quick-section">
+    <h3 class="quick-title">Quick Actions</h3>
+    <div class="quick-actions">
+      <a class="quick-card" routerLink="/admin/appointments">
+        <div class="quick-icon purple">
+          <mat-icon>event_note</mat-icon>
+        </div>
+        <div class="quick-info">
+          <span class="quick-name">Appointments</span>
+          <span class="quick-desc">Manage bookings</span>
+        </div>
+        <mat-icon class="quick-arrow">chevron_right</mat-icon>
+      </a>
+      <a class="quick-card" routerLink="/admin/customers">
+        <div class="quick-icon blue">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="quick-info">
+          <span class="quick-name">Customers</span>
+          <span class="quick-desc">View clients</span>
+        </div>
+        <mat-icon class="quick-arrow">chevron_right</mat-icon>
+      </a>
+      <a class="quick-card" routerLink="/admin/services">
+        <div class="quick-icon amber">
+          <mat-icon>auto_awesome</mat-icon>
+        </div>
+        <div class="quick-info">
+          <span class="quick-name">Services</span>
+          <span class="quick-desc">Edit offerings</span>
+        </div>
+        <mat-icon class="quick-arrow">chevron_right</mat-icon>
+      </a>
+      <a class="quick-card" routerLink="/admin/staff">
+        <div class="quick-icon green">
+          <mat-icon>badge</mat-icon>
+        </div>
+        <div class="quick-info">
+          <span class="quick-name">Staff</span>
+          <span class="quick-desc">Manage team</span>
+        </div>
+        <mat-icon class="quick-arrow">chevron_right</mat-icon>
+      </a>
+    </div>
   </div>
 
-  <!-- Charts Row 1: Revenue + Popular Services -->
+  <!-- Charts Section -->
   @if (loading) {
-    <div class="chart-grid">
-      <div class="chart-card wide">
-        <div class="chart-head">
-          <div class="skeleton" style="height: 14px; width: 120px;"></div>
-          <div class="skeleton" style="height: 20px; width: 80px; border-radius: 4px;"></div>
+    <div class="charts-grid">
+      <div class="chart-card large">
+        <div class="chart-header">
+          <div class="skeleton" style="height: 16px; width: 140px;"></div>
+          <div class="skeleton" style="height: 24px; width: 80px; border-radius: 6px;"></div>
         </div>
-        <div class="chart-body" style="min-height: 200px;"></div>
+        <div class="chart-body" style="min-height: 280px;"></div>
       </div>
       <div class="chart-card">
-        <div class="chart-head">
-          <div class="skeleton" style="height: 14px; width: 100px;"></div>
-          <div class="skeleton" style="height: 20px; width: 70px; border-radius: 4px;"></div>
+        <div class="chart-header">
+          <div class="skeleton" style="height: 16px; width: 120px;"></div>
+          <div class="skeleton" style="height: 24px; width: 70px; border-radius: 6px;"></div>
         </div>
-        <div class="chart-body" style="min-height: 200px;"></div>
+        <div class="chart-body" style="min-height: 280px;"></div>
       </div>
-    </div>
-    <div class="chart-card weekly-chart">
-      <div class="chart-head">
-        <div class="skeleton" style="height: 14px; width: 140px;"></div>
-        <div class="skeleton" style="height: 20px; width: 70px; border-radius: 4px;"></div>
-      </div>
-      <div class="chart-body weekly-chart-body"></div>
     </div>
   } @else {
-    <div class="chart-grid">
-      <div class="chart-card wide">
-        <div class="chart-head">
-          <h3>Revenue Overview</h3>
-          <span class="chart-badge">Last 7 months</span>
+    <div class="charts-grid">
+      <div class="chart-card large">
+        <div class="chart-header">
+          <div class="chart-title-wrap">
+            <h3>Revenue Overview</h3>
+            <span class="chart-subtitle">Monthly revenue performance</span>
+          </div>
+          <span class="chart-badge success">
+            <mat-icon>trending_up</mat-icon>
+            +12.5%
+          </span>
         </div>
         <div class="chart-body">
           <canvas baseChart
@@ -117,88 +183,114 @@
             [labels]="revenueChartData.labels"
             [options]="revenueChartOptions"
             type="line"
-            aria-label="Revenue overview chart showing monthly revenue trends"
+            aria-label="Revenue overview chart"
             role="img">
           </canvas>
         </div>
       </div>
       <div class="chart-card">
-        <div class="chart-head">
-          <h3>Popular Services</h3>
-          <span class="chart-badge">By bookings</span>
+        <div class="chart-header">
+          <div class="chart-title-wrap">
+            <h3>Popular Services</h3>
+            <span class="chart-subtitle">By total bookings</span>
+          </div>
+          <span class="chart-badge neutral">Top 6</span>
         </div>
-        <div class="chart-body">
+        <div class="chart-body donut-body">
           <canvas baseChart
             [datasets]="serviceChartData.datasets"
             [labels]="serviceChartData.labels"
             [options]="serviceChartOptions"
             type="doughnut"
-            aria-label="Popular services chart showing service booking distribution"
+            aria-label="Popular services chart"
             role="img">
           </canvas>
         </div>
       </div>
     </div>
 
-    <!-- Weekly Appointments - Full width -->
-    <div class="chart-card weekly-chart">
-      <div class="chart-head">
-        <h3>Weekly Appointments</h3>
-        <span class="chart-badge">This week</span>
+    <!-- Weekly Appointments -->
+    <div class="chart-card full-width">
+      <div class="chart-header">
+        <div class="chart-title-wrap">
+          <h3>Weekly Appointments</h3>
+          <span class="chart-subtitle">This week's booking trends</span>
+        </div>
+        <span class="chart-badge info">This Week</span>
       </div>
-      <div class="chart-body weekly-chart-body">
+      <div class="chart-body bar-body">
         <canvas baseChart
           [datasets]="appointmentChartData.datasets"
           [labels]="appointmentChartData.labels"
           [options]="appointmentChartOptions"
           type="bar"
-          aria-label="Weekly appointments chart showing daily appointment counts"
+          aria-label="Weekly appointments chart"
           role="img">
         </canvas>
       </div>
     </div>
   }
 
-  <!-- Recent Appointments - Full width -->
-  <div class="chart-card recent-table">
-    <div class="chart-head">
-      <h3>Recent Appointments</h3>
-      <a class="chart-link" routerLink="/admin/appointments">View all</a>
-    </div>
-    <div class="chart-body no-pad">
-      <div class="table-responsive">
-        <table mat-table [dataSource]="recentAppointments" class="full-width">
-          <ng-container matColumnDef="customer">
-            <th mat-header-cell *matHeaderCellDef>Customer</th>
-            <td mat-cell *matCellDef="let row">
-              <div class="user-cell">
-                <div class="user-cell-avatar avatar-brand">{{ row.customer.charAt(0) }}</div>
-                <span class="cell-name">{{ row.customer }}</span>
-              </div>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="service">
-            <th mat-header-cell *matHeaderCellDef>Service</th>
-            <td mat-cell *matCellDef="let row">{{ row.service }}</td>
-          </ng-container>
-          <ng-container matColumnDef="staff">
-            <th mat-header-cell *matHeaderCellDef>Staff</th>
-            <td mat-cell *matCellDef="let row">{{ row.staff }}</td>
-          </ng-container>
-          <ng-container matColumnDef="time">
-            <th mat-header-cell *matHeaderCellDef>Time</th>
-            <td mat-cell *matCellDef="let row">{{ row.time }}</td>
-          </ng-container>
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Status</th>
-            <td mat-cell *matCellDef="let row">
-              <span class="status-badge" [class]="'status-' + row.status">{{ row.status }}</span>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+  <!-- Recent Appointments Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <div class="table-title-wrap">
+        <h3>Recent Appointments</h3>
+        <span class="table-subtitle">Latest booking activities</span>
       </div>
+      <a class="view-all-btn" routerLink="/admin/appointments">
+        View All
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+    <div class="table-body">
+      <table mat-table [dataSource]="recentAppointments" class="appointments-table">
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef>Customer</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="customer-cell">
+              <div class="customer-avatar">{{ row.customer.charAt(0) }}</div>
+              <span class="customer-name">{{ row.customer }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="service">
+          <th mat-header-cell *matHeaderCellDef>Service</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="service-tag">{{ row.service }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="staff">
+          <th mat-header-cell *matHeaderCellDef>Staff</th>
+          <td mat-cell *matCellDef="let row">{{ row.staff }}</td>
+        </ng-container>
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef>Time</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="time-cell">
+              <mat-icon>schedule</mat-icon>
+              {{ row.time }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="status-pill" [class]="'status-' + row.status">
+              <span class="status-dot"></span>
+              {{ row.status }}
+            </span>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      @if (recentAppointments.length === 0) {
+        <div class="empty-state">
+          <mat-icon>event_busy</mat-icon>
+          <p>No recent appointments</p>
+        </div>
+      }
     </div>
   </div>
 </div>

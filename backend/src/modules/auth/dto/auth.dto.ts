@@ -1,4 +1,11 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  Matches,
+  IsOptional,
+} from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty()
@@ -11,15 +18,15 @@ export class RegisterDto {
 
   @IsNotEmpty()
   @IsString()
+  @Matches(/^[0-9]{10}$/, { message: 'Phone must be a valid 10-digit number' })
   phone: string;
 
   @IsNotEmpty()
   @MinLength(6)
   password: string;
 
-  @IsOptional()
-  @IsString()
-  role?: string;
+  // Role is not allowed from client - always defaults to 'customer'
+  // Admin roles can only be assigned through backend seeding or superadmin
 }
 
 export class LoginDto {
@@ -29,6 +36,14 @@ export class LoginDto {
 
   @IsNotEmpty()
   password: string;
+
+  @IsOptional()
+  @IsString()
+  device?: string;
+
+  @IsOptional()
+  @IsString()
+  ip?: string;
 }
 
 export class ForgotPasswordDto {

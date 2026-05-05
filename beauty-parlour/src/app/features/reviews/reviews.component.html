@@ -1,0 +1,403 @@
+<div class="reviews-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>star_rate</mat-icon>
+      </div>
+      <div class="header-text">
+        <h1>Reviews & Ratings</h1>
+        <p>Manage customer feedback and testimonials</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="stats-section">
+    <!-- Main Rating Card -->
+    <div class="rating-overview-card">
+      <div class="rating-score">
+        <span class="score">{{ stats.avgRating | number:'1.1-1' }}</span>
+        <div class="score-stars">
+          @for (star of [1,2,3,4,5]; track star) {
+            <mat-icon [class.filled]="star <= stats.avgRating" [class.half]="star > stats.avgRating && star - 0.5 <= stats.avgRating">star</mat-icon>
+          }
+        </div>
+        <span class="score-label">out of 5</span>
+      </div>
+      <div class="rating-bars">
+        @for (count of ratingDistribution; track $index; let i = $index) {
+          <div class="rating-bar-row">
+            <span class="bar-label">{{ 5 - i }}</span>
+            <mat-icon class="bar-star">star</mat-icon>
+            <div class="bar-track">
+              <div class="bar-fill" [style.width.%]="getRatingPercent(i)"></div>
+            </div>
+            <span class="bar-count">{{ count }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stat-cards">
+      @if (loading) {
+        @for (i of [1,2,3]; track i) {
+          <div class="stat-card skeleton-card">
+            <div class="skeleton skeleton-icon"></div>
+            <div class="skeleton-content">
+              <div class="skeleton skeleton-value"></div>
+              <div class="skeleton skeleton-label"></div>
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="stat-card">
+          <div class="stat-icon total">
+            <mat-icon>rate_review</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.totalReviews }}</span>
+            <span class="stat-label">Total Reviews</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon approved">
+            <mat-icon>verified</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.approvedCount }}</span>
+            <span class="stat-label">Approved</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon pending">
+            <mat-icon>pending_actions</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ pendingCount }}</span>
+            <span class="stat-label">Pending</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input 
+        type="text" 
+        placeholder="Search by customer, comment, or service..." 
+        [(ngModel)]="searchTerm"
+        (input)="applyFilter()"
+        [disabled]="loading">
+    </div>
+
+    <div class="filter-chips">
+      <button 
+        class="filter-chip" 
+        [class.active]="currentFilter === 'all'"
+        (click)="filterByStatus('all')">
+        <mat-icon>apps</mat-icon>
+        All
+      </button>
+      <button 
+        class="filter-chip" 
+        [class.active]="currentFilter === 'approved'"
+        (click)="filterByStatus('approved')">
+        <mat-icon>check_circle</mat-icon>
+        Approved
+      </button>
+      <button 
+        class="filter-chip" 
+        [class.active]="currentFilter === 'pending'"
+        (click)="filterByStatus('pending')">
+        <mat-icon>pending</mat-icon>
+        Pending
+      </button>
+      <button 
+        class="filter-chip star-chip" 
+        [class.active]="currentFilter === '5star'"
+        (click)="filterByStatus('5star')">
+        <mat-icon>star</mat-icon>
+        5 Star
+      </button>
+      <button 
+        class="filter-chip star-chip" 
+        [class.active]="currentFilter === '4star'"
+        (click)="filterByStatus('4star')">
+        <mat-icon>star</mat-icon>
+        4 Star
+      </button>
+      <button 
+        class="filter-chip low-chip" 
+        [class.active]="currentFilter === 'low'"
+        (click)="filterByStatus('low')">
+        <mat-icon>star_half</mat-icon>
+        Low
+      </button>
+    </div>
+  </div>
+
+  <!-- Reviews Container -->
+  <div class="reviews-container">
+    @if (loading) {
+      <div class="loading-state">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Loading reviews...</p>
+      </div>
+    } @else if (filteredReviews.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <mat-icon>reviews</mat-icon>
+        </div>
+        <h3>No Reviews Found</h3>
+        <p>{{ searchTerm || currentFilter !== 'all' ? 'Try adjusting your search or filters' : 'No customer reviews yet' }}</p>
+      </div>
+    } @else {
+      <!-- Desktop Table View -->
+      <div class="desktop-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Rating</th>
+              <th>Review</th>
+              <th>Service</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (review of paginatedReviews; track review._id) {
+              <tr [class.pending-row]="!review.isApproved">
+                <td>
+                  <div class="customer-cell">
+                    <div class="customer-avatar" [style.background]="getAvatarGradient(review.userName)">
+                      {{ getInitials(review.userName) }}
+                    </div>
+                    <span class="customer-name">{{ review.userName }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="rating-cell" [class]="getRatingClass(review.rating)">
+                    <div class="stars">
+                      @for (star of [1,2,3,4,5]; track star) {
+                        <mat-icon [class.filled]="star <= review.rating">star</mat-icon>
+                      }
+                    </div>
+                    <span class="rating-value">{{ review.rating }}.0</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="comment-cell">
+                    <p class="comment-text">{{ review.comment }}</p>
+                    @if (review.adminReply) {
+                      <div class="admin-reply">
+                        <mat-icon>reply</mat-icon>
+                        <span>{{ review.adminReply }}</span>
+                      </div>
+                    }
+                  </div>
+                </td>
+                <td>
+                  @if (review.serviceName) {
+                    <span class="service-badge">{{ review.serviceName }}</span>
+                  } @else {
+                    <span class="no-service">-</span>
+                  }
+                </td>
+                <td>
+                  <span class="date-text">{{ review.createdAt | date:'MMM d, y' }}</span>
+                </td>
+                <td>
+                  @if (review.isApproved) {
+                    <span class="status-badge approved">
+                      <mat-icon>check_circle</mat-icon>
+                      Approved
+                    </span>
+                  } @else {
+                    <span class="status-badge pending">
+                      <mat-icon>schedule</mat-icon>
+                      Pending
+                    </span>
+                  }
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    @if (!review.isApproved) {
+                      <button mat-icon-button class="action-btn approve" (click)="approve(review)" matTooltip="Approve">
+                        <mat-icon>check</mat-icon>
+                      </button>
+                    }
+                    <button mat-icon-button class="action-btn reply" (click)="openReplyDialog(review)" matTooltip="Reply">
+                      <mat-icon>reply</mat-icon>
+                    </button>
+                    <button mat-icon-button class="action-btn delete" (click)="delete(review)" matTooltip="Delete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="mobile-cards">
+        @for (review of paginatedReviews; track review._id) {
+          <div class="review-card" [class.pending-card]="!review.isApproved">
+            <div class="card-header">
+              <div class="customer-cell">
+                <div class="customer-avatar" [style.background]="getAvatarGradient(review.userName)">
+                  {{ getInitials(review.userName) }}
+                </div>
+                <div class="customer-info">
+                  <span class="customer-name">{{ review.userName }}</span>
+                  <span class="review-date">{{ review.createdAt | date:'MMM d, y' }}</span>
+                </div>
+              </div>
+              @if (review.isApproved) {
+                <span class="status-badge approved">
+                  <mat-icon>check_circle</mat-icon>
+                </span>
+              } @else {
+                <span class="status-badge pending">
+                  <mat-icon>schedule</mat-icon>
+                </span>
+              }
+            </div>
+
+            <div class="card-rating" [class]="getRatingClass(review.rating)">
+              <div class="stars">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <mat-icon [class.filled]="star <= review.rating">star</mat-icon>
+                }
+              </div>
+              @if (review.serviceName) {
+                <span class="service-badge">{{ review.serviceName }}</span>
+              }
+            </div>
+
+            <div class="card-content">
+              <p class="comment-text">{{ review.comment }}</p>
+              @if (review.adminReply) {
+                <div class="admin-reply">
+                  <mat-icon>reply</mat-icon>
+                  <span>{{ review.adminReply }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="card-actions">
+              @if (!review.isApproved) {
+                <button mat-raised-button class="approve-btn" (click)="approve(review)">
+                  <mat-icon>check</mat-icon>
+                  Approve
+                </button>
+              }
+              <button mat-stroked-button class="reply-btn" (click)="openReplyDialog(review)">
+                <mat-icon>reply</mat-icon>
+                Reply
+              </button>
+              <button mat-icon-button class="delete-btn" (click)="delete(review)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (filteredReviews.length > pageSize) {
+        <div class="pagination">
+          <span class="page-info">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredReviews.length) }} of {{ filteredReviews.length }}
+          </span>
+          <div class="page-controls">
+            <button mat-icon-button [disabled]="currentPage === 1" (click)="goToPage(1)" matTooltip="First">
+              <mat-icon>first_page</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)" matTooltip="Previous">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <span class="page-number">Page {{ currentPage }} of {{ totalPages }}</span>
+            <button mat-icon-button [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)" matTooltip="Next">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="currentPage === totalPages" (click)="goToPage(totalPages)" matTooltip="Last">
+              <mat-icon>last_page</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Reply Dialog Overlay -->
+  @if (replyingTo) {
+    <div class="reply-overlay" (click)="cancelReply()">
+      <div class="reply-dialog" (click)="$event.stopPropagation()">
+        <div class="reply-header">
+          <div class="reply-icon">
+            <mat-icon>reply</mat-icon>
+          </div>
+          <div class="reply-title">
+            <h3>Reply to Review</h3>
+            <p>Respond to {{ replyingTo.userName }}'s feedback</p>
+          </div>
+          <button mat-icon-button class="close-btn" (click)="cancelReply()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="reply-content">
+          <div class="original-review">
+            <div class="review-stars">
+              @for (star of [1,2,3,4,5]; track star) {
+                <mat-icon [class.filled]="star <= replyingTo.rating">star</mat-icon>
+              }
+            </div>
+            <p>"{{ replyingTo.comment }}"</p>
+          </div>
+
+          <div class="reply-input">
+            <label>Your Reply</label>
+            <textarea 
+              [(ngModel)]="replyText" 
+              placeholder="Write a thoughtful response..."
+              rows="4"></textarea>
+          </div>
+        </div>
+
+        <div class="reply-footer">
+          <button mat-button class="cancel-btn" (click)="cancelReply()">Cancel</button>
+          <button 
+            mat-raised-button 
+            class="send-btn" 
+            (click)="submitReply()"
+            [disabled]="!replyText.trim()">
+            <mat-icon>send</mat-icon>
+            Send Reply
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Success Toast -->
+  @if (showSuccess) {
+    <div class="success-toast">
+      <div class="toast-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <span>{{ successMessage }}</span>
+    </div>
+  }
+</div>

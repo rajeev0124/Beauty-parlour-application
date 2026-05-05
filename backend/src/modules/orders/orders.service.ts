@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Order, OrderDocument } from '../../schemas/order.schema';
@@ -45,7 +49,7 @@ export class OrdersService {
     const orderData = {
       userId: new Types.ObjectId(createOrderDto.userId),
       userName: createOrderDto.userName,
-      items: createOrderDto.items.map(item => ({
+      items: createOrderDto.items.map((item) => ({
         productId: new Types.ObjectId(item.productId),
         productName: item.productName,
         quantity: item.quantity,
@@ -58,7 +62,9 @@ export class OrdersService {
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
-    const order = await this.orderModel.findByIdAndUpdate(id, updateOrderDto, { new: true });
+    const order = await this.orderModel.findByIdAndUpdate(id, updateOrderDto, {
+      new: true,
+    });
     if (!order) throw new NotFoundException('Order not found');
     return order;
   }
@@ -78,5 +84,58 @@ export class OrdersService {
 
     await this.orderModel.findByIdAndDelete(id);
     return { message: 'Order deleted successfully' };
+  }
+
+  async updateOrderStatus(orderId: string, status: string, notes?: string) {
+    const order = await this.orderModel.findById(orderId);
+    if (!order) throw new NotFoundException('Order not found');
+
+    // Add status update to history
+    if (!order.statusHistory) {
+      order.statusHistory = [];
+    }
+
+    order.statusHistory.push({
+      status: order.status,
+      timestamp: new Date(),
+      notes: `Changed from ${order.status} to ${status}`,
+    });
+
+    order.status = status;
+    if (notes) order.notes = notes;
+
+    // Set estimated delivery date for processing orders
+    if (status === 'processing' && !order.estimatedDeliveryDate) {
+      const estimatedDate = new Date();
+      estimatedDate.setDate(estimatedDate.getDate() + 5); // 5 days from now
+      order.estimatedDeliveryDate = estimatedDate;
+    }
+
+    return order.save();
+  }
+
+  async trackOrder(orderId: string) {
+    const order = await this.orderModel.findById(orderId);
+    if (!order) throw new NotFoundException('Order not found');
+
+    return {
+      orderId: order._id,
+      status: order.status,
+      trackingNumber: order.trackingNumber,
+      estimatedDeliveryDate: order.estimatedDeliveryDate,
+      deliveryAddress: order.deliveryAddress,
+      shippingMethod: order.shippingMethod,
+      statusHistory: order.statusHistory || [],
+      totalPrice: order.totalPrice,
+      items: order.items,
+    };
+  }
+
+  async generateTrackingNumber(orderId: string): Promise<string> {
+    const trackingNumber = `BP-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    await this.orderModel.findByIdAndUpdate(orderId, {
+      trackingNumber,
+    });
+    return trackingNumber;
   }
 }

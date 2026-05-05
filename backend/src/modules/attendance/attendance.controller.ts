@@ -229,7 +229,13 @@ export class AttendanceController {
   @UseGuards(RolesGuard)
   @Roles('admin', 'super-admin')
   async markAttendance(
-    @Body() body: { staffId: string; date: string; status: string; notes?: string },
+    @Body()
+    body: {
+      staffId: string;
+      date: string;
+      status: string;
+      notes?: string;
+    },
   ) {
     const attendance = await this.attendanceService.markAttendance(
       body.staffId,

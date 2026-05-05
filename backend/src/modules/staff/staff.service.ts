@@ -13,7 +13,8 @@ export class StaffService {
   async findAll(query: { status?: string; availability?: string }) {
     const filter: any = {};
     if (query.status) filter.status = query.status;
-    if (query.availability !== undefined) filter.availability = query.availability === 'true';
+    if (query.availability !== undefined)
+      filter.availability = query.availability === 'true';
     return this.staffModel.find(filter).sort({ createdAt: -1 });
   }
 
@@ -32,7 +33,9 @@ export class StaffService {
   }
 
   async update(id: string, updateStaffDto: UpdateStaffDto) {
-    const staff = await this.staffModel.findByIdAndUpdate(id, updateStaffDto, { new: true });
+    const staff = await this.staffModel.findByIdAndUpdate(id, updateStaffDto, {
+      returnDocument: 'after',
+    });
     if (!staff) throw new NotFoundException('Staff not found');
     return staff;
   }

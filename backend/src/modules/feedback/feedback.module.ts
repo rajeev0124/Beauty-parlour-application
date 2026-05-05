@@ -6,7 +6,9 @@ import { FeedbackController } from './feedback.controller';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Feedback.name, schema: FeedbackSchema }]),
+    MongooseModule.forFeature([
+      { name: Feedback.name, schema: FeedbackSchema },
+    ]),
   ],
   controllers: [FeedbackController],
   providers: [FeedbackService],

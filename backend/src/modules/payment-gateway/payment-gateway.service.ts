@@ -42,7 +42,9 @@ export class PaymentGatewayService {
       });
       this.logger.log('Razorpay initialized successfully');
     } else {
-      this.logger.warn('Razorpay credentials not configured - running in simulation mode');
+      this.logger.warn(
+        'Razorpay credentials not configured - running in simulation mode',
+      );
     }
   }
 
@@ -51,11 +53,16 @@ export class PaymentGatewayService {
     currency: string = 'INR',
     receipt: string,
     notes?: Record<string, string>,
-  ): Promise<RazorpayOrder | { simulated: true; id: string; amount: number; currency: string }> {
+  ): Promise<
+    | RazorpayOrder
+    | { simulated: true; id: string; amount: number; currency: string }
+  > {
     if (!this.razorpay) {
       // Simulation mode
       const simulatedOrderId = `order_sim_${Date.now()}`;
-      this.logger.log(`[SIMULATION] Created order: ${simulatedOrderId} for ₹${amount / 100}`);
+      this.logger.log(
+        `[SIMULATION] Created order: ${simulatedOrderId} for ₹${amount / 100}`,
+      );
       return {
         simulated: true,
         id: simulatedOrderId,
@@ -110,7 +117,11 @@ export class PaymentGatewayService {
     razorpaySignature: string,
   ) {
     // Verify payment signature
-    const isValid = this.verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature);
+    const isValid = this.verifyPayment(
+      razorpayOrderId,
+      razorpayPaymentId,
+      razorpaySignature,
+    );
     if (!isValid) {
       throw new BadRequestException('Payment verification failed');
     }
@@ -148,13 +159,19 @@ export class PaymentGatewayService {
     razorpaySignature: string,
   ) {
     // Verify payment signature
-    const isValid = this.verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature);
+    const isValid = this.verifyPayment(
+      razorpayOrderId,
+      razorpayPaymentId,
+      razorpaySignature,
+    );
     if (!isValid) {
       throw new BadRequestException('Payment verification failed');
     }
 
     // Get appointment details
-    const appointment = await this.appointmentModel.findById(appointmentId).populate('serviceId');
+    const appointment = await this.appointmentModel
+      .findById(appointmentId)
+      .populate('serviceId');
     if (!appointment) {
       throw new BadRequestException('Appointment not found');
     }
@@ -168,7 +185,9 @@ export class PaymentGatewayService {
     // as the payment schema requires orderId
 
     // Update appointment status
-    await this.appointmentModel.findByIdAndUpdate(appointmentId, { status: 'confirmed' });
+    await this.appointmentModel.findByIdAndUpdate(appointmentId, {
+      status: 'confirmed',
+    });
 
     return {
       success: true,
@@ -188,8 +207,10 @@ export class PaymentGatewayService {
     if (!this.razorpay) {
       // Simulation mode
       const refundId = `refund_sim_${Date.now()}`;
-      this.logger.log(`[SIMULATION] Initiated refund: ${refundId} for ₹${amount || payment.amount}`);
-      
+      this.logger.log(
+        `[SIMULATION] Initiated refund: ${refundId} for ₹${amount || payment.amount}`,
+      );
+
       await this.paymentModel.findByIdAndUpdate(paymentId, {
         status: 'refunded',
         refundId,
@@ -205,10 +226,13 @@ export class PaymentGatewayService {
     }
 
     try {
-      const refund = await this.razorpay.payments.refund(payment.transactionId, {
-        amount: (amount || payment.amount) * 100,
-        speed: 'normal',
-      });
+      const refund = await this.razorpay.payments.refund(
+        payment.transactionId,
+        {
+          amount: (amount || payment.amount) * 100,
+          speed: 'normal',
+        },
+      );
 
       await this.paymentModel.findByIdAndUpdate(paymentId, {
         status: 'refunded',
@@ -240,7 +264,7 @@ export class PaymentGatewayService {
     try {
       const payment = await this.razorpay.payments.fetch(razorpayPaymentId);
       return payment;
-    } catch (error) {
+    } catch {
       throw new BadRequestException('Failed to fetch payment status');
     }
   }

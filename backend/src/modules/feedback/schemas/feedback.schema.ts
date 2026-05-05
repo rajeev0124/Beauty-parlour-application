@@ -14,7 +14,10 @@ export class Feedback {
   @Prop()
   userEmail: string;
 
-  @Prop({ required: true, enum: ['appointment', 'order', 'general', 'service', 'staff'] })
+  @Prop({
+    required: true,
+    enum: ['appointment', 'order', 'general', 'service', 'staff'],
+  })
   type: string;
 
   @Prop({ type: Types.ObjectId })
@@ -36,12 +39,12 @@ export class Feedback {
   // Detailed Ratings
   @Prop({ type: Object })
   ratings: {
-    serviceQuality?: number;    // 1-5
-    staffBehavior?: number;     // 1-5
-    cleanliness?: number;       // 1-5
-    valueForMoney?: number;     // 1-5
-    waitTime?: number;          // 1-5
-    ambience?: number;          // 1-5
+    serviceQuality?: number; // 1-5
+    staffBehavior?: number; // 1-5
+    cleanliness?: number; // 1-5
+    valueForMoney?: number; // 1-5
+    waitTime?: number; // 1-5
+    ambience?: number; // 1-5
   };
 
   @Prop()
@@ -56,7 +59,10 @@ export class Feedback {
   @Prop({ default: false })
   isAnonymous: boolean;
 
-  @Prop({ default: 'pending', enum: ['pending', 'reviewed', 'responded', 'resolved'] })
+  @Prop({
+    default: 'pending',
+    enum: ['pending', 'reviewed', 'responded', 'resolved'],
+  })
   status: string;
 
   @Prop()
@@ -76,8 +82,8 @@ export class Feedback {
 
   @Prop({ type: Object })
   sentiment: {
-    score: number;      // -1 to 1 (negative to positive)
-    label: string;      // 'positive', 'neutral', 'negative'
+    score: number; // -1 to 1 (negative to positive)
+    label: string; // 'positive', 'neutral', 'negative'
     keywords: string[]; // extracted keywords
   };
 

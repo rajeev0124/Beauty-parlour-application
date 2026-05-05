@@ -82,7 +82,12 @@ export class CustomerSegmentationService {
       id: 'champions',
       name: 'Champions',
       description: 'Best customers - recent, frequent, high spenders',
-      criteria: { type: 'rfm', recencyDays: 30, frequencyMin: 3, monetaryMin: 5000 },
+      criteria: {
+        type: 'rfm',
+        recencyDays: 30,
+        frequencyMin: 3,
+        monetaryMin: 5000,
+      },
       count: 0,
       lastUpdated: new Date(),
     });
@@ -133,28 +138,33 @@ export class CustomerSegmentationService {
    */
   async calculateRfmScore(userId: string): Promise<RfmScore> {
     const now = new Date();
-    
+
     // Get order history
-    const orders = await this.orderModel.find({
-      userId: new Types.ObjectId(userId),
-      status: 'completed',
-    }).sort({ createdAt: -1 });
+    const orders = await this.orderModel
+      .find({
+        userId: new Types.ObjectId(userId),
+        status: 'completed',
+      })
+      .sort({ createdAt: -1 });
 
     // Get appointments
-    const appointments = await this.appointmentModel.find({
-      userId: new Types.ObjectId(userId),
-      status: 'completed',
-    }).sort({ date: -1 });
+    const appointments = await this.appointmentModel
+      .find({
+        userId: new Types.ObjectId(userId),
+        status: 'completed',
+      })
+      .sort({ date: -1 });
 
     // Calculate metrics
     const lastOrder = orders[0];
     const lastAppointment = appointments[0];
-    
+
     let lastActivityDate: Date | null = null;
     if (lastOrder && lastAppointment) {
-      lastActivityDate = new Date(lastOrder.createdAt) > new Date(lastAppointment.date)
-        ? new Date(lastOrder.createdAt)
-        : new Date(lastAppointment.date);
+      lastActivityDate =
+        new Date(lastOrder.createdAt) > new Date(lastAppointment.date)
+          ? new Date(lastOrder.createdAt)
+          : new Date(lastAppointment.date);
     } else if (lastOrder) {
       lastActivityDate = new Date(lastOrder.createdAt);
     } else if (lastAppointment) {
@@ -162,27 +172,47 @@ export class CustomerSegmentationService {
     }
 
     const daysSinceLastActivity = lastActivityDate
-      ? Math.floor((now.getTime() - lastActivityDate.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.floor(
+          (now.getTime() - lastActivityDate.getTime()) / (1000 * 60 * 60 * 24),
+        )
       : 999;
 
     const totalOrders = orders.length + appointments.length;
     const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
 
     // Score calculation (1-5)
-    const recencyScore = daysSinceLastActivity <= 7 ? 5
-      : daysSinceLastActivity <= 30 ? 4
-      : daysSinceLastActivity <= 60 ? 3
-      : daysSinceLastActivity <= 120 ? 2 : 1;
+    const recencyScore =
+      daysSinceLastActivity <= 7
+        ? 5
+        : daysSinceLastActivity <= 30
+          ? 4
+          : daysSinceLastActivity <= 60
+            ? 3
+            : daysSinceLastActivity <= 120
+              ? 2
+              : 1;
 
-    const frequencyScore = totalOrders >= 10 ? 5
-      : totalOrders >= 5 ? 4
-      : totalOrders >= 3 ? 3
-      : totalOrders >= 1 ? 2 : 1;
+    const frequencyScore =
+      totalOrders >= 10
+        ? 5
+        : totalOrders >= 5
+          ? 4
+          : totalOrders >= 3
+            ? 3
+            : totalOrders >= 1
+              ? 2
+              : 1;
 
-    const monetaryScore = totalSpent >= 20000 ? 5
-      : totalSpent >= 10000 ? 4
-      : totalSpent >= 5000 ? 3
-      : totalSpent >= 1000 ? 2 : 1;
+    const monetaryScore =
+      totalSpent >= 20000
+        ? 5
+        : totalSpent >= 10000
+          ? 4
+          : totalSpent >= 5000
+            ? 3
+            : totalSpent >= 1000
+              ? 2
+              : 1;
 
     const totalScore = recencyScore + frequencyScore + monetaryScore;
 
@@ -224,12 +254,13 @@ export class CustomerSegmentationService {
     });
 
     const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-    const lastOrder = orders.sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    const lastOrder = orders.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )[0];
 
-    const lastAppointment = appointments.sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
+    const lastAppointment = appointments.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     )[0];
 
     const now = new Date();
@@ -237,7 +268,7 @@ export class CustomerSegmentationService {
     if (lastOrder || lastAppointment) {
       const lastDate = lastOrder?.createdAt || lastAppointment?.date;
       daysSinceLastVisit = Math.floor(
-        (now.getTime() - new Date(lastDate).getTime()) / (1000 * 60 * 60 * 24)
+        (now.getTime() - new Date(lastDate).getTime()) / (1000 * 60 * 60 * 24),
       );
     }
 
@@ -265,14 +296,21 @@ export class CustomerSegmentationService {
   /**
    * Get customers in a segment
    */
-  async getSegmentCustomers(segmentId: string, limit = 100): Promise<CustomerProfile[]> {
-    const customers = await this.userModel.find({ role: 'customer' }).limit(limit);
+  async getSegmentCustomers(
+    segmentId: string,
+    limit = 100,
+  ): Promise<CustomerProfile[]> {
+    const customers = await this.userModel
+      .find({ role: 'customer' })
+      .limit(limit);
     const profiles: CustomerProfile[] = [];
 
     for (const customer of customers) {
       const profile = await this.getCustomerProfile(customer._id.toString());
-      if (profile.rfm.segment === segmentId || 
-          (segmentId === 'vip' && profile.tier === 'vip')) {
+      if (
+        profile.rfm.segment === segmentId ||
+        (segmentId === 'vip' && profile.tier === 'vip')
+      ) {
         profiles.push(profile);
       }
     }
@@ -294,7 +332,7 @@ export class CustomerSegmentationService {
       try {
         const rfm = await this.calculateRfmScore(customer._id.toString());
         segmentCounts[rfm.segment] = (segmentCounts[rfm.segment] || 0) + 1;
-      } catch (err) {
+      } catch {
         this.logger.warn(`Failed to calculate RFM for ${customer._id}`);
       }
     }
@@ -314,8 +352,10 @@ export class CustomerSegmentationService {
   async getAllSegments(): Promise<CustomerSegment[]> {
     // Trigger count refresh if stale
     const firstSegment = this.segments.values().next().value;
-    if (firstSegment && 
-        Date.now() - firstSegment.lastUpdated.getTime() > 24 * 60 * 60 * 1000) {
+    if (
+      firstSegment &&
+      Date.now() - firstSegment.lastUpdated.getTime() > 24 * 60 * 60 * 1000
+    ) {
       await this.refreshSegmentCounts();
     }
 

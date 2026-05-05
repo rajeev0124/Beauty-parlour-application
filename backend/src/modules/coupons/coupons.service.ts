@@ -1,17 +1,29 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Coupon, CouponDocument } from './schemas/coupon.schema';
-import { CreateCouponDto, UpdateCouponDto, ValidateCouponDto } from './dto/coupon.dto';
+import {
+  CreateCouponDto,
+  UpdateCouponDto,
+  ValidateCouponDto,
+} from './dto/coupon.dto';
 
 @Injectable()
 export class CouponsService {
-  constructor(@InjectModel(Coupon.name) private couponModel: Model<CouponDocument>) {}
+  constructor(
+    @InjectModel(Coupon.name) private couponModel: Model<CouponDocument>,
+  ) {}
 
   async create(createCouponDto: CreateCouponDto) {
-    const existing = await this.couponModel.findOne({ code: createCouponDto.code.toUpperCase() });
+    const existing = await this.couponModel.findOne({
+      code: createCouponDto.code.toUpperCase(),
+    });
     if (existing) throw new BadRequestException('Coupon code already exists');
-    
+
     const coupon = new this.couponModel({
       ...createCouponDto,
       code: createCouponDto.code.toUpperCase(),
@@ -32,7 +44,11 @@ export class CouponsService {
   }
 
   async update(id: string, updateCouponDto: UpdateCouponDto) {
-    const coupon = await this.couponModel.findByIdAndUpdate(id, updateCouponDto, { new: true });
+    const coupon = await this.couponModel.findByIdAndUpdate(
+      id,
+      updateCouponDto,
+      { returnDocument: 'after' },
+    );
     if (!coupon) throw new NotFoundException('Coupon not found');
     return coupon;
   }
@@ -42,29 +58,42 @@ export class CouponsService {
   }
 
   async validate(validateDto: ValidateCouponDto) {
-    const coupon = await this.couponModel.findOne({ 
+    const coupon = await this.couponModel.findOne({
       code: validateDto.code.toUpperCase(),
-      isActive: true 
+      isActive: true,
     });
-    
+
     if (!coupon) throw new BadRequestException('Invalid coupon code');
-    
+
     const now = new Date();
-    if (now < new Date(coupon.startDate)) throw new BadRequestException('Coupon not yet active');
-    if (now > new Date(coupon.endDate)) throw new BadRequestException('Coupon has expired');
-    
+    if (now < new Date(coupon.startDate))
+      throw new BadRequestException('Coupon not yet active');
+    if (now > new Date(coupon.endDate))
+      throw new BadRequestException('Coupon has expired');
+
     if (coupon.maxUsage && coupon.usageCount >= coupon.maxUsage) {
       throw new BadRequestException('Coupon usage limit reached');
     }
-    
-    if (coupon.minOrderAmount && validateDto.orderAmount < coupon.minOrderAmount) {
-      throw new BadRequestException(`Minimum order amount is ₹${coupon.minOrderAmount}`);
+
+    if (
+      coupon.minOrderAmount &&
+      validateDto.orderAmount < coupon.minOrderAmount
+    ) {
+      throw new BadRequestException(
+        `Minimum order amount is ₹${coupon.minOrderAmount}`,
+      );
     }
-    
-    if (validateDto.type && !coupon.applicableOn.includes('all') && !coupon.applicableOn.includes(validateDto.type)) {
-      throw new BadRequestException(`Coupon not applicable on ${validateDto.type}s`);
+
+    if (
+      validateDto.type &&
+      !coupon.applicableOn.includes('all') &&
+      !coupon.applicableOn.includes(validateDto.type)
+    ) {
+      throw new BadRequestException(
+        `Coupon not applicable on ${validateDto.type}s`,
+      );
     }
-    
+
     // Calculate discount
     let discount = 0;
     if (coupon.discountType === 'percentage') {
@@ -75,7 +104,7 @@ export class CouponsService {
     } else {
       discount = coupon.discountValue;
     }
-    
+
     return {
       valid: true,
       coupon: {
@@ -93,16 +122,21 @@ export class CouponsService {
     return this.couponModel.findOneAndUpdate(
       { code: code.toUpperCase() },
       { $inc: { usageCount: 1 } },
-      { new: true }
+      { returnDocument: 'after' },
     );
   }
 
   async getActiveCoupons() {
     const now = new Date();
-    return this.couponModel.find({
-      isActive: true,
-      startDate: { $lte: now },
-      endDate: { $gte: now },
-    }).select('code description discountType discountValue minOrderAmount maxDiscount applicableOn').exec();
+    return this.couponModel
+      .find({
+        isActive: true,
+        startDate: { $lte: now },
+        endDate: { $gte: now },
+      })
+      .select(
+        'code description discountType discountValue minOrderAmount maxDiscount applicableOn',
+      )
+      .exec();
   }
 }

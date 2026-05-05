@@ -12,7 +12,7 @@
         @if (sidenavOpened) { <span class="brand-name">Beauty Parlour</span> }
       </div>
       @if (sidenavOpened) {
-        <button mat-icon-button class="collapse-btn" (click)="toggleSidenav()">
+        <button mat-icon-button class="collapse-btn" (click)="toggleSidenav()" aria-label="Collapse sidebar">
           <mat-icon>chevron_left</mat-icon>
         </button>
       }
@@ -124,7 +124,7 @@
             <span class="user-name-text">{{ userName }}</span>
             <span class="user-role-text">Admin</span>
           </div>
-          <button mat-icon-button class="user-more" [matMenuTriggerFor]="userMenu">
+          <button mat-icon-button class="user-more" [matMenuTriggerFor]="userMenu" aria-label="User menu">
             <mat-icon>more_vert</mat-icon>
           </button>
         </div>
@@ -149,7 +149,7 @@
     <header class="topbar">
       <div class="topbar-left">
         @if (!sidenavOpened || isMobile) {
-          <button mat-icon-button class="expand-btn" (click)="toggleSidenav()">
+          <button mat-icon-button class="expand-btn" (click)="toggleSidenav()" aria-label="Open sidebar menu">
             <mat-icon>menu</mat-icon>
           </button>
         }

@@ -3,7 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { WaitlistController } from './waitlist.controller';
 import { WaitlistService } from './waitlist.service';
 import { WaitlistEntry, WaitlistEntrySchema } from './schemas/waitlist.schema';
-import { Appointment, AppointmentSchema } from '../../schemas/appointment.schema';
+import {
+  Appointment,
+  AppointmentSchema,
+} from '../../schemas/appointment.schema';
 import { NotificationsModule } from '../../common/notifications/notifications.module';
 import { EmailModule } from '../email/email.module';
 import { SmsModule } from '../sms/sms.module';

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface LoyaltyConfig {
@@ -55,9 +55,35 @@ export class LoyaltyService {
 
   constructor(private http: HttpClient) {}
 
-  // Config
+  // Config - maps backend response to frontend format
   getConfig(): Observable<LoyaltyConfig> {
-    return this.http.get<LoyaltyConfig>(`${this.apiUrl}/config`);
+    return this.http.get<any>(`${this.apiUrl}/config`).pipe(
+      map((res: any) => {
+        // Map backend format to frontend format
+        const tiersObj = res.TIERS || res.tiers || {};
+        const tiersArray: LoyaltyTier[] = Object.entries(tiersObj).map(([name, data]: [string, any]) => ({
+          name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize first letter
+          minPoints: data.min || data.minPoints || 0,
+          multiplier: data.multiplier || 1,
+          benefits: typeof data.benefits === 'string' 
+            ? data.benefits.split(/[,\n]/).map((b: string) => b.trim()).filter((b: string) => b)
+            : (data.benefits || [])
+        }));
+        
+        // Sort tiers by minPoints
+        tiersArray.sort((a, b) => a.minPoints - b.minPoints);
+
+        return {
+          pointsPerRupee: res.POINTS_PER_RUPEE || res.pointsPerRupee || 1,
+          minRedeemPoints: res.MIN_REDEMPTION_POINTS || res.minRedeemPoints || 100,
+          pointValue: res.POINT_VALUE || res.pointValue || 0.25,
+          welcomeBonus: res.FIRST_APPOINTMENT_BONUS || res.welcomeBonus || 50,
+          referralBonus: res.REFERRAL_BONUS || res.referralBonus || 100,
+          birthdayBonus: res.BIRTHDAY_BONUS || res.birthdayBonus || 50,
+          tiers: tiersArray
+        };
+      })
+    );
   }
 
   // Account
@@ -95,8 +121,20 @@ export class LoyaltyService {
     return this.http.post<{ success: boolean; message: string; bonusPoints: number }>(`${this.apiUrl}/referral`, { referralCode });
   }
 
-  // Leaderboard
+  // Leaderboard - maps backend response to frontend format
   getLeaderboard(limit: number = 10): Observable<LeaderboardEntry[]> {
-    return this.http.get<LeaderboardEntry[]>(`${this.apiUrl}/leaderboard`, { params: { limit: limit.toString() } });
+    return this.http.get<any>(`${this.apiUrl}/leaderboard`, { params: { limit: limit.toString() } }).pipe(
+      map((response: any) => {
+        // Handle both array and object with value property
+        const entries = Array.isArray(response) ? response : (response.value || response.data || []);
+        
+        return entries.map((entry: any, index: number) => ({
+          rank: entry.rank || index + 1,
+          user: entry.user || { _id: entry._id, name: `User ${index + 1}`, profileImage: null },
+          points: entry.points || entry.totalPoints || 0,
+          tier: entry.tier ? (entry.tier.charAt(0).toUpperCase() + entry.tier.slice(1)) : 'Bronze'
+        }));
+      })
+    );
   }
 }

@@ -21,6 +21,20 @@ export class OrderItem {
 export const OrderItemSchema = SchemaFactory.createForClass(OrderItem);
 
 @Schema({ timestamps: true })
+export class OrderStatusUpdate {
+  @Prop({ required: true })
+  status: string;
+
+  @Prop()
+  timestamp: Date;
+
+  @Prop()
+  notes: string;
+}
+
+export const OrderStatusUpdateSchema = SchemaFactory.createForClass(OrderStatusUpdate);
+
+@Schema({ timestamps: true })
 export class Order {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
@@ -34,8 +48,29 @@ export class Order {
   @Prop({ required: true })
   totalPrice: number;
 
-  @Prop({ enum: ['pending', 'processing', 'completed', 'cancelled'], default: 'pending' })
+  @Prop({
+    enum: ['pending', 'processing', 'completed', 'cancelled'],
+    default: 'pending',
+  })
   status: string;
+
+  @Prop({ type: [OrderStatusUpdateSchema], default: [] })
+  statusHistory: OrderStatusUpdate[];
+
+  @Prop()
+  trackingNumber: string;
+
+  @Prop()
+  estimatedDeliveryDate: Date;
+
+  @Prop()
+  deliveryAddress: string;
+
+  @Prop()
+  shippingMethod: string;
+
+  @Prop()
+  notes: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

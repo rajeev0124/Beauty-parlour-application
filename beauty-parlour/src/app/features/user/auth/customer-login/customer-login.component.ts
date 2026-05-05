@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -6,26 +6,51 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CommonModule } from '@angular/common';
+import { trigger, transition, style, animate, state } from '@angular/animations';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-customer-login',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule, RouterLink,
     MatFormFieldModule, MatInputModule,
     MatButtonModule, MatIconModule, MatProgressSpinnerModule
   ],
   templateUrl: './customer-login.component.html',
-  styleUrl: './customer-login.component.scss'
+  styleUrl: './customer-login.component.scss',
+  encapsulation: ViewEncapsulation.None,
+  animations: [
+    trigger('stepAnimation', [
+      state('email', style({ transform: 'translateX(0)', opacity: 1 })),
+      state('password', style({ transform: 'translateX(0)', opacity: 1 })),
+      transition('email => password', [
+        style({ transform: 'translateX(0)', opacity: 1 }),
+        animate('300ms ease-out', style({ transform: 'translateX(-100%)', opacity: 0 }))
+      ]),
+      transition('password => email', [
+        style({ transform: 'translateX(0)', opacity: 1 }),
+        animate('300ms ease-out', style({ transform: 'translateX(100%)', opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class CustomerLoginComponent {
-  loginForm: FormGroup;
+  // Multi-step state
+  currentStep: 'email' | 'password' = 'email';
+  userEmail = '';
+  
+  // Forms for each step
+  emailForm: FormGroup;
+  passwordForm: FormGroup;
+  
   hidePassword = true;
   loading = false;
   errorMessage = '';
   
-  // Focus states for custom inputs
+  // Focus states
   emailFocused = false;
   passwordFocused = false;
 
@@ -43,19 +68,57 @@ export class CustomerLoginComponent {
       }
     }
 
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+    // Step 1: Email form
+    this.emailForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
+    
+    // Step 2: Password form
+    this.passwordForm = this.fb.group({
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  onSubmit(): void {
-    if (this.loginForm.invalid) return;
+  // Proceed to password step
+  onEmailNext(): void {
+    if (this.emailForm.invalid) return;
+    
+    this.userEmail = this.emailForm.value.email;
+    this.errorMessage = '';
+    this.currentStep = 'password';
+    
+    // Focus password field after transition
+    setTimeout(() => {
+      const passwordInput = document.getElementById('password');
+      if (passwordInput) passwordInput.focus();
+    }, 350);
+  }
+
+  // Go back to email step
+  goBackToEmail(): void {
+    this.currentStep = 'email';
+    this.errorMessage = '';
+    this.passwordForm.reset();
+    
+    setTimeout(() => {
+      const emailInput = document.getElementById('email');
+      if (emailInput) emailInput.focus();
+    }, 350);
+  }
+
+  // Final login submit
+  onPasswordSubmit(): void {
+    if (this.passwordForm.invalid) return;
 
     this.loading = true;
     this.errorMessage = '';
     
-    this.authService.login(this.loginForm.value).subscribe({
+    const credentials = {
+      email: this.userEmail,
+      password: this.passwordForm.value.password
+    };
+    
+    this.authService.login(credentials).subscribe({
       next: () => {
         this.loading = false;
         const user = this.authService.getCurrentUser();
@@ -67,7 +130,6 @@ export class CustomerLoginComponent {
       },
       error: (err) => {
         this.loading = false;
-        // Better error message handling
         if (err.status === 0) {
           this.errorMessage = 'Unable to connect to server. Please check if backend is running.';
         } else if (err.status === 401) {
@@ -79,15 +141,6 @@ export class CustomerLoginComponent {
         }
       }
     });
-  }
-
-  fillDemo(customer: string = 'priya'): void {
-    const customerEmails: Record<string, string> = {
-      'priya': 'priya@gmail.com',
-      'sneha': 'sneha@gmail.com',
-      'anjali': 'anjali@gmail.com'
-    };
-    this.loginForm.setValue({ email: customerEmails[customer] || 'priya@gmail.com', password: 'customer123' });
   }
 
   showForgotPassword(): void {

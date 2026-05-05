@@ -31,14 +31,17 @@ export class EmailService {
     try {
       const smtpUser = this.configService.get('SMTP_USER') || '';
       // If SMTP not configured or has placeholder values, log the email instead
-      const isPlaceholder = !smtpUser || smtpUser.includes('your-email') || smtpUser === '';
-      
+      const isPlaceholder =
+        !smtpUser || smtpUser.includes('your-email') || smtpUser === '';
+
       if (isPlaceholder) {
         console.log('\n========================================');
         console.log('[EMAIL SIMULATION] To:', options.to);
         console.log('[EMAIL SIMULATION] Subject:', options.subject);
         // Extract and log reset link if present
-        const linkMatch = options.html?.match(/href="([^"]*reset-password[^"]*)"/);
+        const linkMatch = options.html?.match(
+          /href="([^"]*reset-password[^"]*)"/,
+        );
         if (linkMatch) {
           console.log('\n🔗 RESET LINK (copy this to browser):');
           console.log(linkMatch[1]);
@@ -48,7 +51,9 @@ export class EmailService {
       }
 
       await this.transporter.sendMail({
-        from: this.configService.get('SMTP_FROM') || 'Beauty Parlour <noreply@beautyparlour.com>',
+        from:
+          this.configService.get('SMTP_FROM') ||
+          'Beauty Parlour <noreply@beautyparlour.com>',
         to: options.to,
         subject: options.subject,
         html: options.html,
@@ -57,7 +62,9 @@ export class EmailService {
       this.logger.log(`Email sent successfully to ${options.to}`);
       return true;
     } catch (error) {
-      this.logger.error(`Failed to send email to ${options.to}: ${error.message}`);
+      this.logger.error(
+        `Failed to send email to ${options.to}: ${error.message}`,
+      );
       return false;
     }
   }
@@ -210,7 +217,10 @@ export class EmailService {
     });
   }
 
-  async sendWelcomeEmail(userEmail: string, userName: string): Promise<boolean> {
+  async sendWelcomeEmail(
+    userEmail: string,
+    userName: string,
+  ): Promise<boolean> {
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #e91e63, #9c27b0); padding: 20px; text-align: center;">
@@ -245,7 +255,10 @@ export class EmailService {
     });
   }
 
-  async sendPasswordReset(userEmail: string, resetToken: string): Promise<boolean> {
+  async sendPasswordReset(
+    userEmail: string,
+    resetToken: string,
+  ): Promise<boolean> {
     const resetLink = `http://localhost:4200/reset-password?token=${resetToken}`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

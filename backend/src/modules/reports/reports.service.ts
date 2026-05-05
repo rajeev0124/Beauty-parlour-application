@@ -46,19 +46,23 @@ export class ReportsService {
       this.userModel.countDocuments({ role: 'customer' }).exec(),
       this.appointmentModel.countDocuments(dateFilter).exec(),
       this.orderModel.countDocuments(dateFilter).exec(),
-      
+
       // Revenue sum (simplified)
-      this.paymentModel.aggregate([
-        { $match: { status: 'completed', ...dateFilter } },
-        { $group: { _id: null, total: { $sum: '$amount' } } },
-      ]).exec(),
-      
+      this.paymentModel
+        .aggregate([
+          { $match: { status: 'completed', ...dateFilter } },
+          { $group: { _id: null, total: { $sum: '$amount' } } },
+        ])
+        .exec(),
+
       // Appointments by status (simplified)
-      this.appointmentModel.aggregate([
-        { $match: dateFilter },
-        { $group: { _id: '$status', count: { $sum: 1 } } },
-      ]).exec(),
-      
+      this.appointmentModel
+        .aggregate([
+          { $match: dateFilter },
+          { $group: { _id: '$status', count: { $sum: 1 } } },
+        ])
+        .exec(),
+
       // Recent appointments (fast - limited to 5)
       this.appointmentModel
         .find(dateFilter)
@@ -71,18 +75,20 @@ export class ReportsService {
 
     // Run slower queries separately with fallback to empty arrays
     let topServices: any[] = [];
-    let topProducts: any[] = [];
+    const topProducts: any[] = [];
     let revenueByMonth: any[] = [];
 
     try {
       // Top services - simplified without $lookup
-      const serviceStats = await this.appointmentModel.aggregate([
-        { $match: dateFilter },
-        { $group: { _id: '$serviceName', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 5 },
-        { $project: { name: '$_id', count: 1, _id: 0 } },
-      ]).exec();
+      const serviceStats = await this.appointmentModel
+        .aggregate([
+          { $match: dateFilter },
+          { $group: { _id: '$serviceName', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 5 },
+          { $project: { name: '$_id', count: 1, _id: 0 } },
+        ])
+        .exec();
       topServices = serviceStats;
     } catch (e) {
       this.logger.error('Error fetching top services:', e);
@@ -90,17 +96,19 @@ export class ReportsService {
 
     try {
       // Revenue by month - simplified
-      revenueByMonth = await this.paymentModel.aggregate([
-        { $match: { status: 'completed', ...dateFilter } },
-        {
-          $group: {
-            _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
-            revenue: { $sum: '$amount' },
+      revenueByMonth = await this.paymentModel
+        .aggregate([
+          { $match: { status: 'completed', ...dateFilter } },
+          {
+            $group: {
+              _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+              revenue: { $sum: '$amount' },
+            },
           },
-        },
-        { $sort: { _id: 1 } },
-        { $limit: 12 },
-      ]).exec();
+          { $sort: { _id: 1 } },
+          { $limit: 12 },
+        ])
+        .exec();
     } catch (e) {
       this.logger.error('Error fetching revenue by month:', e);
     }
@@ -145,7 +153,10 @@ export class ReportsService {
       .sort({ createdAt: -1 });
 
     const totalSales = orders.reduce((sum, order) => sum + order.totalPrice, 0);
-    const totalPayments = payments.reduce((sum, payment) => sum + payment.amount, 0);
+    const totalPayments = payments.reduce(
+      (sum, payment) => sum + payment.amount,
+      0,
+    );
 
     return {
       orders,
@@ -165,7 +176,9 @@ export class ReportsService {
       if (endDate) dateFilter.createdAt.$lte = new Date(endDate);
     }
 
-    const customers = await this.userModel.find(dateFilter).select('-password -refreshToken');
+    const customers = await this.userModel
+      .find(dateFilter)
+      .select('-password -refreshToken');
 
     // Get customer statistics
     const customerStats = await Promise.all(
@@ -242,11 +255,22 @@ export class ReportsService {
       doc.on('end', () => resolve(Buffer.concat(chunks)));
 
       // Header
-      doc.fontSize(24).fillColor('#e91e63').text('Beauty Parlour', { align: 'center' });
+      doc
+        .fontSize(24)
+        .fillColor('#e91e63')
+        .text('Beauty Parlour', { align: 'center' });
       doc.moveDown(0.5);
-      doc.fontSize(16).fillColor('#333').text(`${reportType} Report`, { align: 'center' });
+      doc
+        .fontSize(16)
+        .fillColor('#333')
+        .text(`${reportType} Report`, { align: 'center' });
       doc.moveDown(0.5);
-      doc.fontSize(10).fillColor('#666').text(`Generated on: ${new Date().toLocaleString()}`, { align: 'center' });
+      doc
+        .fontSize(10)
+        .fillColor('#666')
+        .text(`Generated on: ${new Date().toLocaleString()}`, {
+          align: 'center',
+        });
       doc.moveDown();
 
       // Line separator
@@ -254,17 +278,22 @@ export class ReportsService {
       doc.moveDown();
 
       if (data.length === 0) {
-        doc.fontSize(12).fillColor('#333').text('No data available for this report.');
+        doc
+          .fontSize(12)
+          .fillColor('#333')
+          .text('No data available for this report.');
       } else {
         // Data content
-        const headers = Object.keys(data[0]).filter((key) => !key.startsWith('_') && key !== 'password');
-        
+        const headers = Object.keys(data[0]).filter(
+          (key) => !key.startsWith('_') && key !== 'password',
+        );
+
         // Table header
         doc.fontSize(10).fillColor('#e91e63');
         let y = doc.y;
         let x = 50;
         headers.slice(0, 5).forEach((header, i) => {
-          doc.text(header.toUpperCase(), x + (i * 100), y, { width: 95 });
+          doc.text(header.toUpperCase(), x + i * 100, y, { width: 95 });
         });
         doc.moveDown();
 
@@ -277,7 +306,9 @@ export class ReportsService {
             let value = item[header];
             if (value instanceof Date) value = value.toLocaleDateString();
             if (typeof value === 'object') value = '-';
-            doc.text(String(value || '-').substring(0, 15), x + (i * 100), y, { width: 95 });
+            doc.text(String(value || '-').substring(0, 15), x + i * 100, y, {
+              width: 95,
+            });
           });
           doc.moveDown(0.5);
 
@@ -289,13 +320,21 @@ export class ReportsService {
 
         if (data.length > 20) {
           doc.moveDown();
-          doc.fontSize(10).fillColor('#666').text(`... and ${data.length - 20} more records`);
+          doc
+            .fontSize(10)
+            .fillColor('#666')
+            .text(`... and ${data.length - 20} more records`);
         }
       }
 
       // Footer
       doc.moveDown(2);
-      doc.fontSize(8).fillColor('#999').text('© 2024 Beauty Parlour - Confidential Report', { align: 'center' });
+      doc
+        .fontSize(8)
+        .fillColor('#999')
+        .text('© 2024 Beauty Parlour - Confidential Report', {
+          align: 'center',
+        });
 
       doc.end();
     });

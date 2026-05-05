@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto, UpdateOrderDto } from './dto/order.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -39,5 +49,27 @@ export class OrdersController {
   @Roles('admin', 'superadmin')
   remove(@Param('id') id: string) {
     return this.ordersService.remove(id);
+  }
+
+  @Get(':id/track')
+  trackOrder(@Param('id') id: string) {
+    return this.ordersService.trackOrder(id);
+  }
+
+  @Put(':id/status')
+  @UseGuards(RolesGuard)
+  @Roles('admin', 'superadmin')
+  updateStatus(
+    @Param('id') id: string,
+    @Body() body: { status: string; notes?: string },
+  ) {
+    return this.ordersService.updateOrderStatus(id, body.status, body.notes);
+  }
+
+  @Post(':id/tracking-number')
+  @UseGuards(RolesGuard)
+  @Roles('admin', 'superadmin')
+  generateTrackingNumber(@Param('id') id: string) {
+    return this.ordersService.generateTrackingNumber(id);
   }
 }

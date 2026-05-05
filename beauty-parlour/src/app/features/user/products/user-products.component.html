@@ -1,7 +1,8 @@
 <div class="products-page">
-  <!-- Elegant Hero Section -->
+  <!-- Elegant Hero Section with Image -->
   <section class="hero-section">
-    <div class="hero-bg-pattern"></div>
+    <div class="hero-bg-image"></div>
+    <div class="hero-overlay"></div>
     <div class="hero-content">
       <div class="hero-badge">
         <mat-icon>verified</mat-icon>
@@ -157,7 +158,7 @@
                 <!-- Image -->
                 <div class="image-wrapper" [attr.data-category]="product.category" (click)="viewProduct(product)">
                   @if (!hasImageError(product._id)) {
-                    <img [src]="getProductImage(product.category, i)" 
+                    <img [src]="$any(product).displayImage || getProductImage(product.category, i)" 
                          [alt]="product.name"
                          class="product-image"
                          loading="lazy"

@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Param,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -35,10 +28,7 @@ export class SchedulerController {
    */
   @Post('jobs/:jobId/toggle')
   @Roles('admin', 'super-admin')
-  toggleJob(
-    @Param('jobId') jobId: string,
-    @Body('enabled') enabled: boolean,
-  ) {
+  toggleJob(@Param('jobId') jobId: string, @Body('enabled') enabled: boolean) {
     const result = this.schedulerService.setJobEnabled(jobId, enabled);
     return {
       success: result,

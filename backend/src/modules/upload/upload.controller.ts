@@ -17,7 +17,27 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import type { Response } from 'express';
 import { existsSync, unlinkSync } from 'fs';
-import { join } from 'path';
+import { join, basename } from 'path';
+
+// Helper function to sanitize filename and prevent path traversal
+function sanitizeFilename(filename: string): string | null {
+  // Get only the base filename, removing any path components
+  const sanitized = basename(filename);
+  // Reject if filename contains suspicious patterns
+  if (
+    sanitized !== filename ||
+    filename.includes('..') ||
+    filename.includes('\\') ||
+    filename.includes('/')
+  ) {
+    return null;
+  }
+  // Only allow alphanumeric, dash, underscore, and dot
+  if (!/^[a-zA-Z0-9_.-]+$/.test(sanitized)) {
+    return null;
+  }
+  return sanitized;
+}
 
 @Controller('upload')
 @UseGuards(JwtAuthGuard)
@@ -86,7 +106,11 @@ export class UploadController {
 
   @Get('file/:filename')
   getFile(@Param('filename') filename: string, @Res() res: Response) {
-    const filePath = join(process.cwd(), 'uploads', filename);
+    const sanitized = sanitizeFilename(filename);
+    if (!sanitized) {
+      return res.status(400).json({ message: 'Invalid filename' });
+    }
+    const filePath = join(process.cwd(), 'uploads', sanitized);
     if (!existsSync(filePath)) {
       return res.status(404).json({ message: 'File not found' });
     }
@@ -97,7 +121,11 @@ export class UploadController {
   @UseGuards(RolesGuard)
   @Roles('admin', 'superadmin')
   deleteFile(@Param('filename') filename: string) {
-    const filePath = join(process.cwd(), 'uploads', filename);
+    const sanitized = sanitizeFilename(filename);
+    if (!sanitized) {
+      throw new BadRequestException('Invalid filename');
+    }
+    const filePath = join(process.cwd(), 'uploads', sanitized);
     if (!existsSync(filePath)) {
       throw new BadRequestException('File not found');
     }

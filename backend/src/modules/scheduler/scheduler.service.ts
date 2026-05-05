@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { Appointment } from '../../schemas/appointment.schema';
 import { EmailService } from '../email/email.service';
 import { SmsService } from '../sms/sms.service';
@@ -184,7 +184,6 @@ export class SchedulerService implements OnModuleInit {
 
     try {
       const now = new Date();
-      const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
       const todayStr = now.toISOString().split('T')[0];
 
       // Find appointments that should have started but are still pending/confirmed

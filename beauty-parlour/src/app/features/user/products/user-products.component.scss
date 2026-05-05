@@ -28,43 +28,71 @@ $gray-900: #111827;
 }
 
 // =============================================================
-// HERO SECTION
+// HERO SECTION WITH IMAGE
 // =============================================================
 .hero-section {
-  background: linear-gradient(135deg, #7C3AED 0%, #9333EA 50%, #C026D3 100%);
-  padding: 100px 32px 80px;
   position: relative;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
 }
 
-.hero-bg-pattern {
+.hero-bg-image {
   position: absolute;
   inset: 0;
-  background-image: 
-    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 50%),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  pointer-events: none;
+  z-index: 1;
+  background-image: url('https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 27, 75, 0.80) 0%,
+    rgba(124, 58, 237, 0.70) 50%,
+    rgba(192, 38, 211, 0.65) 100%
+  );
 }
 
 .hero-content {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   max-width: 800px;
   margin: 0 auto;
   text-align: center;
+  padding: 60px 32px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 10px 24px;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 100px;
   margin-bottom: 24px;
+  animation: fadeInDown 0.6s ease-out;
   
   mat-icon {
     font-size: 18px;
@@ -74,47 +102,69 @@ $gray-900: #111827;
   }
   
   span {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    color: white;
+    color: #FCD34D;
     letter-spacing: 0.02em;
   }
 }
 
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .hero-title {
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 800;
   color: white;
   margin: 0 0 16px;
   letter-spacing: -0.03em;
   line-height: 1.1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.7s ease-out 0.1s both;
 }
 
 .hero-subtitle {
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.95);
   margin: 0 0 32px;
   line-height: 1.6;
-  max-width: 600px;
+  max-width: 650px;
   margin-left: auto;
   margin-right: auto;
+  animation: fadeInUp 0.7s ease-out 0.2s both;
 }
 
 .hero-features {
   display: flex;
   justify-content: center;
-  gap: 32px;
+  gap: 24px;
   flex-wrap: wrap;
+  animation: fadeInUp 0.7s ease-out 0.3s both;
 }
 
 .feature {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
   
   mat-icon {
     font-size: 20px;
@@ -127,6 +177,50 @@ $gray-900: #111827;
     font-size: 14px;
     font-weight: 600;
     color: white;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 380px;
+  }
+  
+  .hero-content {
+    padding: 48px 24px;
+  }
+  
+  .hero-title {
+    font-size: 36px;
+  }
+  
+  .hero-subtitle {
+    font-size: 16px;
+  }
+  
+  .hero-features {
+    gap: 12px;
+  }
+  
+  .feature {
+    padding: 10px 16px;
+    
+    span {
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    min-height: 340px;
+  }
+  
+  .hero-title {
+    font-size: 28px;
+  }
+  
+  .hero-subtitle {
+    font-size: 14px;
   }
 }
 

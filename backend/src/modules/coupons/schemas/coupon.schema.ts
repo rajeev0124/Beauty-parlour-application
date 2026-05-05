@@ -38,7 +38,11 @@ export class Coupon {
   @Prop({ default: 1 })
   perUserLimit: number;
 
-  @Prop({ type: [String], enum: ['service', 'product', 'all'], default: ['all'] })
+  @Prop({
+    type: [String],
+    enum: ['service', 'product', 'all'],
+    default: ['all'],
+  })
   applicableOn: string[];
 
   @Prop({ default: true })

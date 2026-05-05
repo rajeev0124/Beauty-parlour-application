@@ -32,6 +32,9 @@ export class StaffComponent implements OnInit, AfterViewInit {
   displayedColumns = ['name', 'specialization', 'role', 'phone', 'availability', 'status', 'actions'];
   dataSource = new MatTableDataSource<Staff>();
   loading = false;
+  activeFilter: 'all' | 'available' | 'unavailable' = 'all';
+  filteredData: Staff[] = [];
+  private searchTerm = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -57,6 +60,7 @@ export class StaffComponent implements OnInit, AfterViewInit {
     this.staffService.getAll().subscribe({
       next: (staff) => {
         this.dataSource.data = staff;
+        this.applyFilters();
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -68,8 +72,85 @@ export class StaffComponent implements OnInit, AfterViewInit {
   }
 
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.searchTerm = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = this.searchTerm;
+    this.applyFilters();
+  }
+
+  filterStaff(filter: 'all' | 'available' | 'unavailable'): void {
+    this.activeFilter = filter;
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
+    let data = this.dataSource.data;
+    
+    // Apply search filter
+    if (this.searchTerm) {
+      data = data.filter(s => 
+        s.name?.toLowerCase().includes(this.searchTerm) ||
+        s.role?.toLowerCase().includes(this.searchTerm) ||
+        s.specialization?.toLowerCase().includes(this.searchTerm)
+      );
+    }
+    
+    // Apply availability filter
+    if (this.activeFilter === 'available') {
+      data = data.filter(s => s.availability);
+    } else if (this.activeFilter === 'unavailable') {
+      data = data.filter(s => !s.availability);
+    }
+    
+    this.filteredData = data;
+  }
+
+  clearFilters(): void {
+    this.activeFilter = 'all';
+    this.searchTerm = '';
+    this.dataSource.filter = '';
+    this.applyFilters();
+  }
+
+  getActiveCount(): number {
+    return this.dataSource.data.filter(s => s.status === 'active').length;
+  }
+
+  getAvailableCount(): number {
+    return this.dataSource.data.filter(s => s.availability).length;
+  }
+
+  getRolesCount(): number {
+    const roles = new Set(this.dataSource.data.map(s => s.role));
+    return roles.size;
+  }
+
+  getAvatarColor(name: string | undefined): string {
+    const colors = [
+      'linear-gradient(135deg, #7c3aed, #9333ea)',
+      'linear-gradient(135deg, #3b82f6, #2563eb)',
+      'linear-gradient(135deg, #10b981, #059669)',
+      'linear-gradient(135deg, #f59e0b, #d97706)',
+      'linear-gradient(135deg, #ec4899, #db2777)',
+      'linear-gradient(135deg, #06b6d4, #0891b2)',
+      'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+    ];
+    if (!name) return colors[0];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+  }
+
+  getRoleColor(role: string | undefined): { bg: string; text: string } {
+    const roleColors: { [key: string]: { bg: string; text: string } } = {
+      'manager': { bg: '#ede9fe', text: '#7c3aed' },
+      'senior stylist': { bg: '#dbeafe', text: '#2563eb' },
+      'junior stylist': { bg: '#d1fae5', text: '#059669' },
+      'skin specialist': { bg: '#fce7f3', text: '#db2777' },
+      'nail technician': { bg: '#fee2e2', text: '#dc2626' },
+      'massage therapist': { bg: '#fef3c7', text: '#d97706' },
+      'bridal expert': { bg: '#fce7f3', text: '#be185d' },
+    };
+    const lowerRole = (role || '').toLowerCase();
+    return roleColors[lowerRole] || { bg: '#f3f4f6', text: '#6b7280' };
   }
 
   openDialog(staff?: Staff): void {

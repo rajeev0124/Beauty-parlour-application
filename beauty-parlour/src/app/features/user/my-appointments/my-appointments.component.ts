@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -23,7 +23,7 @@ interface DisplayAppointment {
 @Component({
   selector: 'app-my-appointments',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, MatIconModule, MatButtonModule, MatSnackBarModule, MatDialogModule],
+  imports: [CommonModule, RouterLink, DatePipe, DecimalPipe, MatIconModule, MatButtonModule, MatSnackBarModule, MatDialogModule],
   templateUrl: './my-appointments.component.html',
   styleUrl: './my-appointments.component.scss'
 })
@@ -72,7 +72,14 @@ export class MyAppointmentsComponent implements OnInit {
 
         this.appointments = appointments.map(a => {
           const now = new Date();
+          
+          // Parse appointment date and time for accurate comparison
           const apptDate = new Date(a.date);
+          const timeParts = a.time ? a.time.split(':') : [23, 59];
+          apptDate.setHours(parseInt(timeParts[0]) || 23, parseInt(timeParts[1]) || 59, 0, 0);
+          
+          // Add 1 hour grace period after appointment time
+          const apptEndTime = new Date(apptDate.getTime() + 60 * 60 * 1000);
 
           // Get service info from populated serviceId or direct fields
           const serviceName = a.serviceName || a.serviceId?.name || 'Service';
@@ -81,15 +88,17 @@ export class MyAppointmentsComponent implements OnInit {
           // Get staff name from populated staffId or direct field
           const staffName = a.staffName || a.staffId?.name || 'Any available';
 
-          // Determine display status
+          // Determine display status - respect actual database status
           let displayStatus: 'upcoming' | 'completed' | 'cancelled';
           if (a.status === 'cancelled') {
             displayStatus = 'cancelled';
           } else if (a.status === 'completed') {
             displayStatus = 'completed';
-          } else if (apptDate >= now) {
+          } else if (apptEndTime >= now) {
+            // Appointment time hasn't passed yet (including 1hr grace period)
             displayStatus = 'upcoming';
           } else {
+            // Appointment time has passed - show as past but preserve actual status
             displayStatus = 'completed';
           }
 
@@ -141,10 +150,20 @@ export class MyAppointmentsComponent implements OnInit {
         this.http.put(`${environment.apiUrl}/customer/appointments/${appt._id}/cancel`, {}).subscribe({
           next: () => {
             appt.status = 'cancelled';
-            this.snackBar.open('Appointment cancelled successfully', 'Close', { duration: 3000 });
+            this.snackBar.open('✓ Appointment cancelled successfully', 'OK', { 
+              duration: 5000,
+              panelClass: ['warning-snackbar'],
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            });
           },
           error: () => {
-            this.snackBar.open('Failed to cancel appointment. Please try again.', 'Close', { duration: 3000 });
+            this.snackBar.open('Failed to cancel appointment. Please try again.', 'Retry', { 
+              duration: 5000,
+              panelClass: ['error-snackbar'],
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            });
           }
         });
       }

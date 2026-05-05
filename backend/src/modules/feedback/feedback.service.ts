@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Feedback, FeedbackDocument } from './schemas/feedback.schema';
@@ -29,7 +29,9 @@ export class FeedbackService {
       userName: dto.isAnonymous ? 'Anonymous' : userName,
       userEmail,
       type: dto.type,
-      referenceId: dto.referenceId ? new Types.ObjectId(dto.referenceId) : undefined,
+      referenceId: dto.referenceId
+        ? new Types.ObjectId(dto.referenceId)
+        : undefined,
       serviceId: dto.serviceId ? new Types.ObjectId(dto.serviceId) : undefined,
       staffId: dto.staffId ? new Types.ObjectId(dto.staffId) : undefined,
       overallRating: dto.overallRating,
@@ -42,7 +44,9 @@ export class FeedbackService {
       isPublic: !dto.isAnonymous,
     });
 
-    this.logger.log(`Feedback submitted by ${userName}: ${dto.overallRating}/5`);
+    this.logger.log(
+      `Feedback submitted by ${userName}: ${dto.overallRating}/5`,
+    );
 
     return feedback;
   }
@@ -95,9 +99,11 @@ export class FeedbackService {
 
     if (filters?.type) query.type = filters.type;
     if (filters?.status) query.status = filters.status;
-    if (filters?.minRating) query.overallRating = { ...query.overallRating, $gte: filters.minRating };
-    if (filters?.maxRating) query.overallRating = { ...query.overallRating, $lte: filters.maxRating };
-    
+    if (filters?.minRating)
+      query.overallRating = { ...query.overallRating, $gte: filters.minRating };
+    if (filters?.maxRating)
+      query.overallRating = { ...query.overallRating, $lte: filters.maxRating };
+
     if (filters?.startDate || filters?.endDate) {
       query.createdAt = {};
       if (filters.startDate) query.createdAt.$gte = filters.startDate;
@@ -109,7 +115,11 @@ export class FeedbackService {
     const skip = (page - 1) * limit;
 
     const [feedback, total] = await Promise.all([
-      this.feedbackModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      this.feedbackModel
+        .find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
       this.feedbackModel.countDocuments(query),
     ]);
 
@@ -203,13 +213,18 @@ export class FeedbackService {
   /**
    * Mark feedback as helpful
    */
-  async markHelpful(feedbackId: string, userId: string): Promise<FeedbackDocument> {
+  async markHelpful(
+    feedbackId: string,
+    userId: string,
+  ): Promise<FeedbackDocument> {
     const feedback = await this.findById(feedbackId);
     const userObjectId = new Types.ObjectId(userId);
 
     if (feedback.helpfulBy.some((id) => id.equals(userObjectId))) {
       // Remove helpful
-      feedback.helpfulBy = feedback.helpfulBy.filter((id) => !id.equals(userObjectId));
+      feedback.helpfulBy = feedback.helpfulBy.filter(
+        (id) => !id.equals(userObjectId),
+      );
       feedback.helpfulCount--;
     } else {
       // Add helpful
@@ -303,10 +318,18 @@ export class FeedbackService {
     const topPraises = this.extractTopTags(positiveFeedback);
 
     return {
-      overview: overview[0] || { totalFeedback: 0, averageRating: 0, positiveCount: 0, negativeCount: 0 },
+      overview: overview[0] || {
+        totalFeedback: 0,
+        averageRating: 0,
+        positiveCount: 0,
+        negativeCount: 0,
+      },
       ratingTrend,
       byType,
-      bySentiment: sentimentData.reduce((acc, s) => ({ ...acc, [s._id || 'unknown']: s.count }), {}),
+      bySentiment: sentimentData.reduce(
+        (acc, s) => ({ ...acc, [s._id || 'unknown']: s.count }),
+        {},
+      ),
       topIssues,
       topPraises,
     };
@@ -315,21 +338,44 @@ export class FeedbackService {
   /**
    * Simple sentiment analysis
    */
-  private analyzeSentiment(rating: number, comment?: string): {
+  private analyzeSentiment(
+    rating: number,
+    comment?: string,
+  ): {
     score: number;
     label: string;
     keywords: string[];
   } {
     // Basic sentiment based on rating
-    let score = (rating - 3) / 2; // Convert 1-5 to -1 to 1
-    let label = rating >= 4 ? 'positive' : rating <= 2 ? 'negative' : 'neutral';
+    const score = (rating - 3) / 2; // Convert 1-5 to -1 to 1
+    const label =
+      rating >= 4 ? 'positive' : rating <= 2 ? 'negative' : 'neutral';
 
     const keywords: string[] = [];
 
     // Extract keywords from comment
     if (comment) {
-      const positiveWords = ['great', 'excellent', 'amazing', 'wonderful', 'best', 'love', 'fantastic', 'professional'];
-      const negativeWords = ['bad', 'poor', 'terrible', 'worst', 'hate', 'rude', 'dirty', 'slow', 'expensive'];
+      const positiveWords = [
+        'great',
+        'excellent',
+        'amazing',
+        'wonderful',
+        'best',
+        'love',
+        'fantastic',
+        'professional',
+      ];
+      const negativeWords = [
+        'bad',
+        'poor',
+        'terrible',
+        'worst',
+        'hate',
+        'rude',
+        'dirty',
+        'slow',
+        'expensive',
+      ];
 
       const lowerComment = comment.toLowerCase();
 

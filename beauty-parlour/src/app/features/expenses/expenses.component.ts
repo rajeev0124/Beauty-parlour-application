@@ -1,21 +1,19 @@
-import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClient } from '@angular/common/http';
+import { Subject, takeUntil } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ExpenseDialogComponent } from './expense-dialog.component';
 
@@ -31,214 +29,65 @@ interface Expense {
   addedByName: string;
 }
 
+interface CategoryStat {
+  _id: string;
+  total: number;
+  count: number;
+}
+
 @Component({
   selector: 'app-expenses',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatTableModule, MatPaginatorModule, MatSortModule,
+    CommonModule, FormsModule, MatTableModule,
     MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule,
-    MatCardModule, MatDialogModule, MatSnackBarModule, MatChipsModule,
-    MatSelectModule, MatDatepickerModule, MatNativeDateModule
+    MatDialogModule, MatSnackBarModule, MatDatepickerModule, MatNativeDateModule,
+    MatMenuModule, MatTooltipModule
   ],
-  template: `
-    <div class="expenses-container">
-      <div class="header">
-        <h1>Expense Tracking</h1>
-        <button mat-raised-button color="primary" (click)="openDialog()">
-          <mat-icon>add</mat-icon>
-          Add Expense
-        </button>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="stats-cards">
-        <mat-card class="stat-card">
-          <mat-card-content>
-            <div class="stat-icon total">
-              <mat-icon>account_balance_wallet</mat-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value">₹{{ stats.total | number }}</span>
-              <span class="stat-label">Total Expenses</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-        
-        <mat-card class="stat-card">
-          <mat-card-content>
-            <div class="stat-icon month">
-              <mat-icon>calendar_month</mat-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value">₹{{ thisMonthTotal | number }}</span>
-              <span class="stat-label">This Month</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-        
-        <mat-card class="stat-card">
-          <mat-card-content>
-            <div class="stat-icon count">
-              <mat-icon>receipt_long</mat-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value">{{ stats.count }}</span>
-              <span class="stat-label">Total Entries</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-
-      <!-- Category Breakdown -->
-      <mat-card class="category-card">
-        <mat-card-header>
-          <mat-card-title>Expenses by Category</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="category-list">
-            @for (cat of stats.byCategory; track cat._id) {
-              <div class="category-item">
-                <div class="category-info">
-                  <mat-icon>{{ getCategoryIcon(cat._id) }}</mat-icon>
-                  <span>{{ cat._id | titlecase }}</span>
-                </div>
-                <div class="category-amount">₹{{ cat.total | number }}</div>
-              </div>
-            }
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Filters -->
-      <div class="filters">
-        <mat-form-field appearance="outline">
-          <mat-label>Category</mat-label>
-          <mat-select [(ngModel)]="filterCategory" (selectionChange)="loadExpenses()">
-            <mat-option value="">All</mat-option>
-            <mat-option value="rent">Rent</mat-option>
-            <mat-option value="utilities">Utilities</mat-option>
-            <mat-option value="salary">Salary</mat-option>
-            <mat-option value="supplies">Supplies</mat-option>
-            <mat-option value="equipment">Equipment</mat-option>
-            <mat-option value="marketing">Marketing</mat-option>
-            <mat-option value="maintenance">Maintenance</mat-option>
-            <mat-option value="other">Other</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Start Date</mat-label>
-          <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate" (dateChange)="loadExpenses()">
-          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-          <mat-datepicker #startPicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>End Date</mat-label>
-          <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate" (dateChange)="loadExpenses()">
-          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-          <mat-datepicker #endPicker></mat-datepicker>
-        </mat-form-field>
-      </div>
-
-      <!-- Table -->
-      <div class="table-container mat-elevation-z2">
-        <table mat-table [dataSource]="dataSource" matSort>
-          <ng-container matColumnDef="date">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-            <td mat-cell *matCellDef="let expense">{{ expense.date | date:'mediumDate' }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="title">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-            <td mat-cell *matCellDef="let expense">{{ expense.title }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="category">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
-            <td mat-cell *matCellDef="let expense">
-              <mat-chip>{{ expense.category | titlecase }}</mat-chip>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="amount">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
-            <td mat-cell *matCellDef="let expense" class="amount">₹{{ expense.amount | number }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="paymentMethod">
-            <th mat-header-cell *matHeaderCellDef>Payment</th>
-            <td mat-cell *matCellDef="let expense">{{ expense.paymentMethod | titlecase }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let expense">
-              <button mat-icon-button color="primary" (click)="openDialog(expense)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="delete(expense)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-        <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .expenses-container { padding: 24px; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .header h1 { margin: 0; }
-    
-    .stats-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card mat-card-content { display: flex; align-items: center; gap: 16px; padding: 16px; }
-    .stat-icon { width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-    .stat-icon.total { background: #ffebee; color: #c62828; }
-    .stat-icon.month { background: #e3f2fd; color: #1976d2; }
-    .stat-icon.count { background: #e8f5e9; color: #388e3c; }
-    .stat-icon mat-icon { font-size: 28px; width: 28px; height: 28px; }
-    .stat-info { display: flex; flex-direction: column; }
-    .stat-value { font-size: 24px; font-weight: 600; }
-    .stat-label { font-size: 14px; color: #666; }
-    
-    .category-card { margin-bottom: 24px; }
-    .category-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .category-item { display: flex; justify-content: space-between; padding: 12px; background: #f5f5f5; border-radius: 8px; }
-    .category-info { display: flex; align-items: center; gap: 8px; }
-    .category-amount { font-weight: 600; }
-    
-    .filters { display: flex; gap: 16px; margin-bottom: 16px; }
-    .filters mat-form-field { flex: 1; }
-    
-    .table-container { border-radius: 8px; overflow: hidden; }
-    table { width: 100%; }
-    .amount { font-weight: 600; color: #c62828; }
-    
-    @media (max-width: 768px) {
-      .stats-cards { grid-template-columns: 1fr; }
-      .category-list { grid-template-columns: repeat(2, 1fr); }
-      .filters { flex-direction: column; }
-      .header { flex-direction: column; gap: 16px; align-items: flex-start; }
-    }
-  `]
+  templateUrl: './expenses.component.html',
+  styleUrl: './expenses.component.scss',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ExpensesComponent implements OnInit, AfterViewInit {
-  displayedColumns = ['date', 'title', 'category', 'amount', 'paymentMethod', 'actions'];
-  dataSource = new MatTableDataSource<Expense>([]);
-  stats: any = { total: 0, count: 0, byCategory: [] };
-  thisMonthTotal = 0;
+export class ExpensesComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   
+  // Data
+  allExpenses: Expense[] = [];
+  filteredExpenses: Expense[] = [];
+  dataSource = new MatTableDataSource<Expense>([]);
+  displayedColumns = ['date', 'title', 'category', 'amount', 'paymentMethod', 'actions'];
+  
+  // Stats
+  stats: { total: number; count: number; byCategory: CategoryStat[] } = { total: 0, count: 0, byCategory: [] };
+  thisMonthTotal = 0;
+  avgExpense = 0;
+  
+  // Filters
+  searchQuery = '';
   filterCategory = '';
   startDate: Date | null = null;
   endDate: Date | null = null;
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  
+  // Categories with icons and colors
+  categories = [
+    { id: 'rent', name: 'Rent', icon: 'home', color: '#ef4444' },
+    { id: 'utilities', name: 'Utilities', icon: 'bolt', color: '#f59e0b' },
+    { id: 'salary', name: 'Salary', icon: 'people', color: '#10b981' },
+    { id: 'supplies', name: 'Supplies', icon: 'inventory_2', color: '#3b82f6' },
+    { id: 'equipment', name: 'Equipment', icon: 'precision_manufacturing', color: '#8b5cf6' },
+    { id: 'marketing', name: 'Marketing', icon: 'campaign', color: '#ec4899' },
+    { id: 'maintenance', name: 'Maintenance', icon: 'build', color: '#6366f1' },
+    { id: 'other', name: 'Other', icon: 'more_horiz', color: '#6b7280' }
+  ];
+  
+  // Pagination
+  pageSize = 10;
+  currentPage = 0;
+  pageSizeOptions = [5, 10, 25, 50];
+  
+  // Loading
+  loading = false;
 
   constructor(
     private http: HttpClient,
@@ -252,59 +101,154 @@ export class ExpensesComponent implements OnInit, AfterViewInit {
     this.loadStats();
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadExpenses() {
+    this.loading = true;
     let url = `${environment.apiUrl}/expenses?`;
     if (this.filterCategory) url += `category=${this.filterCategory}&`;
     if (this.startDate) url += `startDate=${this.startDate.toISOString()}&`;
     if (this.endDate) url += `endDate=${this.endDate.toISOString()}&`;
 
-    this.http.get<Expense[]>(url).subscribe({
+    this.http.get<Expense[]>(url).pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
-        this.dataSource.data = data;
-        this.cdr.detectChanges();
+        this.allExpenses = data;
+        this.applyFilter();
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }
 
   loadStats() {
-    this.http.get<any>(`${environment.apiUrl}/expenses/stats`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/expenses/stats`).pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
         this.stats = data;
+        this.avgExpense = data.count > 0 ? data.total / data.count : 0;
+        
         // Calculate this month total
         const now = new Date();
         const thisMonth = data.monthlyTrend?.find((m: any) => 
           m._id.year === now.getFullYear() && m._id.month === now.getMonth() + 1
         );
         this.thisMonthTotal = thisMonth?.total || 0;
+        this.cdr.markForCheck();
       }
     });
   }
 
+  applyFilter() {
+    let filtered = [...this.allExpenses];
+    
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(e => 
+        e.title.toLowerCase().includes(query) ||
+        e.category.toLowerCase().includes(query) ||
+        e.vendor?.toLowerCase().includes(query) ||
+        e.description?.toLowerCase().includes(query)
+      );
+    }
+    
+    this.filteredExpenses = filtered;
+    this.currentPage = 0;
+    this.updateDataSource();
+  }
+
+  updateDataSource() {
+    const start = this.currentPage * this.pageSize;
+    const end = start + this.pageSize;
+    this.dataSource.data = this.filteredExpenses.slice(start, end);
+    this.cdr.markForCheck();
+  }
+
+  setCategory(category: string) {
+    this.filterCategory = category;
+    this.loadExpenses();
+  }
+
+  clearFilters() {
+    this.filterCategory = '';
+    this.startDate = null;
+    this.endDate = null;
+    this.searchQuery = '';
+    this.loadExpenses();
+  }
+
   getCategoryIcon(category: string): string {
+    return this.categories.find(c => c.id === category)?.icon || 'receipt';
+  }
+
+  getCategoryColor(category: string): string {
+    return this.categories.find(c => c.id === category)?.color || '#6b7280';
+  }
+
+  getCategoryName(category: string): string {
+    return this.categories.find(c => c.id === category)?.name || category;
+  }
+
+  getCategoryPercentage(cat: CategoryStat): number {
+    return this.stats.total > 0 ? (cat.total / this.stats.total) * 100 : 0;
+  }
+
+  getPaymentIcon(method: string): string {
     const icons: Record<string, string> = {
-      rent: 'home',
-      utilities: 'bolt',
-      salary: 'people',
-      supplies: 'inventory_2',
-      equipment: 'precision_manufacturing',
-      marketing: 'campaign',
-      maintenance: 'build',
-      other: 'more_horiz'
+      cash: 'payments',
+      card: 'credit_card',
+      upi: 'account_balance',
+      bank: 'account_balance',
+      cheque: 'receipt'
     };
-    return icons[category] || 'receipt';
+    return icons[method?.toLowerCase()] || 'payments';
+  }
+
+  // Pagination
+  get totalPages(): number {
+    return Math.ceil(this.filteredExpenses.length / this.pageSize);
+  }
+
+  get startIndex(): number {
+    return this.currentPage * this.pageSize + 1;
+  }
+
+  get endIndex(): number {
+    return Math.min((this.currentPage + 1) * this.pageSize, this.filteredExpenses.length);
+  }
+
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.updateDataSource();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.updateDataSource();
+    }
+  }
+
+  onPageSizeChange() {
+    this.currentPage = 0;
+    this.updateDataSource();
   }
 
   openDialog(expense?: Expense) {
     const dialogRef = this.dialog.open(ExpenseDialogComponent, {
-      width: '500px',
-      data: expense
+      width: '600px',
+      maxWidth: '95vw',
+      data: expense,
+      panelClass: 'expense-dialog-panel'
     });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result) {
         this.loadExpenses();
         this.loadStats();
@@ -313,12 +257,15 @@ export class ExpensesComponent implements OnInit, AfterViewInit {
   }
 
   delete(expense: Expense) {
-    if (confirm('Delete this expense?')) {
-      this.http.delete(`${environment.apiUrl}/expenses/${expense._id}`).subscribe({
+    if (confirm(`Delete expense "${expense.title}"?`)) {
+      this.http.delete(`${environment.apiUrl}/expenses/${expense._id}`).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
-          this.snackBar.open('Expense deleted', 'Close', { duration: 3000 });
+          this.snackBar.open('Expense deleted successfully', 'Close', { duration: 3000 });
           this.loadExpenses();
           this.loadStats();
+        },
+        error: () => {
+          this.snackBar.open('Failed to delete expense', 'Close', { duration: 3000 });
         }
       });
     }

@@ -1,6 +1,20 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
-import { CreateAppointmentDto, UpdateAppointmentDto, UpdateStatusDto } from './dto/appointment.dto';
+import {
+  CreateAppointmentDto,
+  UpdateAppointmentDto,
+  UpdateStatusDto,
+} from './dto/appointment.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -38,7 +52,10 @@ export class AppointmentsController {
   }
 
   @Post()
-  create(@Body() createAppointmentDto: CreateAppointmentDto, @CurrentUser() user: any) {
+  create(
+    @Body() createAppointmentDto: CreateAppointmentDto,
+    @CurrentUser() user: any,
+  ) {
     // Use the authenticated user's ID from JWT to ensure consistency
     const appointmentData = {
       ...createAppointmentDto,
@@ -52,13 +69,19 @@ export class AppointmentsController {
   @Put('status/:id')
   @UseGuards(RolesGuard)
   @Roles('admin', 'superadmin', 'staff')
-  updateStatus(@Param('id') id: string, @Body() updateStatusDto: UpdateStatusDto) {
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateStatusDto: UpdateStatusDto,
+  ) {
     return this.appointmentsService.updateStatus(id, updateStatusDto);
   }
 
   // Generic :id route MUST be after specific routes
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateAppointmentDto: UpdateAppointmentDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAppointmentDto: UpdateAppointmentDto,
+  ) {
     return this.appointmentsService.update(id, updateAppointmentDto);
   }
 

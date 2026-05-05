@@ -5,6 +5,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { User } from '../../schemas/user.schema';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
+import { EmailService } from '../email/email.service';
 
 // Mock bcrypt
 jest.mock('bcryptjs', () => ({
@@ -16,6 +17,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let mockUserModel: any;
   let mockJwtService: any;
+  let mockEmailService: any;
 
   const mockUser = {
     _id: '507f1f77bcf86cd799439011',
@@ -26,15 +28,20 @@ describe('AuthService', () => {
     role: 'customer',
     status: 'active',
     refreshToken: null,
-    toObject: function() { return this; },
+    toObject: function () {
+      return this;
+    },
+    save: jest.fn().mockResolvedValue(true),
   };
 
   beforeEach(async () => {
     mockUserModel = {
-      findOne: jest.fn(),
-      findById: jest.fn(),
-      findByIdAndUpdate: jest.fn(),
+      findOne: jest.fn().mockReturnThis(),
+      findById: jest.fn().mockReturnThis(),
+      findByIdAndUpdate: jest.fn().mockReturnThis(),
       create: jest.fn(),
+      select: jest.fn().mockReturnThis(),
+      exec: jest.fn(),
     };
 
     mockJwtService = {
@@ -42,11 +49,16 @@ describe('AuthService', () => {
       verify: jest.fn(),
     };
 
+    mockEmailService = {
+      sendPasswordReset: jest.fn().mockResolvedValue(true),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: getModelToken(User.name), useValue: mockUserModel },
         { provide: JwtService, useValue: mockJwtService },
+        { provide: EmailService, useValue: mockEmailService },
       ],
     }).compile();
 
@@ -80,13 +92,17 @@ describe('AuthService', () => {
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
       expect(result).toHaveProperty('user');
-      expect(mockUserModel.findOne).toHaveBeenCalledWith({ email: registerDto.email });
+      expect(mockUserModel.findOne).toHaveBeenCalledWith({
+        email: registerDto.email,
+      });
     });
 
     it('should throw ConflictException if email already exists', async () => {
       mockUserModel.findOne.mockResolvedValue(mockUser);
 
-      await expect(service.register(registerDto)).rejects.toThrow(ConflictException);
+      await expect(service.register(registerDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -115,20 +131,29 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException for invalid email', async () => {
       mockUserModel.findOne.mockResolvedValue(null);
 
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException for invalid password', async () => {
       mockUserModel.findOne.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException for blocked user', async () => {
-      mockUserModel.findOne.mockResolvedValue({ ...mockUser, status: 'blocked' });
+      mockUserModel.findOne.mockResolvedValue({
+        ...mockUser,
+        status: 'blocked',
+      });
 
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -141,7 +166,7 @@ describe('AuthService', () => {
       expect(result).toEqual({ message: 'Logged out successfully' });
       expect(mockUserModel.findByIdAndUpdate).toHaveBeenCalledWith(
         '507f1f77bcf86cd799439011',
-        { refreshToken: null }
+        { refreshToken: null },
       );
     });
   });

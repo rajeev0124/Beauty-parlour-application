@@ -1,4 +1,11 @@
-import { IsEmail, IsOptional, IsString, MinLength, IsMongoId, IsArray } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  MinLength,
+  IsMongoId,
+  IsArray,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -66,4 +73,16 @@ export class AssignStaffDto {
   @IsArray()
   @IsMongoId({ each: true })
   staffIds: string[];
+}
+
+export class ChangePasswordDto {
+  @IsString()
+  oldPassword: string;
+
+  @IsString()
+  @MinLength(8)
+  newPassword: string;
+
+  @IsString()
+  confirmPassword: string;
 }

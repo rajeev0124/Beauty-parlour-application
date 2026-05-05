@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, TitleCasePipe } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -24,7 +24,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
     MatTableModule, MatPaginatorModule, MatSortModule,
     MatCardModule, MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatChipsModule,
-    MatDialogModule, MatSnackBarModule, CurrencyPipe, MatProgressBarModule
+    MatDialogModule, MatSnackBarModule, CurrencyPipe, MatProgressBarModule, TitleCasePipe
   ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
@@ -34,6 +34,9 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   displayedColumns = ['name', 'category', 'price', 'stock', 'status', 'actions'];
   dataSource = new MatTableDataSource<Product>();
   loading = true;
+  activeFilter = 'all';
+  filteredData: Product[] = [];
+  private searchTerm = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -61,6 +64,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     this.productService.getAll().subscribe({
       next: (products) => {
         this.dataSource.data = products;
+        this.applyFilters();
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -73,8 +77,119 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.searchTerm = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = this.searchTerm;
+    this.applyFilters();
+  }
+
+  filterProducts(category: string): void {
+    this.activeFilter = category;
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
+    let data = this.dataSource.data;
+    
+    if (this.searchTerm) {
+      data = data.filter(p => 
+        p.name?.toLowerCase().includes(this.searchTerm) ||
+        p.category?.toLowerCase().includes(this.searchTerm)
+      );
+    }
+    
+    if (this.activeFilter !== 'all') {
+      data = data.filter(p => p.category?.toLowerCase() === this.activeFilter.toLowerCase());
+    }
+    
+    this.filteredData = data;
+  }
+
+  clearFilters(): void {
+    this.activeFilter = 'all';
+    this.searchTerm = '';
+    this.dataSource.filter = '';
+    this.applyFilters();
+  }
+
+  getActiveCount(): number {
+    return this.dataSource.data.filter(p => p.isActive).length;
+  }
+
+  getLowStockCount(): number {
+    return this.dataSource.data.filter(p => p.stock < 10).length;
+  }
+
+  getCategoriesCount(): number {
+    return new Set(this.dataSource.data.map(p => p.category?.toLowerCase())).size;
+  }
+
+  getCategories(): string[] {
+    const cats = new Set(this.dataSource.data.map(p => p.category?.toLowerCase()));
+    return Array.from(cats).filter(c => c);
+  }
+
+  getCategoryIcon(category: string): string {
+    const icons: { [key: string]: string } = {
+      'skin': '🧴',
+      'hair': '💇',
+      'nails': '💅',
+      'makeup': '💄',
+      'body': '🧖',
+      'fragrance': '🌸',
+      'tools': '✂️',
+      'accessories': '💎'
+    };
+    return icons[category?.toLowerCase()] || '📦';
+  }
+
+  getCategoryGradient(category: string): string {
+    const gradients: { [key: string]: string } = {
+      'skin': 'linear-gradient(135deg, #fce7f3, #fbcfe8)',
+      'hair': 'linear-gradient(135deg, #dbeafe, #bfdbfe)',
+      'nails': 'linear-gradient(135deg, #fecaca, #fca5a5)',
+      'makeup': 'linear-gradient(135deg, #ede9fe, #ddd6fe)',
+      'body': 'linear-gradient(135deg, #d1fae5, #a7f3d0)',
+      'fragrance': 'linear-gradient(135deg, #fef3c7, #fde68a)',
+      'tools': 'linear-gradient(135deg, #e5e7eb, #d1d5db)',
+      'accessories': 'linear-gradient(135deg, #fce7f3, #f9a8d4)'
+    };
+    return gradients[category?.toLowerCase()] || 'linear-gradient(135deg, #f3f4f6, #e5e7eb)';
+  }
+
+  getCategoryBg(category: string): string {
+    const bgs: { [key: string]: string } = {
+      'skin': '#fce7f3',
+      'hair': '#dbeafe',
+      'nails': '#fecaca',
+      'makeup': '#ede9fe',
+      'body': '#d1fae5',
+      'fragrance': '#fef3c7',
+      'tools': '#e5e7eb',
+      'accessories': '#fce7f3'
+    };
+    return bgs[category?.toLowerCase()] || '#f3f4f6';
+  }
+
+  getCategoryColor(category: string): string {
+    const colors: { [key: string]: string } = {
+      'skin': '#be185d',
+      'hair': '#1d4ed8',
+      'nails': '#dc2626',
+      'makeup': '#7c3aed',
+      'body': '#059669',
+      'fragrance': '#d97706',
+      'tools': '#4b5563',
+      'accessories': '#db2777'
+    };
+    return colors[category?.toLowerCase()] || '#6b7280';
+  }
+
+  onImageError(event: Event, product: Product): void {
+    // Hide the broken image and show category icon instead
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    // Reset product image to show fallback
+    product.image = '';
   }
 
   openDialog(product?: Product): void {

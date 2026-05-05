@@ -7,7 +7,9 @@ import { AuditController } from './audit.controller';
 @Global()
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: AuditLog.name, schema: AuditLogSchema }]),
+    MongooseModule.forFeature([
+      { name: AuditLog.name, schema: AuditLogSchema },
+    ]),
   ],
   providers: [AuditService],
   controllers: [AuditController],

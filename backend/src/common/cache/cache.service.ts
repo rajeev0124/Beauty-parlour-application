@@ -21,9 +21,9 @@ export class CacheService {
   /**
    * Get a value from cache
    */
-  async get<T>(key: string): Promise<T | null> {
+  get<T>(key: string): T | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return null;
     }
@@ -40,7 +40,7 @@ export class CacheService {
   /**
    * Set a value in cache with optional TTL
    */
-  async set<T>(key: string, value: T, ttlMs?: number): Promise<void> {
+  set<T>(key: string, value: T, ttlMs?: number): void {
     // Evict old entries if cache is full
     if (this.cache.size >= this.maxSize) {
       this.evictLeastUsed();
@@ -56,14 +56,14 @@ export class CacheService {
   /**
    * Delete a specific key
    */
-  async del(key: string): Promise<boolean> {
+  del(key: string): boolean {
     return this.cache.delete(key);
   }
 
   /**
    * Delete all keys matching a pattern
    */
-  async delPattern(pattern: string): Promise<number> {
+  delPattern(pattern: string): number {
     const regex = new RegExp(pattern.replace('*', '.*'));
     let count = 0;
 
@@ -81,7 +81,7 @@ export class CacheService {
   /**
    * Clear entire cache
    */
-  async clear(): Promise<void> {
+  clear(): void {
     this.cache.clear();
     this.logger.log('Cache cleared');
   }
@@ -119,13 +119,13 @@ export class CacheService {
     factory: () => Promise<T>,
     ttlMs?: number,
   ): Promise<T> {
-    const cached = await this.get<T>(key);
+    const cached = this.get<T>(key);
     if (cached !== null) {
       return cached;
     }
 
     const value = await factory();
-    await this.set(key, value, ttlMs);
+    this.set(key, value, ttlMs);
     return value;
   }
 

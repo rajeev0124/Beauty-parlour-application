@@ -17,7 +17,10 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ enum: ['customer', 'admin', 'superadmin', 'staff'], default: 'customer' })
+  @Prop({
+    enum: ['customer', 'admin', 'superadmin', 'staff'],
+    default: 'customer',
+  })
   role: string;
 
   @Prop()
@@ -40,6 +43,43 @@ export class User {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Staff' }], default: [] })
   assignedStaff: Types.ObjectId[];
+
+  @Prop({ default: false })
+  is2FAEnabled: boolean;
+
+  @Prop()
+  twoFactorSecret: string;
+
+  @Prop({
+    type: [
+      {
+        device: String,
+        ip: String,
+        lastActive: { type: Date, default: Date.now },
+        sessionId: String,
+      },
+    ],
+    default: [],
+  })
+  activeSessions: any[];
+
+  @Prop({ default: 0 })
+  failedLoginAttempts: number;
+
+  @Prop()
+  lastFailedLogin: Date;
+
+  @Prop()
+  lockedUntil: Date;
+
+  @Prop({ default: false })
+  emailVerified: boolean;
+
+  @Prop()
+  emailVerificationToken: string;
+
+  @Prop()
+  emailVerificationExpires: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

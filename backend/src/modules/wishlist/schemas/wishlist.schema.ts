@@ -9,15 +9,30 @@ export class Wishlist {
   user: Types.ObjectId;
 
   @Prop({
-    type: [{
-      itemType: { type: String, enum: ['product', 'service', 'package'], required: true },
-      item: { type: Types.ObjectId, refPath: 'items.itemRef', required: true },
-      itemRef: { type: String, required: true },
-      addedAt: { type: Date, default: Date.now },
-      notes: String,
-      priceAtAdd: Number,
-      notifyOnSale: { type: Boolean, default: false },
-    }],
+    type: [
+      {
+        itemType: {
+          type: String,
+          enum: ['product', 'service', 'package'],
+          required: true,
+        },
+        item: {
+          type: Types.ObjectId,
+          refPath: 'items.itemRef',
+          required: true,
+        },
+        itemRef: { type: String, required: true },
+        addedAt: { type: Date, default: Date.now },
+        notes: String,
+        priority: {
+          type: String,
+          enum: ['low', 'medium', 'high'],
+          default: 'medium',
+        },
+        priceAtAdd: Number,
+        notifyOnSale: { type: Boolean, default: false },
+      },
+    ],
     default: [],
   })
   items: {
@@ -26,6 +41,7 @@ export class Wishlist {
     itemRef: string;
     addedAt: Date;
     notes?: string;
+    priority?: string;
     priceAtAdd?: number;
     notifyOnSale?: boolean;
   }[];

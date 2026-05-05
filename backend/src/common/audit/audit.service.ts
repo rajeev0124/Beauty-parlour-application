@@ -15,12 +15,12 @@ export interface AuditEntry {
   action: string;
   entity: string;
   entityId?: string;
-  previousData?: Record<string, any>;
-  newData?: Record<string, any>;
+  previousData?: Record<string, unknown>;
+  newData?: Record<string, unknown>;
   description?: string;
   status?: 'success' | 'failed';
   errorMessage?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 @Injectable()
@@ -34,14 +34,22 @@ export class AuditService {
   /**
    * Log an audit entry
    */
-  async log(context: AuditContext, entry: AuditEntry): Promise<AuditLogDocument> {
+  async log(
+    context: AuditContext,
+    entry: AuditEntry,
+  ): Promise<AuditLogDocument> {
     try {
-      const changedFields = this.getChangedFields(entry.previousData, entry.newData);
+      const changedFields = this.getChangedFields(
+        entry.previousData,
+        entry.newData,
+      );
 
       const auditLog = await this.auditModel.create({
         action: entry.action,
         entity: entry.entity,
-        entityId: entry.entityId ? new Types.ObjectId(entry.entityId) : undefined,
+        entityId: entry.entityId
+          ? new Types.ObjectId(entry.entityId)
+          : undefined,
         userId: new Types.ObjectId(context.userId),
         userName: context.userName,
         userRole: context.userRole,
@@ -62,7 +70,9 @@ export class AuditService {
 
       return auditLog;
     } catch (error) {
-      this.logger.error(`Failed to create audit log: ${error.message}`);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to create audit log: ${errorMessage}`);
       throw error;
     }
   }
@@ -70,7 +80,12 @@ export class AuditService {
   /**
    * Log a CREATE action
    */
-  async logCreate(context: AuditContext, entity: string, entityId: string, data: any): Promise<void> {
+  async logCreate(
+    context: AuditContext,
+    entity: string,
+    entityId: string,
+    data: Record<string, unknown>,
+  ): Promise<void> {
     await this.log(context, {
       action: 'CREATE',
       entity,
@@ -83,12 +98,15 @@ export class AuditService {
   /**
    * Log an UPDATE action
    */
+  /**
+   * Log an UPDATE action
+   */
   async logUpdate(
     context: AuditContext,
     entity: string,
     entityId: string,
-    previousData: any,
-    newData: any,
+    previousData: Record<string, unknown>,
+    newData: Record<string, unknown>,
   ): Promise<void> {
     await this.log(context, {
       action: 'UPDATE',
@@ -103,7 +121,12 @@ export class AuditService {
   /**
    * Log a DELETE action
    */
-  async logDelete(context: AuditContext, entity: string, entityId: string, data?: any): Promise<void> {
+  async logDelete(
+    context: AuditContext,
+    entity: string,
+    entityId: string,
+    data?: Record<string, unknown>,
+  ): Promise<void> {
     await this.log(context, {
       action: 'DELETE',
       entity,
@@ -116,7 +139,11 @@ export class AuditService {
   /**
    * Log a LOGIN action
    */
-  async logLogin(context: AuditContext, success: boolean, errorMessage?: string): Promise<void> {
+  async logLogin(
+    context: AuditContext,
+    success: boolean,
+    errorMessage?: string,
+  ): Promise<void> {
     await this.log(context, {
       action: 'LOGIN',
       entity: 'auth',
@@ -150,7 +177,12 @@ export class AuditService {
     page?: number;
     limit?: number;
   }): Promise<{ logs: AuditLogDocument[]; total: number; pages: number }> {
-    const query: any = {};
+    const query: Record<
+      string,
+      | string
+      | { $gte?: Date; $lte?: Date; $in?: string[] }
+      | import('mongoose').Types.ObjectId
+    > = {};
 
     if (filters.userId) query.userId = new Types.ObjectId(filters.userId);
     if (filters.entity) query.entity = filters.entity;
@@ -187,7 +219,10 @@ export class AuditService {
   /**
    * Get entity history
    */
-  async getEntityHistory(entity: string, entityId: string): Promise<AuditLogDocument[]> {
+  async getEntityHistory(
+    entity: string,
+    entityId: string,
+  ): Promise<AuditLogDocument[]> {
     return this.auditModel
       .find({
         entity,
@@ -200,7 +235,10 @@ export class AuditService {
   /**
    * Get user activity
    */
-  async getUserActivity(userId: string, limit = 50): Promise<AuditLogDocument[]> {
+  async getUserActivity(
+    userId: string,
+    limit = 50,
+  ): Promise<AuditLogDocument[]> {
     return this.auditModel
       .find({ userId: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
@@ -222,11 +260,22 @@ export class AuditService {
   /**
    * Get audit statistics
    */
-  async getStats(days = 30): Promise<any> {
+  async getStats(days = 30): Promise<{
+    byEntity: Array<{
+      _id: string;
+      actions: Array<{ action: string; count: number }>;
+      total: number;
+    }>;
+    dailyActivity: Array<{ _id: string; count: number }>;
+  }> {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    const stats = await this.auditModel.aggregate([
+    const stats = await this.auditModel.aggregate<{
+      _id: string;
+      actions: Array<{ action: string; count: number }>;
+      total: number;
+    }>([
       { $match: { createdAt: { $gte: startDate } } },
       {
         $group: {
@@ -252,7 +301,10 @@ export class AuditService {
       { $sort: { total: -1 } },
     ]);
 
-    const dailyActivity = await this.auditModel.aggregate([
+    const dailyActivity = await this.auditModel.aggregate<{
+      _id: string;
+      count: number;
+    }>([
       { $match: { createdAt: { $gte: startDate } } },
       {
         $group: {
@@ -269,10 +321,18 @@ export class AuditService {
   /**
    * Remove sensitive fields from data before logging
    */
-  private sanitizeData(data: any): any {
-    if (!data) return data;
+  private sanitizeData(
+    data: Record<string, unknown> | null | undefined,
+  ): Record<string, unknown> | undefined {
+    if (!data) return undefined;
 
-    const sensitiveFields = ['password', 'refreshToken', 'resetPasswordToken', 'otp', 'otpSecret'];
+    const sensitiveFields = [
+      'password',
+      'refreshToken',
+      'resetPasswordToken',
+      'otp',
+      'otpSecret',
+    ];
     const sanitized = { ...data };
 
     for (const field of sensitiveFields) {
@@ -287,11 +347,17 @@ export class AuditService {
   /**
    * Get list of changed fields between two objects
    */
-  private getChangedFields(previous: any, current: any): string[] {
+  private getChangedFields(
+    previous: Record<string, unknown> | null | undefined,
+    current: Record<string, unknown> | null | undefined,
+  ): string[] {
     if (!previous || !current) return [];
 
     const changes: string[] = [];
-    const allKeys = new Set([...Object.keys(previous), ...Object.keys(current)]);
+    const allKeys = new Set([
+      ...Object.keys(previous),
+      ...Object.keys(current),
+    ]);
 
     for (const key of allKeys) {
       if (JSON.stringify(previous[key]) !== JSON.stringify(current[key])) {

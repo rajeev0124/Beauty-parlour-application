@@ -15,7 +15,6 @@ export class SmsService {
   async sendSms(options: SmsOptions): Promise<boolean> {
     try {
       const apiKey = this.configService.get('SMS_API_KEY');
-      const senderId = this.configService.get('SMS_SENDER_ID');
 
       // If SMS not configured, simulate SMS
       if (!apiKey) {
@@ -25,28 +24,18 @@ export class SmsService {
       }
 
       // Integration with SMS gateway (e.g., Twilio, MSG91, TextLocal)
-      // For MSG91 example:
-      const url = `https://api.msg91.com/api/v5/flow/`;
-      
       // Implement actual SMS API call here based on your provider
-      // const response = await fetch(url, {
-      //   method: 'POST',
-      //   headers: {
-      //     'authkey': apiKey,
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     sender: senderId,
-      //     route: '4',
-      //     country: '91',
-      //     sms: [{ message: options.message, to: [options.to] }],
-      //   }),
-      // });
+      // Example for MSG91:
+      // const url = `https://api.msg91.com/api/v5/flow/`;
+      // const senderId = this.configService.get('SMS_SENDER_ID');
+      // const response = await fetch(url, { ... });
 
       this.logger.log(`SMS sent successfully to ${options.to}`);
       return true;
     } catch (error) {
-      this.logger.error(`Failed to send SMS to ${options.to}: ${error.message}`);
+      this.logger.error(
+        `Failed to send SMS to ${options.to}: ${error.message}`,
+      );
       return false;
     }
   }

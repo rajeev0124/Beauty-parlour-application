@@ -6,9 +6,15 @@ import { CreateExpenseDto, UpdateExpenseDto } from './dto/expense.dto';
 
 @Injectable()
 export class ExpensesService {
-  constructor(@InjectModel(Expense.name) private expenseModel: Model<ExpenseDocument>) {}
+  constructor(
+    @InjectModel(Expense.name) private expenseModel: Model<ExpenseDocument>,
+  ) {}
 
-  async create(userId: string, userName: string, createExpenseDto: CreateExpenseDto) {
+  async create(
+    userId: string,
+    userName: string,
+    createExpenseDto: CreateExpenseDto,
+  ) {
     const expense = new this.expenseModel({
       ...createExpenseDto,
       addedBy: new Types.ObjectId(userId),
@@ -17,7 +23,11 @@ export class ExpensesService {
     return expense.save();
   }
 
-  async findAll(query: { category?: string; startDate?: string; endDate?: string }) {
+  async findAll(query: {
+    category?: string;
+    startDate?: string;
+    endDate?: string;
+  }) {
     const filter: any = {};
     if (query.category) filter.category = query.category;
     if (query.startDate || query.endDate) {
@@ -35,7 +45,11 @@ export class ExpensesService {
   }
 
   async update(id: string, updateExpenseDto: UpdateExpenseDto) {
-    const expense = await this.expenseModel.findByIdAndUpdate(id, updateExpenseDto, { new: true });
+    const expense = await this.expenseModel.findByIdAndUpdate(
+      id,
+      updateExpenseDto,
+      { new: true },
+    );
     if (!expense) throw new NotFoundException('Expense not found');
     return expense;
   }
@@ -56,13 +70,21 @@ export class ExpensesService {
       // Total expenses
       this.expenseModel.aggregate([
         { $match: filter },
-        { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } }
+        {
+          $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } },
+        },
       ]),
       // By category
       this.expenseModel.aggregate([
         { $match: filter },
-        { $group: { _id: '$category', total: { $sum: '$amount' }, count: { $sum: 1 } } },
-        { $sort: { total: -1 } }
+        {
+          $group: {
+            _id: '$category',
+            total: { $sum: '$amount' },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { total: -1 } },
       ]),
       // Monthly trend
       this.expenseModel.aggregate([
@@ -71,12 +93,12 @@ export class ExpensesService {
           $group: {
             _id: { year: { $year: '$date' }, month: { $month: '$date' } },
             total: { $sum: '$amount' },
-            count: { $sum: 1 }
-          }
+            count: { $sum: 1 },
+          },
         },
         { $sort: { '_id.year': -1, '_id.month': -1 } },
-        { $limit: 12 }
-      ])
+        { $limit: 12 },
+      ]),
     ]);
 
     return {
@@ -88,6 +110,9 @@ export class ExpensesService {
   }
 
   async getRecurringExpenses() {
-    return this.expenseModel.find({ isRecurring: true }).sort({ date: -1 }).exec();
+    return this.expenseModel
+      .find({ isRecurring: true })
+      .sort({ date: -1 })
+      .exec();
   }
 }

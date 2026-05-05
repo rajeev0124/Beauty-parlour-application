@@ -62,9 +62,8 @@ export class InventoryAlertService implements OnModuleInit {
       });
 
       for (const item of lowStockItems) {
-        const severity = item.stock <= this.config.criticalStockThreshold
-          ? 'critical'
-          : 'low';
+        const severity =
+          item.stock <= this.config.criticalStockThreshold ? 'critical' : 'low';
 
         alerts.push({
           itemId: item._id.toString(),
@@ -98,10 +97,12 @@ export class InventoryAlertService implements OnModuleInit {
 
     try {
       const warningDate = new Date();
-      warningDate.setDate(warningDate.getDate() + this.config.expiryWarningDays);
+      warningDate.setDate(
+        warningDate.getDate() + this.config.expiryWarningDays,
+      );
 
       const expiringItems = await this.productModel.find({
-        expiryDate: { 
+        expiryDate: {
           $lte: warningDate,
           $gte: new Date(),
         },
@@ -151,10 +152,11 @@ export class InventoryAlertService implements OnModuleInit {
    */
   private async sendAlerts(alerts: AlertItem[], type: 'stock' | 'expiry') {
     // Prevent duplicate alerts within 24 hours
-    const filteredAlerts = alerts.filter(alert => {
+    const filteredAlerts = alerts.filter((alert) => {
       const lastAlert = this.alertHistory.get(`${type}-${alert.itemId}`);
       if (lastAlert) {
-        const hoursSince = (Date.now() - lastAlert.getTime()) / (1000 * 60 * 60);
+        const hoursSince =
+          (Date.now() - lastAlert.getTime()) / (1000 * 60 * 60);
         return hoursSince > 24;
       }
       return true;
@@ -163,7 +165,7 @@ export class InventoryAlertService implements OnModuleInit {
     if (filteredAlerts.length === 0) return;
 
     // Update alert history
-    filteredAlerts.forEach(alert => {
+    filteredAlerts.forEach((alert) => {
       this.alertHistory.set(`${type}-${alert.itemId}`, new Date());
     });
 
@@ -178,11 +180,11 @@ export class InventoryAlertService implements OnModuleInit {
 
     // Send email alerts
     if (this.config.enableEmailAlerts) {
-      const subject = type === 'stock'
-        ? `🚨 Low Stock Alert: ${filteredAlerts.length} items`
-        : `⚠️ Expiry Alert: ${filteredAlerts.length} items`;
+      const subject =
+        type === 'stock'
+          ? `🚨 Low Stock Alert: ${filteredAlerts.length} items`
+          : `⚠️ Expiry Alert: ${filteredAlerts.length} items`;
 
-      const criticalItems = filteredAlerts.filter(a => a.severity === 'critical');
       const body = this.formatAlertEmail(filteredAlerts, type);
 
       for (const email of this.config.adminEmails) {
@@ -192,8 +194,8 @@ export class InventoryAlertService implements OnModuleInit {
             subject,
             html: body,
           });
-        } catch (err) {
-          this.logger.error(`Failed to send email to ${email}:`, err.message);
+        } catch {
+          this.logger.error(`Failed to send email to ${email}`);
         }
       }
     }
@@ -202,7 +204,10 @@ export class InventoryAlertService implements OnModuleInit {
   /**
    * Format alert email
    */
-  private formatAlertEmail(alerts: AlertItem[], type: 'stock' | 'expiry'): string {
+  private formatAlertEmail(
+    alerts: AlertItem[],
+    type: 'stock' | 'expiry',
+  ): string {
     let html = `
       <h2>Inventory ${type === 'stock' ? 'Stock' : 'Expiry'} Alert</h2>
       <p>The following items need your attention:</p>
@@ -216,7 +221,8 @@ export class InventoryAlertService implements OnModuleInit {
     `;
 
     for (const alert of alerts) {
-      const severityColor = alert.severity === 'critical' ? '#dc3545' : '#ffc107';
+      const severityColor =
+        alert.severity === 'critical' ? '#dc3545' : '#ffc107';
       html += `
         <tr>
           <td style="padding: 8px;">${alert.name}</td>
@@ -279,15 +285,16 @@ export class InventoryAlertService implements OnModuleInit {
       isActive: { $ne: false },
     });
 
-    const lowStock: AlertItem[] = lowStockItems.map(item => ({
+    const lowStock: AlertItem[] = lowStockItems.map((item) => ({
       itemId: item._id.toString(),
       name: item.name,
       currentStock: item.stock,
       threshold: this.config.lowStockThreshold,
-      severity: item.stock <= this.config.criticalStockThreshold ? 'critical' : 'low',
+      severity:
+        item.stock <= this.config.criticalStockThreshold ? 'critical' : 'low',
     }));
 
-    const expiring: AlertItem[] = expiringItems.map(item => ({
+    const expiring: AlertItem[] = expiringItems.map((item) => ({
       itemId: item._id.toString(),
       name: item.name,
       currentStock: item.stock,
@@ -301,7 +308,7 @@ export class InventoryAlertService implements OnModuleInit {
       expiring,
       summary: {
         totalLowStock: lowStock.length,
-        criticalCount: lowStock.filter(a => a.severity === 'critical').length,
+        criticalCount: lowStock.filter((a) => a.severity === 'critical').length,
         expiringCount: expiring.length,
       },
     };

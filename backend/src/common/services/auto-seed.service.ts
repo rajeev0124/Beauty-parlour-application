@@ -25,7 +25,7 @@ export class AutoSeedService implements OnModuleInit {
       phone: '9876543210',
       password: 'admin123',
       role: 'admin',
-      address: 'Shop No. 5, MG Road, Hyderabad'
+      address: 'Shop No. 5, MG Road, Hyderabad',
     },
     {
       name: 'Super Admin',
@@ -33,13 +33,11 @@ export class AutoSeedService implements OnModuleInit {
       phone: '9876543211',
       password: 'super123',
       role: 'superadmin',
-      address: 'Admin Office, Banjara Hills, Hyderabad'
-    }
+      address: 'Admin Office, Banjara Hills, Hyderabad',
+    },
   ];
 
-  constructor(
-    @InjectModel('User') private userModel: Model<any>,
-  ) {}
+  constructor(@InjectModel('User') private userModel: Model<any>) {}
 
   async onModuleInit() {
     await this.ensureDefaultUsers();
@@ -64,38 +62,44 @@ export class AutoSeedService implements OnModuleInit {
    */
   private async ensureUserExists(userData: DefaultUser): Promise<void> {
     try {
-      const existingUser = await this.userModel.findOne({ email: userData.email });
-      
+      const existingUser = await this.userModel.findOne({
+        email: userData.email,
+      });
+
       if (!existingUser) {
         // Create new user
         const hashedPassword = await bcrypt.hash(userData.password, 12);
         await this.userModel.create({
           ...userData,
           password: hashedPassword,
-          status: 'active'
+          status: 'active',
         });
         this.logger.log(`✅ Created ${userData.role}: ${userData.email}`);
       } else {
         // Ensure user is active and password is correct
         const updates: any = {};
-        
+
         if (existingUser.status === 'blocked') {
           updates.status = 'active';
         }
-        
+
         // Always reset password for default users to prevent lockouts
         updates.password = await bcrypt.hash(userData.password, 12);
-        
+
         if (Object.keys(updates).length > 0) {
           await this.userModel.updateOne({ email: userData.email }, updates);
           if (existingUser.status === 'blocked') {
-            this.logger.log(`✅ Reactivated ${userData.role}: ${userData.email}`);
+            this.logger.log(
+              `✅ Reactivated ${userData.role}: ${userData.email}`,
+            );
           }
         }
         this.logger.log(`✅ ${userData.role} exists: ${userData.email}`);
       }
     } catch (error) {
-      this.logger.error(`❌ Failed to ensure user ${userData.email}: ${error.message}`);
+      this.logger.error(
+        `❌ Failed to ensure user ${userData.email}: ${error.message}`,
+      );
     }
   }
 
@@ -117,32 +121,34 @@ export class AutoSeedService implements OnModuleInit {
   /**
    * Reset any user's password to default (for password recovery)
    */
-  async resetUserPassword(email: string): Promise<{ success: boolean; newPassword?: string }> {
-    const defaultUser = this.defaultUsers.find(u => u.email === email);
-    
+  async resetUserPassword(
+    email: string,
+  ): Promise<{ success: boolean; newPassword?: string }> {
+    const defaultUser = this.defaultUsers.find((u) => u.email === email);
+
     if (defaultUser) {
       // Reset to default password
       const hashedPassword = await bcrypt.hash(defaultUser.password, 12);
       await this.userModel.updateOne(
         { email },
-        { password: hashedPassword, status: 'active' }
+        { password: hashedPassword, status: 'active' },
       );
       return { success: true, newPassword: defaultUser.password };
     }
-    
+
     // For non-default users, generate a temporary password
     const tempPassword = 'temp' + Math.random().toString(36).slice(-6);
     const hashedPassword = await bcrypt.hash(tempPassword, 12);
-    
+
     const result = await this.userModel.updateOne(
       { email },
-      { password: hashedPassword, status: 'active' }
+      { password: hashedPassword, status: 'active' },
     );
-    
+
     if (result.modifiedCount > 0) {
       return { success: true, newPassword: tempPassword };
     }
-    
+
     return { success: false };
   }
 
@@ -152,7 +158,7 @@ export class AutoSeedService implements OnModuleInit {
   async unblockUser(email: string): Promise<boolean> {
     const result = await this.userModel.updateOne(
       { email },
-      { status: 'active' }
+      { status: 'active' },
     );
     return result.modifiedCount > 0;
   }

@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsBoolean, IsNumber, IsObject, IsEnum, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsNumber,
+  IsObject,
+  IsEnum,
+  Min,
+  Max,
+} from 'class-validator';
 
 export class CheckInDto {
   @IsOptional()
@@ -39,7 +48,15 @@ export class RequestLeaveDto {
   date: string; // YYYY-MM-DD
 
   @IsString()
-  @IsEnum(['sick', 'casual', 'annual', 'emergency', 'maternity', 'paternity', 'unpaid'])
+  @IsEnum([
+    'sick',
+    'casual',
+    'annual',
+    'emergency',
+    'maternity',
+    'paternity',
+    'unpaid',
+  ])
   leaveType: string;
 
   @IsOptional()

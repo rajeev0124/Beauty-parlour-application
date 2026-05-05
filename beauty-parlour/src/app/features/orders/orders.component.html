@@ -1,115 +1,290 @@
-<div class="page-shell">
-  <div class="page-header">
-    <div class="page-header-left">
-      <h1 class="page-title">Orders</h1>
-      <p class="page-desc">View and manage product orders</p>
+<div class="orders-page">
+  <!-- Header -->
+  <div class="orders-header">
+    <div class="orders-header-left">
+      <div class="orders-header-icon">
+        <mat-icon>shopping_bag</mat-icon>
+      </div>
+      <div class="orders-header-text">
+        <h1>Orders</h1>
+        <p>View and manage product orders</p>
+      </div>
     </div>
-    <div class="page-header-actions">
-      <button class="btn-outline">
+    <div class="orders-header-actions">
+      <button class="orders-btn secondary" (click)="loadOrders()">
+        <mat-icon>refresh</mat-icon>
+        <span class="btn-text">Refresh</span>
+      </button>
+      <button class="orders-btn primary">
         <mat-icon>download</mat-icon>
-        Export
+        <span class="btn-text">Export</span>
       </button>
     </div>
   </div>
 
-  <div class="data-card">
-    <div class="data-card-toolbar">
-      <div class="data-search">
+  <!-- Stats Grid -->
+  <div class="orders-stats">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ totalOrders }}</span>
+        <span class="stat-label">Total Orders</span>
+      </div>
+      <div class="stat-bg"></div>
+    </div>
+    
+    <div class="stat-card pending">
+      <div class="stat-icon">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ pendingCount }}</span>
+        <span class="stat-label">Pending</span>
+      </div>
+      <div class="stat-bg"></div>
+    </div>
+    
+    <div class="stat-card processing">
+      <div class="stat-icon">
+        <mat-icon>autorenew</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ processingCount }}</span>
+        <span class="stat-label">Processing</span>
+      </div>
+      <div class="stat-bg"></div>
+    </div>
+    
+    <div class="stat-card revenue">
+      <div class="stat-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">₹{{ totalRevenue | number:'1.0-0' }}</span>
+        <span class="stat-label">Total Revenue</span>
+      </div>
+      <div class="stat-bg"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="orders-main">
+    <!-- Toolbar -->
+    <div class="orders-toolbar">
+      <div class="orders-search">
         <mat-icon>search</mat-icon>
-        <input (keyup)="applyFilter($event)" placeholder="Search orders...">
+        <input type="text" placeholder="Search orders by ID, customer..." (input)="applyFilter($event)" #searchInput>
+        @if (searchInput.value) {
+          <button class="clear-btn" (click)="clearSearch(searchInput)">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+      <div class="orders-filters">
+        <button class="filter-chip" [class.active]="filterMode === 'all'" (click)="setFilter('all')">
+          All Orders
+        </button>
+        <button class="filter-chip" [class.active]="filterMode === 'pending'" (click)="setFilter('pending')">
+          <span class="dot yellow"></span> Pending
+        </button>
+        <button class="filter-chip" [class.active]="filterMode === 'processing'" (click)="setFilter('processing')">
+          <span class="dot blue"></span> Processing
+        </button>
+        <button class="filter-chip" [class.active]="filterMode === 'completed'" (click)="setFilter('completed')">
+          <span class="dot green"></span> Completed
+        </button>
+        <button class="filter-chip" [class.active]="filterMode === 'cancelled'" (click)="setFilter('cancelled')">
+          <span class="dot red"></span> Cancelled
+        </button>
       </div>
     </div>
 
+    <!-- Loading -->
     @if (loading) {
-      <div class="skeleton-table-loader">
-        @for (i of [1,2,3,4,5]; track i) {
-          <div class="skeleton-row">
-            <div class="skeleton-cell skeleton-short"></div>
-            <div class="skeleton-cell skeleton-avatar"></div>
-            <div class="skeleton-cell skeleton-medium"></div>
-            <div class="skeleton-cell skeleton-short"></div>
-            <div class="skeleton-cell skeleton-short"></div>
-            <div class="skeleton-cell skeleton-medium"></div>
+      <div class="orders-loading">
+        <div class="loading-spinner"></div>
+        <p>Loading orders...</p>
+      </div>
+    } @else if (filteredData.length === 0) {
+      <div class="orders-empty">
+        <div class="empty-icon">
+          <mat-icon>shopping_bag</mat-icon>
+        </div>
+        <h3>No orders found</h3>
+        <p>{{ allData.length === 0 ? 'Orders will appear here once customers place them.' : 'Try adjusting your search or filters' }}</p>
+        @if (allData.length > 0) {
+          <button class="orders-btn secondary" (click)="resetFilters(searchInput)">
+            <mat-icon>refresh</mat-icon> Reset Filters
+          </button>
+        }
+      </div>
+    } @else {
+      <!-- Desktop Table View -->
+      <div class="orders-table-wrap">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th class="col-order">Order ID</th>
+              <th class="col-customer">Customer</th>
+              <th class="col-amount">Amount</th>
+              <th class="col-status">Status</th>
+              <th class="col-date">Date & Time</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of paginatedData; track order._id) {
+              <tr [class.row-pending]="order.status === 'pending'" 
+                  [class.row-processing]="order.status === 'processing'"
+                  [class.row-completed]="order.status === 'completed'"
+                  [class.row-cancelled]="order.status === 'cancelled'">
+                <td class="col-order">
+                  <span class="order-id">#{{ order._id | slice:0:8 }}</span>
+                </td>
+                <td class="col-customer">
+                  <div class="customer-cell">
+                    <div class="customer-avatar" [style.background]="getAvatarColor(order.userName || '')">
+                      {{ getInitials(order.userName || '') }}
+                    </div>
+                    <span class="customer-name">{{ order.userName || 'Guest' }}</span>
+                  </div>
+                </td>
+                <td class="col-amount">
+                  <span class="amount-value">{{ order.totalPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                </td>
+                <td class="col-status">
+                  <span class="status-badge" [class]="'status-' + order.status">
+                    @switch (order.status) {
+                      @case ('pending') { <mat-icon>schedule</mat-icon> }
+                      @case ('processing') { <mat-icon>autorenew</mat-icon> }
+                      @case ('completed') { <mat-icon>check_circle</mat-icon> }
+                      @case ('cancelled') { <mat-icon>cancel</mat-icon> }
+                    }
+                    {{ order.status | titlecase }}
+                  </span>
+                </td>
+                <td class="col-date">
+                  <div class="date-cell">
+                    <span class="date-main">{{ order.createdAt | date:'MMM d, y' }}</span>
+                    <span class="date-time">{{ order.createdAt | date:'h:mm a' }}</span>
+                  </div>
+                </td>
+                <td class="col-actions">
+                  <div class="action-btns">
+                    @if (order.status === 'pending') {
+                      <button class="action-btn process" (click)="updateStatus(order._id, 'processing')" matTooltip="Start Processing">
+                        <mat-icon>play_arrow</mat-icon>
+                      </button>
+                    }
+                    @if (order.status === 'processing') {
+                      <button class="action-btn complete" (click)="updateStatus(order._id, 'completed')" matTooltip="Mark Complete">
+                        <mat-icon>done</mat-icon>
+                      </button>
+                    }
+                    @if (order.status !== 'cancelled' && order.status !== 'completed') {
+                      <button class="action-btn cancel" (click)="updateStatus(order._id, 'cancelled')" matTooltip="Cancel Order">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    }
+                    <button class="action-btn view" matTooltip="View Details">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="orders-cards">
+        @for (order of paginatedData; track order._id) {
+          <div class="order-card" [class]="'card-' + order.status">
+            <div class="card-header">
+              <span class="order-id">#{{ order._id | slice:0:8 }}</span>
+              <span class="status-badge" [class]="'status-' + order.status">
+                @switch (order.status) {
+                  @case ('pending') { <mat-icon>schedule</mat-icon> }
+                  @case ('processing') { <mat-icon>autorenew</mat-icon> }
+                  @case ('completed') { <mat-icon>check_circle</mat-icon> }
+                  @case ('cancelled') { <mat-icon>cancel</mat-icon> }
+                }
+                {{ order.status | titlecase }}
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="customer-info">
+                <div class="customer-avatar" [style.background]="getAvatarColor(order.userName || '')">
+                  {{ getInitials(order.userName || '') }}
+                </div>
+                <div class="customer-details">
+                  <span class="customer-name">{{ order.userName || 'Guest' }}</span>
+                  <span class="order-date">{{ order.createdAt | date:'MMM d, y • h:mm a' }}</span>
+                </div>
+              </div>
+              <div class="order-amount">
+                <span class="amount-label">Total</span>
+                <span class="amount-value">{{ order.totalPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="action-btns">
+                @if (order.status === 'pending') {
+                  <button class="action-btn process" (click)="updateStatus(order._id, 'processing')">
+                    <mat-icon>play_arrow</mat-icon> Process
+                  </button>
+                }
+                @if (order.status === 'processing') {
+                  <button class="action-btn complete" (click)="updateStatus(order._id, 'completed')">
+                    <mat-icon>done</mat-icon> Complete
+                  </button>
+                }
+                @if (order.status !== 'cancelled' && order.status !== 'completed') {
+                  <button class="action-btn cancel" (click)="updateStatus(order._id, 'cancelled')">
+                    <mat-icon>close</mat-icon> Cancel
+                  </button>
+                }
+                <button class="action-btn view">
+                  <mat-icon>visibility</mat-icon> View
+                </button>
+              </div>
+            </div>
           </div>
         }
       </div>
-    }
 
-    <div class="table-responsive">
-    <table mat-table [dataSource]="dataSource" matSort class="full-width">
-      <ng-container matColumnDef="orderId">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Order ID</th>
-        <td mat-cell *matCellDef="let row" class="cell-mono">#{{ row._id | slice:0:8 }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="userName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
-        <td mat-cell *matCellDef="let row">
-          <div class="user-cell">
-            <div class="user-cell-avatar avatar-green">{{ row.userName?.charAt(0) }}</div>
-            <span class="cell-name">{{ row.userName }}</span>
-          </div>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="totalPrice">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
-        <td mat-cell *matCellDef="let row" class="amount-cell">{{ row.totalPrice | currency:'INR':'symbol':'1.0-0' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let row">
-          <span class="status-badge" [class]="'status-' + row.status">{{ row.status }}</span>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date & Time</th>
-        <td mat-cell *matCellDef="let row">
-          <div class="date-time-cell">
-            <span class="date-full">{{ row.createdAt | date:'EEE, MMM d, y' }}</span>
-            <span class="time-full">{{ row.createdAt | date:'h:mm a' }}</span>
-          </div>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let row">
-          <div class="row-actions">
-            @if (row.status === 'pending') {
-              <button mat-icon-button color="primary" (click)="updateStatus(row._id, 'processing')" title="Process">
-                <mat-icon>play_arrow</mat-icon>
-              </button>
-            }
-            @if (row.status === 'processing') {
-              <button mat-icon-button color="primary" (click)="updateStatus(row._id, 'completed')" title="Complete">
-                <mat-icon>done</mat-icon>
-              </button>
-            }
-            @if (row.status !== 'cancelled' && row.status !== 'completed') {
-              <button mat-icon-button color="warn" (click)="updateStatus(row._id, 'cancelled')" title="Cancel">
-                <mat-icon>cancel</mat-icon>
-              </button>
-            }
-          </div>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-    </div>
-
-    @if (dataSource.data.length === 0) {
-      <div class="empty-state">
-        <mat-icon>shopping_bag</mat-icon>
-        <h3>No orders yet</h3>
-        <p>Orders will appear here once customers place them.</p>
+      <!-- Pagination -->
+      <div class="orders-pagination">
+        <div class="pagination-info">
+          Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredData.length) }} of {{ filteredData.length }} orders
+        </div>
+        <div class="pagination-controls">
+          <button class="page-btn" (click)="goToPage(1)" [disabled]="currentPage === 1">
+            <mat-icon>first_page</mat-icon>
+          </button>
+          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="page-num">{{ currentPage }} / {{ totalPages }}</span>
+          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+          <button class="page-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages">
+            <mat-icon>last_page</mat-icon>
+          </button>
+        </div>
+        <div class="page-size">
+          <span>Per page:</span>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option [value]="10">10</option>
+            <option [value]="25">25</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
       </div>
     }
-
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
   </div>
 </div>

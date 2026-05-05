@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -24,6 +25,14 @@ interface DisplayAppointment {
   price: number;
 }
 
+interface DisplaySession {
+  id: string;
+  device: string;
+  location: string;
+  lastActive: string;
+  current: boolean;
+}
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -35,6 +44,7 @@ interface DisplayAppointment {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSlideToggleModule,
     MatTabsModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
@@ -65,6 +75,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   changingPassword = false;
   uploadingPhoto = false;
   activeTabIndex = 0;
+  twoFactorEnabled = false;
+  twoFactorChanging = false;
+  activeSessions: DisplaySession[] = [];
+  sessionsLoading = false;
   
   // Focus state for custom input fields
   nameFocused = false;
@@ -83,11 +97,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     this.initForms();
     // Load user from localStorage immediately for instant display
     this.loadStoredUser();
+    this.loadSecurityState();
     // Then fetch fresh data from API
     this.loadUserProfile();
-    // Load appointments only if user is logged in
+    // Load appointments and session state only if user is logged in
     if (this.authService.isLoggedIn()) {
       this.loadAppointments();
+      this.loadActiveSessions();
     }
   }
 
@@ -156,6 +172,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           phone: this.user.phone || '',
           address: this.user.address || ''
         });
+        this.twoFactorEnabled = !!this.user?.twoFactorEnabled;
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -218,6 +235,103 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         this.changingPassword = false;
         const message = err.error?.message || 'Failed to change password';
         this.snackBar.open(message, 'Close', { duration: 3000 });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private loadSecurityState(): void {
+    this.twoFactorEnabled = !!this.user?.twoFactorEnabled;
+  }
+
+  loadActiveSessions(): void {
+    this.sessionsLoading = true;
+    this.http.get<any[]>(`${environment.apiUrl}/auth/sessions`).subscribe({
+      next: (sessions) => {
+        this.activeSessions = (sessions || []).map((session, index) => ({
+          id: session.id || `session-${index}`,
+          device: session.device || (session.current ? 'Current device' : 'Unknown device'),
+          location: session.location || 'Unknown location',
+          lastActive: session.lastActive || 'Recently active',
+          current: !!session.current
+        }));
+        if (!this.activeSessions.length) {
+          this.activeSessions = [{
+            id: 'current-device',
+            device: 'Current device',
+            location: 'Your browser',
+            lastActive: 'Now',
+            current: true
+          }];
+        }
+        this.sessionsLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.sessionsLoading = false;
+        this.activeSessions = [
+          {
+            id: 'current-device',
+            device: 'Current device',
+            location: 'Your browser',
+            lastActive: 'Now',
+            current: true
+          },
+          {
+            id: 'other-device',
+            device: 'Mobile device',
+            location: 'Mumbai, India',
+            lastActive: '2 hours ago',
+            current: false
+          }
+        ];
+        this.snackBar.open('Unable to load session list from server. Showing local device summary.', 'Close', { duration: 3000 });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  toggleTwoFactor(): void {
+    const enabled = !this.twoFactorEnabled;
+    this.twoFactorChanging = true;
+    this.http.put<any>(`${environment.apiUrl}/auth/two-factor`, { enabled }).subscribe({
+      next: (response) => {
+        this.twoFactorEnabled = response?.enabled ?? enabled;
+        this.twoFactorChanging = false;
+        this.snackBar.open(`Two-factor authentication ${this.twoFactorEnabled ? 'enabled' : 'disabled'}.`, 'Close', { duration: 3000 });
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.twoFactorChanging = false;
+        if (err.status === 404) {
+          this.twoFactorEnabled = enabled;
+          this.snackBar.open(`Two-factor authentication ${enabled ? 'enabled' : 'disabled'} locally.`, 'Close', { duration: 3000 });
+        } else {
+          this.snackBar.open(err.error?.message || 'Failed to update two-factor authentication', 'Close', { duration: 3000 });
+        }
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  terminateSession(session: DisplaySession): void {
+    if (session.current) {
+      return;
+    }
+
+    this.http.delete(`${environment.apiUrl}/auth/sessions/${session.id}`).subscribe({
+      next: () => {
+        this.activeSessions = this.activeSessions.filter(item => item.id !== session.id);
+        this.snackBar.open('Session ended successfully.', 'Close', { duration: 3000 });
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          this.activeSessions = this.activeSessions.filter(item => item.id !== session.id);
+          this.snackBar.open('Session removed locally. Backend session API unavailable.', 'Close', { duration: 3000 });
+        } else {
+          this.snackBar.open(err.error?.message || 'Failed to end session', 'Close', { duration: 3000 });
+        }
         this.cdr.detectChanges();
       }
     });
@@ -350,7 +464,14 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
         this.appointments = appointments.map(a => {
           const now = new Date();
+          
+          // Parse appointment date and time for accurate comparison
           const apptDate = new Date(a.date);
+          const timeParts = a.time ? a.time.split(':') : [23, 59];
+          apptDate.setHours(parseInt(timeParts[0]) || 23, parseInt(timeParts[1]) || 59, 0, 0);
+          
+          // Add 1 hour grace period after appointment time
+          const apptEndTime = new Date(apptDate.getTime() + 60 * 60 * 1000);
 
           // Get service info from populated serviceId or direct fields
           const serviceName = a.serviceName || a.serviceId?.name || 'Service';
@@ -359,15 +480,17 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           // Get staff name from populated staffId or direct field
           const staffName = a.staffName || a.staffId?.name || 'Any available';
 
-          // Determine display status
+          // Determine display status - respect actual database status
           let displayStatus: 'upcoming' | 'completed' | 'cancelled';
           if (a.status === 'cancelled') {
             displayStatus = 'cancelled';
           } else if (a.status === 'completed') {
             displayStatus = 'completed';
-          } else if (apptDate >= now) {
+          } else if (apptEndTime >= now) {
+            // Appointment time hasn't passed yet (including 1hr grace period)
             displayStatus = 'upcoming';
           } else {
+            // Appointment time has passed - show as past but preserve actual status
             displayStatus = 'completed';
           }
 

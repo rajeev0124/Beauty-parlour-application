@@ -6,9 +6,15 @@ import { CreateReviewDto, ReplyReviewDto } from './dto/review.dto';
 
 @Injectable()
 export class ReviewsService {
-  constructor(@InjectModel(Review.name) private reviewModel: Model<ReviewDocument>) {}
+  constructor(
+    @InjectModel(Review.name) private reviewModel: Model<ReviewDocument>,
+  ) {}
 
-  async create(userId: string, userName: string, createReviewDto: CreateReviewDto) {
+  async create(
+    userId: string,
+    userName: string,
+    createReviewDto: CreateReviewDto,
+  ) {
     const review = new this.reviewModel({
       ...createReviewDto,
       userId: new Types.ObjectId(userId),
@@ -17,18 +23,23 @@ export class ReviewsService {
     return review.save();
   }
 
-  async findAll(query: { approved?: string; serviceId?: string; staffId?: string }) {
+  async findAll(query: {
+    approved?: string;
+    serviceId?: string;
+    staffId?: string;
+  }) {
     const filter: any = { isActive: true };
     if (query.approved === 'true') filter.isApproved = true;
     if (query.approved === 'false') filter.isApproved = false;
     if (query.serviceId) filter.serviceId = new Types.ObjectId(query.serviceId);
     if (query.staffId) filter.staffId = new Types.ObjectId(query.staffId);
-    
+
     return this.reviewModel.find(filter).sort({ createdAt: -1 }).exec();
   }
 
   async findPublic() {
-    return this.reviewModel.find({ isApproved: true, isActive: true })
+    return this.reviewModel
+      .find({ isApproved: true, isActive: true })
       .sort({ createdAt: -1 })
       .limit(20)
       .exec();
@@ -38,7 +49,7 @@ export class ReviewsService {
     const review = await this.reviewModel.findByIdAndUpdate(
       id,
       { isApproved: true },
-      { new: true }
+      { new: true },
     );
     if (!review) throw new NotFoundException('Review not found');
     return review;
@@ -48,7 +59,7 @@ export class ReviewsService {
     const review = await this.reviewModel.findByIdAndUpdate(
       id,
       { isApproved: false, isActive: false },
-      { new: true }
+      { new: true },
     );
     if (!review) throw new NotFoundException('Review not found');
     return review;
@@ -58,7 +69,7 @@ export class ReviewsService {
     const review = await this.reviewModel.findByIdAndUpdate(
       id,
       { adminReply: replyDto.adminReply, repliedAt: new Date() },
-      { new: true }
+      { new: true },
     );
     if (!review) throw new NotFoundException('Review not found');
     return review;
@@ -77,8 +88,8 @@ export class ReviewsService {
           threeStars: { $sum: { $cond: [{ $eq: ['$rating', 3] }, 1, 0] } },
           twoStars: { $sum: { $cond: [{ $eq: ['$rating', 2] }, 1, 0] } },
           oneStars: { $sum: { $cond: [{ $eq: ['$rating', 1] }, 1, 0] } },
-        }
-      }
+        },
+      },
     ]);
     return stats[0] || { avgRating: 0, totalReviews: 0 };
   }

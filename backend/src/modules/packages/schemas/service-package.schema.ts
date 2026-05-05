@@ -11,10 +11,15 @@ export class ServicePackage {
   @Prop()
   description: string;
 
-  @Prop({ type: [{ 
-    service: { type: Types.ObjectId, ref: 'Service' },
-    quantity: { type: Number, default: 1 }
-  }], required: true })
+  @Prop({
+    type: [
+      {
+        service: { type: Types.ObjectId, ref: 'BeautyService' },
+        quantity: { type: Number, default: 1 },
+      },
+    ],
+    required: true,
+  })
   services: {
     service: Types.ObjectId;
     quantity: number;
@@ -41,7 +46,10 @@ export class ServicePackage {
   @Prop()
   imageUrl: string;
 
-  @Prop({ default: 'standard', enum: ['standard', 'premium', 'bridal', 'seasonal'] })
+  @Prop({
+    default: 'standard',
+    enum: ['standard', 'premium', 'bridal', 'seasonal'],
+  })
   category: string;
 
   @Prop({ type: [String] })
@@ -66,7 +74,8 @@ export class ServicePackage {
   sortOrder: number;
 }
 
-export const ServicePackageSchema = SchemaFactory.createForClass(ServicePackage);
+export const ServicePackageSchema =
+  SchemaFactory.createForClass(ServicePackage);
 
 ServicePackageSchema.index({ isActive: 1, category: 1 });
 ServicePackageSchema.index({ packagePrice: 1 });
