@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters';
 import { AppLoggerService } from './common/logger';
@@ -66,6 +65,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   // Security Headers with Helmet
+  const helmet = (await import('helmet')).default;
   app.use(
     helmet({
       contentSecurityPolicy: {
