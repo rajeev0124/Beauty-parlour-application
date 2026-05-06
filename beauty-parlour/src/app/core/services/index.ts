@@ -27,3 +27,6 @@ export { ThemeService } from './theme.service';
 export { GiftCardService } from './gift-card.service';
 export { FeedbackService } from './feedback.service';
 export { NotificationService } from './notification.service';
+
+// Firebase
+export { FirebaseService } from './firebase.service';
