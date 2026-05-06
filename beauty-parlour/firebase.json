@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "dist/beauty-parlour/browser",
     "ignore": [
       "firebase.json",
       "**/.*",

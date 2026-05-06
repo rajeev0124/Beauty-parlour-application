@@ -7,13 +7,16 @@ import {
   IsOptional,
 } from 'class-validator';
 
+// Email regex that accepts all valid email formats including .test TLD for testing
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export class RegisterDto {
   @IsNotEmpty()
   @IsString()
   name: string;
 
   @IsNotEmpty()
-  @IsEmail()
+  @Matches(EMAIL_REGEX, { message: 'Email must be a valid email address' })
   email: string;
 
   @IsNotEmpty()
@@ -31,7 +34,7 @@ export class RegisterDto {
 
 export class LoginDto {
   @IsNotEmpty()
-  @IsEmail()
+  @Matches(EMAIL_REGEX, { message: 'Email must be a valid email address' })
   email: string;
 
   @IsNotEmpty()
@@ -48,7 +51,7 @@ export class LoginDto {
 
 export class ForgotPasswordDto {
   @IsNotEmpty()
-  @IsEmail()
+  @Matches(EMAIL_REGEX, { message: 'Email must be a valid email address' })
   email: string;
 }
 
