@@ -2347,10 +2347,12 @@
   }
   .section-title-premium { font-size: 26px; }
   .section-desc-premium { font-size: 15px; }
-  .why-grid-premium { grid-template-columns: 1fr; }
-  .why-card-inner { padding: 24px 18px; }
-  .why-icon-premium { width: 60px; height: 60px; }
-  .why-card-number { font-size: 80px; }
+  .why-grid-premium { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .why-card-inner { padding: 20px 14px; }
+  .why-icon-premium { width: 50px; height: 50px; margin-bottom: 12px; mat-icon { font-size: 24px; width: 24px; height: 24px; } }
+  .why-card-title { font-size: 14px; margin-bottom: 6px; }
+  .why-card-desc { font-size: 11px; line-height: 1.4; }
+  .why-card-number { font-size: 60px; }
   .section-container { padding: 0 16px; }
   .cta-section-premium { padding: 56px 0; }
   .cta-icon-wrapper { width: 64px; height: 64px; border-radius: 18px;
