@@ -1491,8 +1491,10 @@ $gray-900: #111827;
   }
   
   .info-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
+  .info-card { padding: 16px 12px; text-align: center; flex-direction: column; .info-icon { margin: 0 0 10px; width: 40px; height: 40px; min-width: 40px; mat-icon { font-size: 20px; width: 20px; height: 20px; } } .info-content h4 { font-size: 13px; margin-bottom: 4px; } .info-content p { font-size: 10px; line-height: 1.4; } }
   
   .contact-form-card {
     padding: 24px 18px;
