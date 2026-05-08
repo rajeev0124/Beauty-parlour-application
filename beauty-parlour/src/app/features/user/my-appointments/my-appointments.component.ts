@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -39,7 +39,8 @@ export class MyAppointmentsComponent implements OnInit {
     private dialog: MatDialog,
     private http: HttpClient,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +48,7 @@ export class MyAppointmentsComponent implements OnInit {
     if (!this.isLoggedIn) {
       this.loading = false;
       this.errorMessage = 'Please sign in to view your appointments.';
+      this.cdr.detectChanges();
       return;
     }
     this.loadAppointments();
@@ -112,8 +114,17 @@ export class MyAppointmentsComponent implements OnInit {
             price: servicePrice
           };
         });
+        
+        // Smart Tab Selection: If no upcoming, but has completed, switch tab
+        const hasUpcoming = this.appointments.some(a => a.status === 'upcoming');
+        const hasCompleted = this.appointments.some(a => a.status === 'completed');
+        
+        if (!hasUpcoming && hasCompleted && this.activeTab === 'upcoming') {
+          this.activeTab = 'completed';
+        }
 
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Failed to load appointments:', err);
@@ -123,6 +134,7 @@ export class MyAppointmentsComponent implements OnInit {
           this.errorMessage = 'Failed to load appointments. Please try again later.';
         }
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
