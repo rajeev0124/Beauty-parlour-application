@@ -306,6 +306,12 @@
   }
 }
 
+.hide-mobile {
+  @media (max-width: 640px) {
+    display: none !important;
+  }
+}
+
 .nav-user-btn {
   background: none;
   border: 1.5px solid var(--border-color);

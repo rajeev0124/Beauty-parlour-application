@@ -37,11 +37,13 @@
     </nav>
 
     <div class="nav-actions">
-      <app-theme-toggle></app-theme-toggle>
+      <div class="hide-mobile">
+        <app-theme-toggle></app-theme-toggle>
+      </div>
       
       <a routerLink="/book" class="nav-book-btn">
         <mat-icon>calendar_today</mat-icon>
-        Book Now
+        <span class="hide-mobile">Book Now</span>
       </a>
 
       @if (isLoggedIn) {
