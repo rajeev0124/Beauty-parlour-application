@@ -2300,7 +2300,11 @@
   .why-grid-premium { gap: 20px; }
   .why-card-inner { padding: 28px 20px; }
   .why-card-number { font-size: 90px; }
-  .testimonials-grid-premium { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+  .testimonials-grid-premium { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .testimonial-card-premium { padding: 16px; }
+  .testimonial-text-premium { font-size: 11px; line-height: 1.4; }
+  .testimonial-name-premium { font-size: 13px; }
+  .testimonial-avatar-premium { width: 36px; height: 36px; font-size: 14px; }
   .testimonial-card-premium { padding: 24px; }
   .rating-showcase { padding: 14px 24px; }
   .rating-number { font-size: 36px; }
@@ -2362,7 +2366,7 @@
   .cta-desc { font-size: 15px; margin-bottom: 28px; }
   .cta-btn-primary { padding: 14px 24px; font-size: 14px; }
   .cta-btn-secondary { padding: 14px 20px; font-size: 14px; }
-  .cta-trust { flex-direction: column; gap: 10px; }
+  .cta-trust { flex-direction: row; flex-wrap: wrap; gap: 10px; }
   .explore-all-btn { width: 100%; justify-content: center;
     .btn-arrow { display: none; }
   }
