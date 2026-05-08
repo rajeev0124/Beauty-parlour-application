@@ -8,6 +8,8 @@
 
 html {
   height: 100%;
+  width: 100%;
+  overflow-x: hidden;
   scroll-behavior: smooth;
   @include mat.theme((
     color: (primary: mat.$violet-palette, tertiary: mat.$rose-palette),
@@ -122,6 +124,9 @@ body {
   line-height: 1.6;
   margin: 0;
   height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
