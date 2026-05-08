@@ -33,7 +33,9 @@
         
         <div class="header-stats">
           <div class="stat-card lifetime">
-            <mat-icon>trending_up</mat-icon>
+            <div class="stat-icon-wrapper">
+              <mat-icon>trending_up</mat-icon>
+            </div>
             <div class="stat-info">
               <span class="stat-value">{{ account?.lifetimePoints || 0 | number }}</span>
               <span class="stat-label">Lifetime Points</span>
@@ -41,7 +43,9 @@
           </div>
           <div class="stat-divider"></div>
           <div class="stat-card transactions">
-            <mat-icon>receipt_long</mat-icon>
+            <div class="stat-icon-wrapper">
+              <mat-icon>receipt_long</mat-icon>
+            </div>
             <div class="stat-info">
               <span class="stat-value">{{ transactions.length || 0 }}</span>
               <span class="stat-label">Transactions</span>
