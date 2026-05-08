@@ -186,7 +186,22 @@ export class UsersService {
   async getActiveSessions(userId: string) {
     const user = await this.userModel.findById(userId);
     if (!user) throw new NotFoundException('User not found');
-    return user.activeSessions || [];
+    
+    return (user.activeSessions || []).map(session => ({
+      ...session,
+      id: session.sessionId,
+      location: this.getLocationFromIP(session.ip || '0.0.0.0'),
+      current: false // Logic can be added to compare with current request
+    }));
+  }
+
+  private getLocationFromIP(ip: string): string {
+    const locations: { [key: string]: string } = {
+      '127.0.0.1': 'Local Machine',
+      '::1': 'Local Machine',
+      '0.0.0.0': 'Unknown Location',
+    };
+    return locations[ip] || 'Remote Location';
   }
 
   async revokeSession(userId: string, sessionId: string) {
@@ -196,7 +211,7 @@ export class UsersService {
       { returnDocument: 'after' },
     );
     if (!user) throw new NotFoundException('User not found');
-    return user.activeSessions;
+    return this.getActiveSessions(userId);
   }
 
   async addSession(userId: string, sessionData: any) {

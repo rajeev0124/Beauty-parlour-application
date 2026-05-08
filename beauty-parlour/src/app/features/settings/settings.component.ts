@@ -92,8 +92,9 @@ export class SettingsComponent implements OnInit {
   loadSessions(): void {
     if (!this.currentUser?._id) return;
     this.userService.getSessions(this.currentUser._id).subscribe({
-      next: (sessions) => {
-        this.activeSessions = sessions;
+      next: (res: any) => {
+        // Handle both raw array and { sessions: [] } wrapper
+        this.activeSessions = Array.isArray(res) ? res : (res.sessions || []);
         this.cdr.detectChanges();
       },
       error: () => this.snackBar.open('Error loading sessions', 'Close', { duration: 3000 })
