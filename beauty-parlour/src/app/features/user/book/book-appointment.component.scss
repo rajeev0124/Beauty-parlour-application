@@ -71,10 +71,16 @@ app-book-appointment,
 .booking-container {
   max-width: 680px;
   margin: -50px auto 80px;
-  padding: 0 24px;
+  padding: 0 16px;
   position: relative;
   z-index: 3;
   animation: fadeInUp 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
+  overflow-x: hidden;
+
+  @media (max-width: 600px) {
+    margin-top: -30px;
+    padding: 0 12px;
+  }
 }
 
 @keyframes fadeInUp {
@@ -96,9 +102,15 @@ app-book-appointment,
   margin-bottom: 28px;
   background: #FFFFFF !important;
   border-radius: 20px;
-  padding: 24px 40px;
+  padding: 20px 30px;
   box-shadow: 0 4px 30px rgba(124, 58, 237, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(124, 58, 237, 0.08);
+
+  @media (max-width: 600px) {
+    padding: 16px 20px;
+    gap: 10px;
+    justify-content: space-between;
+  }
 }
 
 .step-item {
@@ -107,8 +119,8 @@ app-book-appointment,
   gap: 12px;
 
   .step-circle {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: #F3F4F6 !important;
     color: #9CA3AF !important;
@@ -116,26 +128,30 @@ app-book-appointment,
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 14px;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     border: 2px solid transparent;
 
-    mat-icon { font-size: 18px; width: 18px; height: 18px; color: inherit !important; }
+    mat-icon { font-size: 16px; width: 16px; height: 16px; color: inherit !important; }
   }
 
   span {
-    font-size: 14px;
+    font-size: 13px;
     color: #9CA3AF !important;
     font-weight: 600;
     transition: color 0.3s ease;
     letter-spacing: -0.01em;
+    
+    @media (max-width: 480px) {
+      display: none;
+    }
   }
 
   &.active {
     .step-circle { 
       background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%) !important; 
       color: #FFFFFF !important;
-      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+      box-shadow: 0 6px 15px rgba(124, 58, 237, 0.3);
       transform: scale(1.05);
     }
     span { color: #1F2937 !important; font-weight: 700; }
@@ -145,21 +161,26 @@ app-book-appointment,
     .step-circle { 
       background: linear-gradient(135deg, #059669 0%, #10B981 100%) !important; 
       color: #FFFFFF !important;
-      box-shadow: 0 6px 20px rgba(5, 150, 105, 0.35);
+      box-shadow: 0 6px 15px rgba(5, 150, 105, 0.3);
     }
     span { color: #059669 !important; font-weight: 600; }
   }
 }
 
 .step-line {
-  width: 80px;
+  flex: 1;
+  max-width: 60px;
   height: 4px;
   background: #E5E7EB !important;
-  margin: 0 20px;
+  margin: 0 12px;
   border-radius: 4px;
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 600px) {
+    margin: 0 8px;
+  }
 
   &.active { 
     background: linear-gradient(90deg, #059669 0%, #10B981 100%) !important;
@@ -186,12 +207,17 @@ app-book-appointment,
 .step-content {
   background: #FFFFFF !important;
   border-radius: 28px;
-  padding: 48px 52px;
+  padding: 40px 48px;
   box-shadow: 0 10px 50px rgba(124, 58, 237, 0.1),
               0 4px 20px rgba(0, 0, 0, 0.04),
               inset 0 0 0 1px rgba(124, 58, 237, 0.06);
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 600px) {
+    padding: 30px 16px;
+    border-radius: 20px;
+  }
   
   &::before {
     content: '';
@@ -222,16 +248,6 @@ app-book-appointment,
       height: 5px;
       background: linear-gradient(90deg, #7C3AED 0%, #A855F7 100%);
       border-radius: 3px;
-    }
-  }
-  
-  @media (max-width: 600px) {
-    padding: 36px 24px;
-    border-radius: 24px;
-    
-    h2 {
-      font-size: 22px !important;
-      margin-bottom: 32px !important;
     }
   }
 }
@@ -1403,12 +1419,34 @@ textarea.mat-mdc-input-element {
     }
   }
   
+  .success-state {
+    padding: 30px 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .success-animation {
+    margin-bottom: 24px;
+  }
+
+  .success-checkmark {
+    width: 70px;
+    height: 70px;
+    
+    .check-icon {
+      height: 60px;
+    }
+  }
+
   .success-content h2 {
-    font-size: 26px;
+    font-size: 24px;
+    margin-bottom: 8px;
   }
   
   .success-content .success-message {
-    font-size: 14px;
+    font-size: 13px;
+    margin-bottom: 24px;
+    padding: 0 10px;
   }
   
   .confirmation-card {
@@ -1490,20 +1528,9 @@ textarea.mat-mdc-input-element {
 
 // --- Responsive ---
 @media (max-width: 600px) {
-  .booking-container { padding: 0 16px; }
-  .steps-indicator { padding: 16px; }
-  .step-item span { display: none; }
-  .step-content { padding: 20px; }
-  .row-fields { grid-template-columns: 1fr; }
-
   .step-actions {
     flex-direction: column-reverse;
     gap: 12px;
-
-    &.two-buttons { flex-direction: column-reverse; }
-    button { width: 100%; }
+    button { width: 100%; min-width: 0; }
   }
-
-  .success-actions { flex-direction: column; }
-  .success-state { padding: 32px 20px; }
 }
