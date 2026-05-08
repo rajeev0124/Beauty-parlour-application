@@ -981,13 +981,18 @@
 }
 
 @media (max-width: 480px) {
-  .nav-container { padding: 0 16px; height: 60px; }
-  .nav-brand-name { font-size: 15px; }
-  .nav-book-btn { height: 36px; padding: 0 14px; font-size: 12px; }
-  .nav-brand-icon { width: 34px; height: 34px; mat-icon { font-size: 18px; width: 18px; height: 18px; } }
+  .nav-actions { gap: 8px; }
+  .nav-book-btn { 
+    height: 34px; 
+    padding: 0 12px; 
+    font-size: 11px;
+    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+  }
+  .nav-brand-icon { width: 32px; height: 32px; mat-icon { font-size: 16px; width: 16px; height: 16px; } }
   .nav-links { top: 60px; height: calc(100vh - 60px); }
   .nav-overlay { top: 60px; }
 
+  .services-grid-premium { grid-template-columns: 1fr; gap: 20px; }
   .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: center; }
   .footer-bottom { 
     flex-direction: column; 

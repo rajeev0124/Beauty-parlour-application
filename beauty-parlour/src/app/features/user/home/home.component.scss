@@ -2321,7 +2321,7 @@
   .hero-title { font-size: 30px; }
   .hero-actions { flex-direction: column; }
   .hero-btn { justify-content: center; }
-  .services-grid-premium { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .services-grid-premium { grid-template-columns: 1fr; gap: 20px; }
   .service-card-premium { 
     border-radius: 14px; 
     &:hover { transform: translateY(-4px) scale(1); }
