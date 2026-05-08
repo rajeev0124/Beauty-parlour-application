@@ -32,23 +32,27 @@
         <!-- Stats -->
         <div class="header-stats">
           <div class="stat-card upcoming">
-            <mat-icon>event</mat-icon>
+            <div class="stat-icon-wrapper">
+              <mat-icon>event</mat-icon>
+            </div>
             <div class="stat-info">
               <span class="stat-value">{{ getCount('upcoming') }}</span>
               <span class="stat-label">Upcoming</span>
             </div>
           </div>
-          <div class="stat-divider"></div>
           <div class="stat-card completed">
-            <mat-icon>check_circle</mat-icon>
+            <div class="stat-icon-wrapper">
+              <mat-icon>check_circle</mat-icon>
+            </div>
             <div class="stat-info">
               <span class="stat-value">{{ getCount('completed') }}</span>
-              <span class="stat-label">Completed</span>
+              <span class="stat-label">Done</span>
             </div>
           </div>
-          <div class="stat-divider"></div>
           <div class="stat-card cancelled">
-            <mat-icon>cancel</mat-icon>
+            <div class="stat-icon-wrapper">
+              <mat-icon>cancel</mat-icon>
+            </div>
             <div class="stat-info">
               <span class="stat-value">{{ getCount('cancelled') }}</span>
               <span class="stat-label">Cancelled</span>
@@ -164,29 +168,36 @@
                           <mat-icon>person</mat-icon>
                           {{ appt.stylist }}
                         </span>
-                        <span class="meta-item">
-                          <mat-icon>calendar_today</mat-icon>
-                          {{ appt.date | date:'EEE, MMM d' }}
-                        </span>
-                        <span class="meta-item">
-                          <mat-icon>schedule</mat-icon>
-                          {{ appt.time }}
-                        </span>
+                        <div class="meta-row">
+                          <span class="meta-item">
+                            <mat-icon>calendar_today</mat-icon>
+                            {{ appt.date | date:'EEE, MMM d' }}
+                          </span>
+                          <span class="meta-item">
+                            <mat-icon>schedule</mat-icon>
+                            {{ appt.time }}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                   
                   <div class="card-right">
-                    <div class="appt-price">₹{{ appt.price | number }}</div>
+                    <div class="price-box">
+                      <span class="price-label">Price</span>
+                      <div class="appt-price">₹{{ appt.price | number }}</div>
+                    </div>
+                    
                     @if (appt.status === 'upcoming') {
                       <button class="cancel-btn" (click)="cancelAppointment(appt)">
                         <mat-icon>close</mat-icon>
                         <span>Cancel</span>
                       </button>
                     } @else {
-                      <span class="status-badge" [class]="appt.status">
-                        {{ appt.status === 'completed' ? 'Completed' : 'Cancelled' }}
-                      </span>
+                      <div class="status-indicator" [class]="appt.status">
+                        <mat-icon>{{ appt.status === 'completed' ? 'check' : 'block' }}</mat-icon>
+                        <span>{{ appt.status === 'completed' ? 'Completed' : 'Cancelled' }}</span>
+                      </div>
                     }
                   </div>
                 </div>

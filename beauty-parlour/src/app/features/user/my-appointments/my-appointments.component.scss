@@ -263,62 +263,70 @@
 
 // Header Stats
 .header-stats {
-  display: inline-flex !important;
+  display: flex !important;
   align-items: center;
-  gap: 24px;
-  padding: 20px 36px;
-  background: #1F2937 !important;
-  border-radius: var(--radius-lg);
-  border: 2px solid rgba(124, 58, 237, 0.5);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  margin-top: 8px;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: rgba(31, 41, 55, 0.95) !important;
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  margin-top: 12px;
+  max-width: 100%;
 
   @media (max-width: 600px) {
-    gap: 20px;
-    padding: 18px 28px;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 14px;
   }
 
   @media (max-width: 400px) {
-    gap: 14px;
-    padding: 16px 20px;
+    gap: 8px;
+    padding: 12px 8px;
   }
 }
 
 .stat-card {
   display: flex !important;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  text-align: center;
+  gap: 8px;
+  min-width: 80px;
 
-  > mat-icon {
-    display: block !important;
-    font-size: 28px !important;
-    width: 28px !important;
-    height: 28px !important;
-
-    @media (max-width: 400px) {
-      font-size: 22px !important;
-      width: 22px !important;
-      height: 22px !important;
+  .stat-icon-wrapper {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
   }
 
-  // Upcoming - Yellow/Amber
   &.upcoming {
-    > mat-icon { color: #FBBF24 !important; }
+    .stat-icon-wrapper mat-icon { color: #FBBF24 !important; }
     .stat-value { color: #FBBF24 !important; }
     .stat-label { color: #FDE68A !important; }
   }
 
-  // Completed - Green
   &.completed {
-    > mat-icon { color: #34D399 !important; }
+    .stat-icon-wrapper mat-icon { color: #34D399 !important; }
     .stat-value { color: #34D399 !important; }
     .stat-label { color: #A7F3D0 !important; }
   }
 
-  // Cancelled - Red
   &.cancelled {
-    > mat-icon { color: #F87171 !important; }
+    .stat-icon-wrapper mat-icon { color: #F87171 !important; }
     .stat-value { color: #F87171 !important; }
     .stat-label { color: #FECACA !important; }
   }
@@ -327,42 +335,28 @@
 .stat-info {
   display: flex !important;
   flex-direction: column;
-  text-align: left;
+  align-items: center;
 }
 
 .stat-value {
   display: block !important;
-  font-size: 28px !important;
+  font-size: 22px !important;
   font-weight: 800 !important;
-  line-height: 1.1 !important;
+  line-height: 1 !important;
 
   @media (max-width: 400px) {
-    font-size: 22px !important;
+    font-size: 18px !important;
   }
 }
 
 .stat-label {
   display: block !important;
-  font-size: 13px !important;
+  font-size: 11px !important;
   font-weight: 600 !important;
-  margin-top: 4px;
+  margin-top: 2px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-
-  @media (max-width: 400px) {
-    font-size: 11px !important;
-  }
-}
-
-.stat-divider {
-  display: block !important;
-  width: 1px;
-  height: 40px;
-  background: #4B5563 !important;
-
-  @media (max-width: 400px) {
-    height: 32px;
-  }
+  opacity: 0.8;
 }
 
 // ============================================================
@@ -765,27 +759,34 @@
 
 .appt-meta {
   display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+  flex-direction: column;
+  gap: 8px;
 
-  @media (max-width: 400px) {
-    gap: 10px;
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    
+    @media (max-width: 400px) {
+      gap: 8px;
+    }
   }
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
 
   mat-icon {
-    font-size: 15px;
-    width: 15px;
-    height: 15px;
-    color: var(--text-muted);
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+    opacity: 0.7;
   }
 
   @media (max-width: 400px) {
@@ -808,7 +809,7 @@
 }
 
 .appt-price {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--primary);
 
@@ -817,13 +818,57 @@
   }
 }
 
+.price-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  
+  .price-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  
+  @media (max-width: 700px) {
+    align-items: flex-start;
+  }
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+  
+  &.completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+  }
+  
+  &.cancelled {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+  }
+}
+
 .cancel-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 18px;
-  background: transparent;
-  border: 2px solid rgba(239, 68, 68, 0.3);
+  padding: 8px 16px;
+  background: white;
+  border: 1.5px solid var(--danger);
   border-radius: var(--radius-md);
   color: var(--danger);
   font-size: 13px;
@@ -839,38 +884,8 @@
 
   &:hover {
     background: var(--danger);
-    border-color: var(--danger);
     color: #fff;
-    transform: scale(1.02);
-  }
-
-  @media (max-width: 400px) {
-    padding: 8px 14px;
-    font-size: 12px;
-  }
-}
-
-.status-badge {
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-
-  &.completed {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--success);
-  }
-
-  &.cancelled {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger);
-  }
-
-  @media (max-width: 400px) {
-    padding: 6px 12px;
-    font-size: 11px;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
   }
 }
 
