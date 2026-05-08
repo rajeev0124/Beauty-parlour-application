@@ -700,10 +700,12 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 850px) {
   .services-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 24px;
+    max-width: 500px;
+    margin: 0 auto;
   }
 
   .page-hero {
