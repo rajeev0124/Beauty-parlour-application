@@ -1,5 +1,5 @@
 # Render.com deployment configuration
-# Backend NestJS API deployment
+# Backend NestJS API deployment with production optimizations
 
 services:
   - type: web
@@ -8,6 +8,8 @@ services:
     buildCommand: npm install && npm run build
     startCommand: npm run start:prod
     healthCheckPath: /api/health
+    healthCheckInterval: 30
+    preDeployCommand: npm run build
     envVars:
       - key: NODE_ENV
         value: production
@@ -24,4 +26,10 @@ services:
       - key: JWT_REFRESH_EXPIRES_IN
         value: 30d
       - key: CORS_ORIGINS
-        sync: false  # Set to your Vercel frontend URL
+        value: https://beauty-parlour-0124.web.app,https://beauty-parlour-0124.firebaseapp.com,https://beauty-parlour-application.onrender.com
+      - key: RAZORPAY_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: RAZORPAY_SECRET
+        sync: false  # Set manually in Render dashboard
+      - key: LOG_LEVEL
+        value: info

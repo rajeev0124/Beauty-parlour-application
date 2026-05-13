@@ -159,10 +159,23 @@ async function bootstrap() {
     customSiteTitle: 'Beauty Parlour API Docs',
   });
 
-  // Optimized CORS with preflight caching
-  const allowedOrigins = process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',')
-    : ['http://localhost:4200', 'http://127.0.0.1:4200'];
+  // Optimized CORS with preflight caching and production safety
+  const allowedOrigins = (() => {
+    const envOrigins = process.env.CORS_ORIGINS;
+    if (envOrigins) {
+      return envOrigins.split(',').map((origin) => origin.trim());
+    }
+    // Production defaults: include Firebase + Render
+    if (process.env.NODE_ENV === 'production') {
+      return [
+        'https://beauty-parlour-0124.web.app',
+        'https://beauty-parlour-0124.firebaseapp.com',
+        'https://beauty-parlour-application.onrender.com',
+      ];
+    }
+    // Development: localhost
+    return ['http://localhost:4200', 'http://127.0.0.1:4200', 'http://localhost:3000'];
+  })();
 
   app.enableCors({
     origin: allowedOrigins,
@@ -171,6 +184,9 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     maxAge: 86400, // Cache preflight for 24 hours
   });
+
+  // Log CORS configuration
+  console.log('🌐 CORS Origins Allowed:', allowedOrigins);
 
   try {
     await app.listen(port, '0.0.0.0');
