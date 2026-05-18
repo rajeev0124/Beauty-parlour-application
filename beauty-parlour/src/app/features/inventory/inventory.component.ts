@@ -934,42 +934,57 @@ interface InventoryItem {
     // ========== CARDS (Mobile) ==========
     .inv-cards {
       display: none;
-      padding: 16px;
-      gap: 16px;
+      padding: 18px;
+      gap: 18px;
     }
 
     .inv-card {
       background: #fff;
       border: 1px solid #e5e7eb;
+      border-left: 4px solid #10b981;
       border-radius: 16px;
       overflow: hidden;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 
       &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.1);
       }
 
       &.low-stock {
-        border-color: #fcd34d;
-        background: #fffbeb;
+        border-left-color: #f59e0b;
+        background: linear-gradient(180deg, #fff 70%, #fffbeb 100%);
       }
 
       &.out-stock {
-        border-color: #fca5a5;
-        background: #fef2f2;
+        border-left-color: #ef4444;
+        background: linear-gradient(180deg, #fff 70%, #fef2f2 100%);
       }
 
       .card-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 16px;
-        border-bottom: 1px solid #f3f4f6;
+        gap: 14px;
+        padding: 18px 16px 14px;
+        border-bottom: 1px dashed #e5e7eb;
         position: relative;
 
         .product-avatar {
-          width: 48px;
-          height: 48px;
+          width: 52px;
+          height: 52px;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
         }
 
         .card-info {
@@ -978,18 +993,28 @@ interface InventoryItem {
           h4 {
             margin: 0 0 6px;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             color: #1f2937;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+          }
+
+          .category-tag {
+            padding: 3px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 6px;
           }
         }
 
         .status-dot {
           position: absolute;
-          top: 16px;
+          top: 18px;
           right: 16px;
-          width: 12px;
-          height: 12px;
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 1), 0 0 8px rgba(0, 0, 0, 0.15);
 
           &.good { background: #10b981; }
           &.low { background: #f59e0b; }
@@ -1001,25 +1026,39 @@ interface InventoryItem {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         padding: 16px;
-        gap: 12px;
+        gap: 8px;
+        background: #fff;
 
         .card-stat {
           text-align: center;
+          position: relative;
+
+          &:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: #f3f4f6;
+          }
 
           .stat-label {
             display: block;
-            font-size: 11px;
+            font-size: 10px;
+            font-weight: 600;
             color: #9ca3af;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
           }
 
           .stat-value {
             font-size: 14px;
-            font-weight: 600;
-            color: #1f2937;
+            font-weight: 700;
+            color: #374151;
 
-            &.stock-good { color: #059669; }
+            &.stock-good { color: #10b981; }
             &.stock-medium { color: #d97706; }
             &.stock-low { color: #dc2626; }
           }
@@ -1033,6 +1072,92 @@ interface InventoryItem {
         padding: 12px 16px;
         background: #f9fafb;
         border-top: 1px solid #f3f4f6;
+
+        .status-badge {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 600;
+          padding: 4px 10px;
+          border-radius: 20px;
+          background: #fff;
+          border: 1px solid #e5e7eb;
+
+          mat-icon {
+            font-size: 15px;
+            width: 15px;
+            height: 15px;
+          }
+
+          &.good {
+            color: #059669;
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+          }
+
+          &.low {
+            color: #d97706;
+            background: #fffbeb;
+            border-color: #fde68a;
+          }
+
+          &.out {
+            color: #dc2626;
+            background: #fef2f2;
+            border-color: #fca5a5;
+          }
+        }
+
+        .action-btns {
+          display: flex;
+          gap: 6px;
+
+          .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+
+            mat-icon {
+              font-size: 16px;
+              width: 16px;
+              height: 16px;
+            }
+
+            &.add {
+              background: #d1fae5;
+              color: #059669;
+
+              &:hover {
+                background: #10b981;
+                color: #fff;
+                transform: scale(1.08);
+              }
+            }
+
+            &.remove {
+              background: #fee2e2;
+              color: #dc2626;
+
+              &:hover:not(:disabled) {
+                background: #ef4444;
+                color: #fff;
+                transform: scale(1.08);
+              }
+
+              &:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+              }
+            }
+          }
+        }
       }
     }
 
@@ -1276,20 +1401,38 @@ interface InventoryItem {
       .inv-card {
         .card-body {
           grid-template-columns: repeat(3, 1fr);
-          padding: 12px;
+          padding: 12px 10px;
+          gap: 4px;
+          
+          .card-stat {
+            .stat-label {
+              font-size: 9px;
+            }
+            .stat-value {
+              font-size: 12px;
+            }
+          }
         }
 
         .card-footer {
-          flex-direction: column;
-          gap: 12px;
-          align-items: stretch;
+          padding: 10px 12px;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
 
           .status-badge {
-            justify-content: center;
+            font-size: 11px;
+            padding: 3px 8px;
+            
+            mat-icon {
+              font-size: 14px;
+              width: 14px;
+              height: 14px;
+            }
           }
 
           .action-btns {
-            justify-content: center;
+            gap: 4px;
           }
         }
       }
