@@ -137,6 +137,8 @@
 .sidebar-body {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth momentum scrolling on iOS */
+  overscroll-behavior: contain; /* Prevent scroll chaining to background */
   padding: 12px 0;
   &::-webkit-scrollbar { width: 5px; }
   &::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: var(--radius-full, 99px); }
@@ -628,6 +630,7 @@
     position: fixed;
     z-index: var(--z-fixed, 200);
     height: 100vh;
+    height: 100dvh; /* Modern dynamic viewport height for mobile browser toolbars */
     &.collapsed { width: 0; border: none; }
   }
   .sidebar-overlay.visible { display: block; }
