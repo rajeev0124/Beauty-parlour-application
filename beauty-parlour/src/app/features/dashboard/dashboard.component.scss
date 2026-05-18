@@ -289,6 +289,10 @@
   box-shadow: 0 4px 20px rgba(0,0,0,0.02);
   transition: all 0.3s ease;
 
+  @media (max-width: 1400px) {
+    padding: 20px;
+  }
+
   &:hover {
     box-shadow: 0 8px 30px rgba(0,0,0,0.05);
     border-color: rgba(99, 102, 241, 0.15);
@@ -903,7 +907,7 @@
 // =============================================================
 // RESPONSIVE
 // =============================================================
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .dashboard-row {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -911,6 +915,25 @@
 
   .charts-grid {
     grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .stat-icon-wrap {
+    width: 48px;
+    height: 48px;
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  .stat-value {
+    font-size: 20px;
   }
 }
 
