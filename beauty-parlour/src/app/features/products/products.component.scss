@@ -662,7 +662,61 @@
 
 @media (max-width: 600px) {
   .prod-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .prod-card-body {
+    padding: 12px;
+  }
+
+  .prod-category-tag {
+    padding: 2px 8px;
+    font-size: 9px;
+    margin-bottom: 6px;
+  }
+
+  .prod-name {
+    font-size: 14px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .prod-description {
+    font-size: 11px;
+    margin-bottom: 8px;
+    -webkit-line-clamp: 1;
+  }
+
+  .prod-price {
+    .price-value {
+      font-size: 16px;
+    }
+  }
+
+  .prod-card-footer {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .stock-info {
+    font-size: 11px;
+    
+    mat-icon {
+      font-size: 13px;
+      width: 13px;
+      height: 13px;
+    }
+  }
+
+  .status-badge {
+    padding: 2px 8px;
+    font-size: 9px;
   }
 }
 
@@ -708,7 +762,4 @@
     
     .prod-category-icon { font-size: 40px; }
   }
-  
-  .prod-name { font-size: 15px; }
-  .prod-price .price-value { font-size: 20px; }
 }
