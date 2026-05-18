@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import {
@@ -86,7 +87,17 @@ export class AppointmentsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @CurrentUser() user: any) {
+    // Admin/superadmin/staff can delete any appointment
+    if (user.role === 'admin' || user.role === 'superadmin' || user.role === 'staff') {
+      return this.appointmentsService.remove(id);
+    }
+
+    // Customers can only delete their own appointments
+    const appointment = await this.appointmentsService.findById(id);
+    if (appointment.userId.toString() !== user._id.toString()) {
+      throw new ForbiddenException('You are not authorized to delete this appointment');
+    }
     return this.appointmentsService.remove(id);
   }
 }

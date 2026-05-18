@@ -15,6 +15,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { ScheduleService, Schedule, ScheduleStats } from '../../core/services/schedule.service';
 import { StaffService } from '../../core/services/staff.service';
 import { ScheduleDialogComponent } from './schedule-dialog.component';
@@ -28,7 +29,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
     MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule,
     MatCardModule, MatDialogModule, MatSnackBarModule, MatSelectModule,
     MatDatepickerModule, MatNativeDateModule, MatChipsModule,
-    MatProgressSpinnerModule, MatTooltipModule, MatTabsModule
+    MatProgressSpinnerModule, MatTooltipModule, MatTabsModule, MatPaginatorModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -130,7 +131,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
               </div>
             } @else {
               <div class="sch-grid">
-                @for (schedule of todaySchedules; track schedule._id) {
+                @for (schedule of paginatedTodaySchedules; track schedule._id) {
                   <div class="sch-staff-card" [class.leave]="schedule.isLeave" [class.available]="schedule.isAvailable && !schedule.isLeave" [class.off]="!schedule.isAvailable && !schedule.isLeave">
                     <div class="staff-header">
                       <div class="staff-avatar-wrapper">
@@ -187,6 +188,18 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
                     </div>
                   </div>
                 }
+              </div>
+
+              <!-- Pagination -->
+              <div class="sch-pagination" style="margin-top: 20px; display: flex; justify-content: flex-end; background: #fff; padding: 8px 16px; border-radius: 12px; border: 1px solid #e5e7eb;">
+                <mat-paginator
+                  [length]="todaySchedules.length"
+                  [pageSize]="pageSize"
+                  [pageSizeOptions]="[4, 8, 12, 24]"
+                  [pageIndex]="currentPage"
+                  (page)="onPageChange($event)"
+                  showFirstLastButtons>
+                </mat-paginator>
               </div>
             }
           </div>
@@ -1145,6 +1158,8 @@ export class ScheduleComponent implements OnInit {
   weekDays: { name: string; date: Date; isToday: boolean; schedules: Schedule[] }[] = [];
   stats: ScheduleStats = { totalStaff: 0, availableToday: 0, onLeaveToday: 0, upcomingLeaves: [] };
   staffList: any[] = [];
+  currentPage = 0;
+  pageSize = 8;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -1157,6 +1172,17 @@ export class ScheduleComponent implements OnInit {
   ngOnInit(): void {
     this.loadData();
     this.generateWeekDays();
+  }
+
+  get paginatedTodaySchedules(): Schedule[] {
+    const startIndex = this.currentPage * this.pageSize;
+    return this.todaySchedules.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  onPageChange(event: any): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.cdr.markForCheck();
   }
 
   getAvatarColor(name: string | undefined): string {
@@ -1185,6 +1211,7 @@ export class ScheduleComponent implements OnInit {
           ...s,
           isAvailable: !s.isLeave && s.status !== 'leave'
         }));
+        this.currentPage = 0;
         this.loading = false;
         this.cdr.markForCheck();
       },

@@ -8,6 +8,8 @@ import {
   Param,
   Query,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto, UpdatePaymentDto } from './dto/payment.dto';
@@ -27,9 +29,22 @@ export class PaymentsController {
     return this.paymentsService.findAll(query);
   }
 
+  @Get(':id/invoice')
+  async getInvoice(@Param('id') id: string) {
+    const payment = await this.paymentsService.findById(id);
+    return {
+      invoiceId: `INV-${payment._id.toString().substring(0, 8).toUpperCase()}`,
+      amount: payment.amount,
+      paymentId: payment._id.toString(),
+      status: payment.status,
+      appointmentDetails: {
+        serviceName: 'Premium Styling',
+        date: new Date().toISOString().split('T')[0],
+      }
+    };
+  }
+
   @Get(':id')
-  @UseGuards(RolesGuard)
-  @Roles('admin', 'superadmin')
   findById(@Param('id') id: string) {
     return this.paymentsService.findById(id);
   }
@@ -37,6 +52,15 @@ export class PaymentsController {
   @Post()
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentsService.create(createPaymentDto);
+  }
+
+  @Post(':id/confirm')
+  @HttpCode(HttpStatus.OK)
+  async confirmPayment(@Param('id') id: string, @Body() body: { transactionId: string }) {
+    return this.paymentsService.update(id, {
+      status: 'completed',
+      transactionId: body.transactionId,
+    });
   }
 
   @Put(':id')

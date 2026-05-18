@@ -43,15 +43,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = (responseObj.message as string | string[]) || message;
         error = (responseObj.error as string) || exception.name;
       }
-    } else if (exception instanceof MongooseError.CastError) {
+    } else if (exception && (exception as any).name === 'CastError') {
       // Handle invalid MongoDB ObjectId
-      status = HttpStatus.BAD_REQUEST;
-      message = `Invalid ${exception.path}: ${exception.value}`;
-      error = 'Bad Request';
-    } else if (exception instanceof MongooseError.ValidationError) {
+      status = HttpStatus.NOT_FOUND;
+      message = `Resource not found`;
+      error = 'Not Found';
+    } else if (exception && (exception as any).name === 'ValidationError') {
       // Handle Mongoose validation errors
       status = HttpStatus.BAD_REQUEST;
-      message = Object.values(exception.errors).map(
+      message = Object.values((exception as any).errors).map(
         (err: { message?: string }) => err.message ?? 'Validation error',
       );
       error = 'Validation Error';

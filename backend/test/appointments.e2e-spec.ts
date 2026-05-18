@@ -16,11 +16,14 @@ describe('AppointmentsController (e2e)', () => {
   let authToken: string;
 
   beforeAll(async () => {
-    mongo = await MongoMemoryServer.create();
+    mongo = await MongoMemoryServer.create({
+      instance: { startupTimeout: 60000 },
+    });
     const uri = mongo.getUri();
+    process.env.MONGODB_URI = uri;
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [MongooseModule.forRoot(uri), AppModule],
+      imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();

@@ -34,6 +34,8 @@ export class StaffComponent implements OnInit, AfterViewInit {
   loading = false;
   activeFilter: 'all' | 'available' | 'unavailable' = 'all';
   filteredData: Staff[] = [];
+  currentPage = 0;
+  pageSize = 10;
   private searchTerm = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -82,6 +84,16 @@ export class StaffComponent implements OnInit, AfterViewInit {
     this.applyFilters();
   }
 
+  get paginatedData(): Staff[] {
+    const startIndex = this.currentPage * this.pageSize;
+    return this.filteredData.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  onPageChange(event: any): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
   private applyFilters(): void {
     let data = this.dataSource.data;
     
@@ -102,6 +114,7 @@ export class StaffComponent implements OnInit, AfterViewInit {
     }
     
     this.filteredData = data;
+    this.currentPage = 0;
   }
 
   clearFilters(): void {

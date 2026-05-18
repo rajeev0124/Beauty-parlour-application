@@ -40,6 +40,8 @@ export class CustomersComponent implements OnInit, AfterViewInit, OnDestroy {
   staffList: Staff[] = [];
   activeFilter: 'all' | 'active' | 'blocked' = 'all';
   filteredData: User[] = [];
+  currentPage = 0;
+  pageSize = 10;
   private searchTerm = '';
   private destroy$ = new Subject<void>();
 
@@ -103,6 +105,16 @@ export class CustomersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.applyFilters();
   }
 
+  get paginatedData(): User[] {
+    const startIndex = this.currentPage * this.pageSize;
+    return this.filteredData.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  onPageChange(event: any): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
   private applyFilters(): void {
     let data = this.dataSource.data;
     
@@ -123,6 +135,7 @@ export class CustomersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     
     this.filteredData = data;
+    this.currentPage = 0;
   }
 
   clearFilters(): void {

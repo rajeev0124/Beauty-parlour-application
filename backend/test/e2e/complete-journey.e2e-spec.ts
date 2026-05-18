@@ -5,14 +5,18 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import { getModelToken } from '@nestjs/mongoose';
+import request from 'supertest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { AppModule } from '../../../app.module';
-import { UserFixtures } from '../../../test/fixtures/users.fixture';
-import { AppointmentFixtures } from '../../../test/fixtures/appointments.fixture';
-import { PaymentFixtures } from '../../../test/fixtures/payments.fixture';
+import { AppModule } from '../../src/app.module';
+import { UserFixtures } from '../fixtures/users.fixture';
+import { AppointmentFixtures } from '../fixtures/appointments.fixture';
+import { PaymentFixtures } from '../fixtures/payments.fixture';
+import { GlobalExceptionFilter } from '../../src/common/filters/http-exception.filter';
 
 describe('Beauty Parlour E2E Tests', () => {
+  jest.setTimeout(60000); // Increase timeout for MongoMemoryServer startup
+  
   let app: INestApplication;
   let mongoServer: MongoMemoryServer;
   let accessToken: string;
@@ -21,19 +25,44 @@ describe('Beauty Parlour E2E Tests', () => {
 
   beforeAll(async () => {
     // Start in-memory MongoDB
-    mongoServer = await MongoMemoryServer.create();
+    mongoServer = await MongoMemoryServer.create({
+      instance: { startupTimeout: 60000 },
+    });
     const mongoUri = mongoServer.getUri();
+    process.env.MONGODB_URI = mongoUri;
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    })
-      .overrideProvider('MONGODB_URI')
-      .useValue(mongoUri)
-      .compile();
+    }).compile();
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalFilters(new GlobalExceptionFilter());
     await app.init();
+
+    // Seed default product and service to avoid catalog browsing and order placement failures in clean DBs
+    const productModel = app.get(getModelToken('Product'));
+    const beautyServiceModel = app.get(getModelToken('BeautyService'));
+
+    await productModel.create({
+      _id: '507f1f77bcf86cd799439011',
+      name: 'Shampoo',
+      price: 25.0,
+      originalPrice: 30.0,
+      category: 'Hair Care',
+      stock: 100,
+      description: 'Nourishing hair shampoo',
+      isActive: true,
+    });
+
+    await beautyServiceModel.create({
+      _id: '607f1f77bcf86cd799439030',
+      name: 'Hair Cut',
+      price: 50.0,
+      duration: 30,
+      category: 'Hair',
+      isActive: true,
+    });
   });
 
   afterAll(async () => {
@@ -46,18 +75,20 @@ describe('Beauty Parlour E2E Tests', () => {
   // ===== AUTH FLOW =====
   describe('Authentication Flow (E2E)', () => {
     it('should complete full auth flow: register -> login -> logout', async () => {
+      const uniqueEmail = `auth-flow-${Date.now()}@example.com`;
       // 1. Register a new user
       const registerResponse = await request(app.getHttpServer())
         .post('/auth/register')
-        .send(UserFixtures.VALID_REGISTER_DTO)
+        .send({
+          ...UserFixtures.VALID_REGISTER_DTO,
+          email: uniqueEmail,
+        })
         .expect(201);
 
       expect(registerResponse.body).toHaveProperty('accessToken');
       expect(registerResponse.body).toHaveProperty('refreshToken');
       expect(registerResponse.body).toHaveProperty('user');
-      expect(registerResponse.body.user.email).toBe(
-        UserFixtures.VALID_REGISTER_DTO.email,
-      );
+      expect(registerResponse.body.user.email).toBe(uniqueEmail);
 
       accessToken = registerResponse.body.accessToken;
       userId = registerResponse.body.user._id;
@@ -66,7 +97,7 @@ describe('Beauty Parlour E2E Tests', () => {
       const loginResponse = await request(app.getHttpServer())
         .post('/auth/login')
         .send({
-          email: UserFixtures.VALID_REGISTER_DTO.email,
+          email: uniqueEmail,
           password: UserFixtures.VALID_REGISTER_DTO.password,
         })
         .expect(200);
@@ -82,9 +113,7 @@ describe('Beauty Parlour E2E Tests', () => {
         .expect(200);
 
       expect(profileResponse.body).toHaveProperty('_id');
-      expect(profileResponse.body.email).toBe(
-        UserFixtures.VALID_REGISTER_DTO.email,
-      );
+      expect(profileResponse.body.email).toBe(uniqueEmail);
 
       // 4. Logout
       await request(app.getHttpServer())
@@ -116,12 +145,13 @@ describe('Beauty Parlour E2E Tests', () => {
     });
 
     it('should reject login with wrong password', async () => {
+      const testEmail = `wrong-pwd-${Date.now()}@example.com`;
       // First register a user
       await request(app.getHttpServer())
         .post('/auth/register')
         .send({
           ...UserFixtures.VALID_REGISTER_DTO,
-          email: `wrong-pwd-${Date.now()}@example.com`,
+          email: testEmail,
         })
         .expect(201);
 
@@ -129,7 +159,7 @@ describe('Beauty Parlour E2E Tests', () => {
       await request(app.getHttpServer())
         .post('/auth/login')
         .send({
-          email: UserFixtures.VALID_REGISTER_DTO.email,
+          email: testEmail,
           password: 'wrongpassword123',
         })
         .expect(401);
@@ -149,6 +179,7 @@ describe('Beauty Parlour E2E Tests', () => {
         .send({
           ...UserFixtures.VALID_REGISTER_DTO,
           email: `apt-test-${Date.now()}@example.com`,
+          phone: `999${Math.floor(1000000 + Math.random() * 9000000)}`,
         })
         .expect(201);
 
@@ -157,6 +188,17 @@ describe('Beauty Parlour E2E Tests', () => {
     });
 
     it('should create and manage appointment lifecycle', async () => {
+      // Login as admin to get admin token for status updates
+      const adminLoginResponse = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          email: 'admin@beauty.com',
+          password: 'admin123',
+        })
+        .expect(200);
+
+      const adminToken = adminLoginResponse.body.accessToken;
+
       // 1. Create appointment
       const createResponse = await request(app.getHttpServer())
         .post('/appointments')
@@ -178,8 +220,8 @@ describe('Beauty Parlour E2E Tests', () => {
 
       // 3. Update appointment status to confirmed
       const updateStatusResponse = await request(app.getHttpServer())
-        .patch(`/appointments/${appointmentId}/status`)
-        .set('Authorization', `Bearer ${accessToken}`)
+        .put(`/appointments/status/${appointmentId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({ status: 'confirmed' })
         .expect(200);
 
@@ -205,8 +247,8 @@ describe('Beauty Parlour E2E Tests', () => {
 
       // 6. Cancel appointment
       const cancelResponse = await request(app.getHttpServer())
-        .patch(`/appointments/${appointmentId}/status`)
-        .set('Authorization', `Bearer ${accessToken}`)
+        .put(`/appointments/status/${appointmentId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({ status: 'cancelled' })
         .expect(200);
 
@@ -237,6 +279,7 @@ describe('Beauty Parlour E2E Tests', () => {
         .send({
           ...UserFixtures.VALID_REGISTER_DTO,
           email: `other-user-${Date.now()}@example.com`,
+          phone: `999${Math.floor(1000000 + Math.random() * 9000000)}`,
         })
         .expect(201);
 
@@ -246,12 +289,14 @@ describe('Beauty Parlour E2E Tests', () => {
       await request(app.getHttpServer())
         .delete(`/appointments/${appointmentId}`)
         .set('Authorization', `Bearer ${otherUserToken}`)
-        .expect(403); // Forbidden (or 400/404 depending on implementation)
+        .expect(403);
     });
   });
 
   // ===== PAYMENT FLOW =====
   describe('Payment Processing Flow (E2E)', () => {
+    let orderId: string;
+
     beforeEach(async () => {
       // Register and create appointment
       const registerResponse = await request(app.getHttpServer())
@@ -265,14 +310,35 @@ describe('Beauty Parlour E2E Tests', () => {
       accessToken = registerResponse.body.accessToken;
       userId = registerResponse.body.user._id;
 
-      // Create an appointment
-      const appointmentResponse = await request(app.getHttpServer())
-        .post('/appointments')
+      // Browse available products
+      const productsResponse = await request(app.getHttpServer())
+        .get('/products')
+        .expect(200);
+
+      const product = productsResponse.body[0];
+      const prodId = product ? product._id : '507f1f77bcf86cd799439011';
+      const prodName = product ? product.name : 'Shampoo';
+      const prodPrice = product ? product.price : 25.0;
+
+      // Create an order first
+      const orderResponse = await request(app.getHttpServer())
+        .post('/orders')
         .set('Authorization', `Bearer ${accessToken}`)
-        .send(AppointmentFixtures.VALID_CREATE_DTO)
+        .send({
+          userId,
+          items: [
+            {
+              productId: prodId,
+              productName: prodName,
+              quantity: 1,
+              price: prodPrice
+            }
+          ],
+          totalPrice: prodPrice
+        })
         .expect(201);
 
-      appointmentId = appointmentResponse.body._id;
+      orderId = orderResponse.body._id;
     });
 
     it('should process complete payment flow', async () => {
@@ -281,8 +347,9 @@ describe('Beauty Parlour E2E Tests', () => {
         .post('/payments')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...PaymentFixtures.VALID_PAYMENT_DTO,
-          appointmentId,
+          orderId,
+          method: 'cash',
+          amount: 50.0,
         })
         .expect(201);
 
@@ -299,7 +366,7 @@ describe('Beauty Parlour E2E Tests', () => {
 
       expect(getPaymentResponse.body._id).toBe(paymentId);
 
-      // 3. Simulate payment success (would normally be webhook from payment gateway)
+      // 3. Simulate payment success
       const processResponse = await request(app.getHttpServer())
         .post(`/payments/${paymentId}/confirm`)
         .set('Authorization', `Bearer ${accessToken}`)
@@ -323,8 +390,9 @@ describe('Beauty Parlour E2E Tests', () => {
         .post('/payments')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...PaymentFixtures.INVALID_AMOUNT_DTO,
-          appointmentId,
+          orderId,
+          method: 'cash',
+          amount: -50.0,
         })
         .expect(400);
     });
@@ -361,7 +429,7 @@ describe('Beauty Parlour E2E Tests', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({
           serviceId,
-          date: '2024-05-20',
+          date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           time: '02:00 PM',
           notes: 'First time customer',
         })
@@ -369,23 +437,61 @@ describe('Beauty Parlour E2E Tests', () => {
 
       const appointmentId = appointmentResponse.body._id;
 
-      // 4. Confirm appointment
+      // 4. Confirm appointment status (needs admin login first)
+      const adminLoginResponse = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          email: 'admin@beauty.com',
+          password: 'admin123',
+        })
+        .expect(200);
+
+      const adminToken = adminLoginResponse.body.accessToken;
+
       await request(app.getHttpServer())
-        .patch(`/appointments/${appointmentId}/status`)
-        .set('Authorization', `Bearer ${token}`)
+        .put(`/appointments/status/${appointmentId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({ status: 'confirmed' })
         .expect(200);
+
+      // Browse available products
+      const productsResponse = await request(app.getHttpServer())
+        .get('/products')
+        .expect(200);
+
+      const product = productsResponse.body[0];
+      const prodId = product ? product._id : '507f1f77bcf86cd799439011';
+      const prodName = product ? product.name : 'Shampoo';
+      const prodPrice = product ? product.price : 25.0;
+
+      // Create an order first for the payment
+      const orderResponse = await request(app.getHttpServer())
+        .post('/orders')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          userId,
+          items: [
+            {
+              productId: prodId,
+              productName: prodName,
+              quantity: 1,
+              price: prodPrice
+            }
+          ],
+          totalPrice: prodPrice
+        })
+        .expect(201);
+
+      const orderId = orderResponse.body._id;
 
       // 5. Process payment
       const paymentResponse = await request(app.getHttpServer())
         .post('/payments')
         .set('Authorization', `Bearer ${token}`)
         .send({
-          appointmentId,
-          amount: 75.0,
-          currency: 'USD',
-          method: 'credit_card',
-          cardToken: 'tok_visa',
+          orderId,
+          method: 'cash',
+          amount: 50.0,
         })
         .expect(201);
 

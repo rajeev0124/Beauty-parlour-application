@@ -36,6 +36,8 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   loading = true;
   activeFilter = 'all';
   filteredData: Product[] = [];
+  currentPage = 0;
+  pageSize = 10;
   private searchTerm = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -87,6 +89,17 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     this.applyFilters();
   }
 
+  get paginatedData(): Product[] {
+    const startIndex = this.currentPage * this.pageSize;
+    return this.filteredData.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  onPageChange(event: any): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.cdr.markForCheck();
+  }
+
   private applyFilters(): void {
     let data = this.dataSource.data;
     
@@ -102,6 +115,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     }
     
     this.filteredData = data;
+    this.currentPage = 0;
   }
 
   clearFilters(): void {

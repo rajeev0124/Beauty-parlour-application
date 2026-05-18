@@ -112,7 +112,7 @@
     } @else {
       <!-- Staff Grid -->
       <div class="staff-grid">
-        @for (staff of filteredData; track staff._id) {
+        @for (staff of paginatedData; track staff._id) {
           <div class="staff-card" [class.unavailable]="!staff.availability">
             <div class="staff-card-header">
               <div class="staff-avatar" [style.background]="getAvatarColor(staff.name)">
@@ -159,7 +159,14 @@
 
       <!-- Pagination -->
       <div class="staff-pagination">
-        <span class="pagination-info">Showing {{ filteredData.length }} of {{ dataSource.data.length }} staff members</span>
+        <mat-paginator
+          [length]="filteredData.length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          [pageIndex]="currentPage"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
       </div>
     }
   </div>

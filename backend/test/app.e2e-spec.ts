@@ -1,13 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { App } from 'supertest/types';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import { AppModule } from './../src/app.module';
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication<App>;
+  jest.setTimeout(60000);
+  let app: INestApplication;
+  let mongoServer: MongoMemoryServer;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
+    mongoServer = await MongoMemoryServer.create({
+      instance: { startupTimeout: 60000 },
+    });
+    const mongoUri = mongoServer.getUri();
+    process.env.MONGODB_URI = mongoUri;
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -16,10 +24,20 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  afterAll(async () => {
+    await app.close();
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
+  });
+
   it('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
-      .expect('Hello World!');
+      .expect((res) => {
+        expect(res.body.status).toBe('ok');
+        expect(res.body.message).toBe('Beauty Parlour API is running');
+      });
   });
 });

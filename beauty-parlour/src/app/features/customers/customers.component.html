@@ -109,7 +109,7 @@
     } @else {
       <!-- Customer Grid -->
       <div class="cust-grid">
-        @for (customer of filteredData; track customer._id) {
+        @for (customer of paginatedData; track customer._id) {
           <div class="cust-card" [class.blocked]="customer.status === 'blocked'">
             <div class="cust-card-header">
               <div class="cust-avatar" [style.background]="getAvatarColor(customer.name)">
@@ -200,7 +200,14 @@
 
       <!-- Pagination -->
       <div class="cust-pagination">
-        <span class="pagination-info">Showing {{ filteredData.length }} of {{ dataSource.data.length }} customers</span>
+        <mat-paginator
+          [length]="filteredData.length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          [pageIndex]="currentPage"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
       </div>
     }
   </div>

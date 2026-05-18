@@ -110,7 +110,7 @@
     } @else {
       <!-- Product Grid -->
       <div class="prod-grid">
-        @for (product of filteredData; track product._id) {
+        @for (product of paginatedData; track product._id) {
           <div class="prod-card" [class.inactive]="!product.isActive" [class.low-stock]="product.stock < 10 && product.stock > 0" [class.out-of-stock]="product.stock === 0">
             <div class="prod-card-header" [class.has-image]="product.image" [style.background]="product.image ? 'transparent' : getCategoryGradient(product.category)">
               @if (product.image) {
@@ -155,7 +155,14 @@
 
       <!-- Pagination -->
       <div class="prod-pagination">
-        <span class="pagination-info">Showing {{ filteredData.length }} of {{ dataSource.data.length }} products</span>
+        <mat-paginator
+          [length]="filteredData.length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          [pageIndex]="currentPage"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
       </div>
     }
   </div>
