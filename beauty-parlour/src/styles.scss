@@ -5476,3 +5476,40 @@ a:focus-visible {
   opacity: 1 !important;
   transition: none !important;
 }
+
+// ==========================================================================
+// SETTINGS PAGE SPECIFIC OVERRIDES - FORCE FLOATING LABEL VISIBILITY
+// ==========================================================================
+.settings-page {
+  .mat-mdc-form-field.mat-form-field-appearance-outline {
+    overflow: visible !important;
+
+    .mdc-text-field--outlined {
+      overflow: visible !important;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      overflow: visible !important;
+    }
+
+    .mdc-notched-outline {
+      display: flex !important;
+      border: none !important;
+    }
+    
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__trailing {
+      display: block !important;
+      border: none !important;
+    }
+    
+    .mdc-notched-outline__notch {
+      display: block !important;
+      border: none !important;
+      width: auto !important;
+      max-width: none !important;
+      overflow: visible !important;
+    }
+  }
+}
+

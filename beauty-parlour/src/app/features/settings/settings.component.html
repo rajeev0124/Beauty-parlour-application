@@ -1,361 +1,379 @@
 <div class="settings-page">
   <!-- Page Header -->
   <header class="page-header">
-    <div class="header-content">
-      <div class="header-icon">
-        <mat-icon>settings</mat-icon>
-      </div>
-      <div class="header-text">
-        <h1>Settings</h1>
-        <p>Configure your salon preferences and notifications</p>
+    <div class="header-wrapper">
+      <div class="header-left">
+        <div class="header-icon-large">
+          <mat-icon>settings</mat-icon>
+        </div>
+        <div class="header-text">
+          <h1>Settings & Preferences</h1>
+          <p>Manage your salon configuration and preferences</p>
+        </div>
       </div>
     </div>
   </header>
 
-  <div class="settings-container">
-    <!-- Sidebar Navigation -->
-    <aside class="settings-sidebar">
-      <nav class="nav-menu">
-        <button class="nav-item" [class.active]="activeTab === 'business'" (click)="activeTab = 'business'">
-          <div class="nav-icon">
-            <mat-icon>store</mat-icon>
-          </div>
-          <div class="nav-content">
-            <span class="nav-label">Business Info</span>
-            <span class="nav-desc">Name, contact, hours</span>
-          </div>
-          <mat-icon class="nav-arrow">chevron_right</mat-icon>
-        </button>
-        
-        <button class="nav-item" [class.active]="activeTab === 'notifications'" (click)="activeTab = 'notifications'">
-          <div class="nav-icon">
-            <mat-icon>notifications</mat-icon>
-          </div>
-          <div class="nav-content">
-            <span class="nav-label">Notifications</span>
-            <span class="nav-desc">Email, SMS, reminders</span>
-          </div>
-          <mat-icon class="nav-arrow">chevron_right</mat-icon>
-        </button>
-
-        <button class="nav-item" [class.active]="activeTab === 'security'" (click)="activeTab = 'security'">
-          <div class="nav-icon">
-            <mat-icon>security</mat-icon>
-          </div>
-          <div class="nav-content">
-            <span class="nav-label">Security</span>
-            <span class="nav-desc">Password, privacy</span>
-          </div>
-          <mat-icon class="nav-arrow">chevron_right</mat-icon>
-        </button>
-      </nav>
-    </aside>
-
-    <!-- Main Content Area -->
-    <main class="settings-main">
-      <!-- Business Information Tab -->
-      @if (activeTab === 'business') {
-        <div class="settings-card">
-          <div class="card-header">
-            <div class="header-icon-sm business">
-              <mat-icon>store</mat-icon>
-            </div>
-            <div class="header-info">
-              <h2>Business Information</h2>
-              <p>Update your salon details visible to customers</p>
-            </div>
-          </div>
-
-          <form [formGroup]="businessForm" (ngSubmit)="saveBusinessSettings()" class="settings-form">
-            <!-- Business Name -->
-            <div class="form-group full">
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Business Name</mat-label>
-                <mat-icon matPrefix>badge</mat-icon>
-                <input matInput formControlName="businessName" placeholder="Enter business name">
-              </mat-form-field>
-            </div>
-
-            <!-- Contact Row -->
-            <div class="form-row">
-              <div class="form-group">
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Email Address</mat-label>
-                  <mat-icon matPrefix>email</mat-icon>
-                  <input matInput type="email" formControlName="email" placeholder="business@email.com">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Phone Number</mat-label>
-                  <mat-icon matPrefix>phone</mat-icon>
-                  <input matInput type="tel" formControlName="phone" placeholder="+91 98765 43210">
-                </mat-form-field>
-              </div>
-            </div>
-
-            <!-- Address -->
-            <div class="form-group full">
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Address</mat-label>
-                <mat-icon matPrefix>location_on</mat-icon>
-                <textarea matInput formControlName="address" rows="3" placeholder="Enter full address"></textarea>
-              </mat-form-field>
-            </div>
-
-            <!-- Business Hours -->
-            <div class="form-section">
-              <h3 class="section-title">
-                <mat-icon>schedule</mat-icon>
-                Business Hours
-              </h3>
-              <div class="hours-grid">
-                <div class="time-card">
-                  <div class="time-icon open">
-                    <mat-icon>wb_sunny</mat-icon>
-                  </div>
-                  <div class="time-content">
-                    <mat-form-field appearance="outline" class="w-full time-field">
-                      <mat-label>Opening Time</mat-label>
-                      <input matInput type="time" formControlName="openTime">
-                    </mat-form-field>
-                  </div>
-                </div>
-
-                <div class="time-separator">
-                  <mat-icon>arrow_forward</mat-icon>
-                </div>
-
-                <div class="time-card">
-                  <div class="time-icon close">
-                    <mat-icon>nights_stay</mat-icon>
-                  </div>
-                  <div class="time-content">
-                    <mat-form-field appearance="outline" class="w-full time-field">
-                      <mat-label>Closing Time</mat-label>
-                      <input matInput type="time" formControlName="closeTime">
-                    </mat-form-field>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Save Button -->
-            <div class="form-actions">
-              <button mat-button class="btn-secondary" type="button" (click)="businessForm.reset()">
-                <mat-icon>refresh</mat-icon>
-                Reset
-              </button>
-              <button mat-raised-button color="primary" class="btn-primary" type="submit" [disabled]="savingBusiness || businessForm.invalid">
-                @if (savingBusiness) {
-                  <span class="spinner"></span>
-                  Saving...
-                } @else {
-                  <mat-icon>check</mat-icon>
-                  Save Changes
-                }
-              </button>
-            </div>
-          </form>
-        </div>
-      }
-
-      <!-- Notifications Tab -->
-      @if (activeTab === 'notifications') {
-        <div class="settings-card">
-          <div class="card-header">
-            <div class="header-icon-sm notifications">
-              <mat-icon>notifications</mat-icon>
-            </div>
-            <div class="header-info">
-              <h2>Notification Preferences</h2>
-              <p>Control how you receive alerts and updates</p>
-            </div>
-          </div>
-
-          <form [formGroup]="notificationForm" (ngSubmit)="saveNotificationSettings()">
-            <div class="notification-list">
-              <!-- Email Notifications -->
-              <div class="notification-item">
-                <div class="notification-icon email">
-                  <mat-icon>email</mat-icon>
-                </div>
-                <div class="notification-content">
-                  <div class="notification-header">
-                    <h4>Email Notifications</h4>
-                    <mat-slide-toggle formControlName="emailNotifications" color="primary"></mat-slide-toggle>
-                  </div>
-                  <p>Receive booking confirmations and updates via email</p>
-                </div>
-              </div>
-
-              <!-- SMS Notifications -->
-              <div class="notification-item">
-                <div class="notification-icon sms">
-                  <mat-icon>sms</mat-icon>
-                </div>
-                <div class="notification-content">
-                  <div class="notification-header">
-                    <h4>SMS Notifications</h4>
-                    <mat-slide-toggle formControlName="smsNotifications" color="primary"></mat-slide-toggle>
-                  </div>
-                  <p>Get instant text alerts for new appointments</p>
-                </div>
-              </div>
-
-              <!-- Appointment Reminders -->
-              <div class="notification-item">
-                <div class="notification-icon reminder">
-                  <mat-icon>alarm</mat-icon>
-                </div>
-                <div class="notification-content">
-                  <div class="notification-header">
-                    <h4>Appointment Reminders</h4>
-                    <mat-slide-toggle formControlName="appointmentReminders" color="primary"></mat-slide-toggle>
-                  </div>
-                  <p>Auto-remind customers before their appointments</p>
-                </div>
-              </div>
-
-              <!-- Promotional Emails -->
-              <div class="notification-item">
-                <div class="notification-icon promo">
-                  <mat-icon>campaign</mat-icon>
-                </div>
-                <div class="notification-content">
-                  <div class="notification-header">
-                    <h4>Promotional Emails</h4>
-                    <mat-slide-toggle formControlName="promotionalEmails" color="primary"></mat-slide-toggle>
-                  </div>
-                  <p>Send marketing offers and promotions to customers</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Save Button -->
-            <div class="form-actions">
-              <button type="submit" class="btn-primary" [disabled]="savingNotifications">
-                @if (savingNotifications) {
-                  <span class="spinner"></span>
-                  Saving...
-                } @else {
-                  <mat-icon>check</mat-icon>
-                  Save Preferences
-                }
-              </button>
-            </div>
-          </form>
-        </div>
-      }
-
-      <!-- Security Tab -->
-      @if (activeTab === 'security') {
-        <div class="settings-card">
-          <div class="card-header">
-            <div class="header-icon-sm security">
-              <mat-icon>security</mat-icon>
-            </div>
-            <div class="header-info">
-              <h2>Security Settings</h2>
-              <p>Manage your account security and privacy</p>
-            </div>
-          </div>
-
-          <div class="security-section">
-            <!-- Change Password -->
-            <div class="security-item">
-              <div class="security-icon">
-                <mat-icon>lock</mat-icon>
-              </div>
-              <div class="security-content">
-                <h4>Change Password</h4>
-                <p>Update your account password regularly for better security</p>
-              </div>
-              <button type="button" class="btn-outline" (click)="openPasswordChange()">
-                <mat-icon>edit</mat-icon>
-                Update
-              </button>
-            </div>
-
-            <!-- Two-Factor Authentication -->
-            <div class="security-item">
-              <div class="security-icon">
-                <mat-icon>verified_user</mat-icon>
-              </div>
-              <div class="security-content">
-                <h4>Two-Factor Authentication</h4>
-                <p>Add an extra layer of security to your account</p>
-                <span class="status-badge" [class.disabled]="!twoFactorEnabled" [class.active]="twoFactorEnabled">
-                  {{ twoFactorEnabled ? 'Enabled' : 'Disabled' }}
-                </span>
-              </div>
-              <button type="button" class="btn-outline" (click)="toggleTwoFactor()">
-                <mat-icon>{{ twoFactorEnabled ? 'close' : 'add' }}</mat-icon>
-                {{ twoFactorEnabled ? 'Disable' : 'Enable' }}
-              </button>
-            </div>
-
-            <!-- Active Sessions -->
-            <div class="security-item">
-              <div class="security-icon">
-                <mat-icon>devices</mat-icon>
-              </div>
-              <div class="security-content">
-                <h4>Active Sessions</h4>
-                <p>View and manage devices logged into your account</p>
-                <span class="status-badge active">{{ activeSessions.length || 0 }} Active Session(s)</span>
-              </div>
-              <button type="button" class="btn-outline" (click)="viewActiveSessions()">
-                <mat-icon>visibility</mat-icon>
-                View
-              </button>
-            </div>
-          </div>
-        </div>
-      }
-    </main>
+  <!-- Tabs Navigation (Mobile-friendly) -->
+  <div class="tabs-container">
+    <button class="tab-button" [class.active]="activeTab === 'business'" (click)="activeTab = 'business'">
+      <mat-icon>store</mat-icon>
+      <span class="tab-label">Business</span>
+    </button>
+    <button class="tab-button" [class.active]="activeTab === 'notifications'" (click)="activeTab = 'notifications'">
+      <mat-icon>notifications</mat-icon>
+      <span class="tab-label">Notifications</span>
+    </button>
+    <button class="tab-button" [class.active]="activeTab === 'security'" (click)="activeTab = 'security'">
+      <mat-icon>security</mat-icon>
+      <span class="tab-label">Security</span>
+    </button>
   </div>
 
-  <!-- Password Change Dialog -->
+  <!-- Main Content -->
+  <div class="settings-wrapper">
+    <!-- BUSINESS INFORMATION TAB -->
+    @if (activeTab === 'business') {
+      <div class="content-card">
+        <div class="card-header-pro">
+          <div class="header-badge business-badge">
+            <mat-icon>store</mat-icon>
+          </div>
+          <div class="header-info-pro">
+            <h2>Business Information</h2>
+            <p>Update your salon details and operating hours</p>
+          </div>
+        </div>
+
+        <form [formGroup]="businessForm" (ngSubmit)="saveBusinessSettings()" class="form-pro">
+          <!-- Basic Information Section -->
+          <div class="form-section-pro">
+            <h3 class="section-heading">
+              <mat-icon>badge</mat-icon>
+              Basic Information
+            </h3>
+            
+            <div class="form-group-pro full-width">
+              <label class="form-label">Business Name</label>
+              <mat-form-field appearance="fill">
+                <mat-label>Enter salon name</mat-label>
+                <input matInput formControlName="businessName" placeholder="e.g., Beauty Palace Salon">
+                <mat-icon matPrefix>store_mall_directory</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group-pro">
+                <label class="form-label">Email Address</label>
+                <mat-form-field appearance="fill">
+                  <mat-label>Contact email</mat-label>
+                  <input matInput type="email" formControlName="email" placeholder="salon@example.com">
+                  <mat-icon matPrefix>email</mat-icon>
+                  <mat-error *ngIf="businessForm.get('email')?.hasError('required')">Email is required</mat-error>
+                  <mat-error *ngIf="businessForm.get('email')?.hasError('email')">Enter a valid email</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group-pro">
+                <label class="form-label">Phone Number</label>
+                <mat-form-field appearance="fill">
+                  <mat-label>Contact number</mat-label>
+                  <input matInput type="tel" formControlName="phone" placeholder="+91 98765 43210">
+                  <mat-icon matPrefix>phone</mat-icon>
+                  <mat-error *ngIf="businessForm.get('phone')?.hasError('required')">Phone is required</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-group-pro full-width">
+              <label class="form-label">Address</label>
+              <mat-form-field appearance="fill">
+                <mat-label>Complete address</mat-label>
+                <textarea matInput formControlName="address" rows="3" placeholder="Shop No., Street, Area, City, Pin code"></textarea>
+                <mat-icon matPrefix>location_on</mat-icon>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Business Hours Section -->
+          <div class="form-section-pro">
+            <h3 class="section-heading">
+              <mat-icon>schedule</mat-icon>
+              Operating Hours
+            </h3>
+            
+            <div class="hours-grid">
+              <div class="time-card-pro">
+                <div class="time-badge open">
+                  <mat-icon>wb_sunny</mat-icon>
+                </div>
+                <div class="time-input-wrapper">
+                  <label class="form-label">Opening Time</label>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Open</mat-label>
+                    <input matInput type="time" formControlName="openTime">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="time-separator">
+                <span class="time-text">to</span>
+              </div>
+
+              <div class="time-card-pro">
+                <div class="time-badge close">
+                  <mat-icon>nights_stay</mat-icon>
+                </div>
+                <div class="time-input-wrapper">
+                  <label class="form-label">Closing Time</label>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Close</mat-label>
+                    <input matInput type="time" formControlName="closeTime">
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions-pro">
+            <button type="button" class="btn-secondary" (click)="resetBusinessForm()">
+              <mat-icon>refresh</mat-icon>
+              <span>Reset</span>
+            </button>
+            <button type="submit" class="btn-primary" [disabled]="businessForm.invalid || savingBusiness">
+              @if (savingBusiness) {
+                <mat-icon class="spinner-icon">hourglass_top</mat-icon>
+                <span>Saving...</span>
+              } @else {
+                <mat-icon>save</mat-icon>
+                <span>Save Changes</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    <!-- NOTIFICATIONS TAB -->
+    @if (activeTab === 'notifications') {
+      <div class="content-card">
+        <div class="card-header-pro">
+          <div class="header-badge notifications-badge">
+            <mat-icon>notifications</mat-icon>
+          </div>
+          <div class="header-info-pro">
+            <h2>Notification Settings</h2>
+            <p>Control how you receive alerts and updates</p>
+          </div>
+        </div>
+
+        <form [formGroup]="notificationForm" (ngSubmit)="saveNotificationSettings()" class="form-pro">
+          <div class="notifications-grid">
+            <!-- Email Notifications -->
+            <div class="notification-card">
+              <div class="notification-header-pro">
+                <div class="icon-box email-box">
+                  <mat-icon>email</mat-icon>
+                </div>
+                <div class="notification-text">
+                  <h3>Email Notifications</h3>
+                  <p>Receive booking confirmations and updates</p>
+                </div>
+                <mat-slide-toggle formControlName="emailNotifications" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <!-- SMS Notifications -->
+            <div class="notification-card">
+              <div class="notification-header-pro">
+                <div class="icon-box sms-box">
+                  <mat-icon>sms</mat-icon>
+                </div>
+                <div class="notification-text">
+                  <h3>SMS Notifications</h3>
+                  <p>Get instant text alerts for appointments</p>
+                </div>
+                <mat-slide-toggle formControlName="smsNotifications" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <!-- Appointment Reminders -->
+            <div class="notification-card">
+              <div class="notification-header-pro">
+                <div class="icon-box reminder-box">
+                  <mat-icon>alarm</mat-icon>
+                </div>
+                <div class="notification-text">
+                  <h3>Appointment Reminders</h3>
+                  <p>Auto-remind customers before bookings</p>
+                </div>
+                <mat-slide-toggle formControlName="appointmentReminders" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <!-- Promotional Emails -->
+            <div class="notification-card">
+              <div class="notification-header-pro">
+                <div class="icon-box promo-box">
+                  <mat-icon>campaign</mat-icon>
+                </div>
+                <div class="notification-text">
+                  <h3>Promotional Offers</h3>
+                  <p>Send marketing offers to customers</p>
+                </div>
+                <mat-slide-toggle formControlName="promotionalEmails" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions-pro">
+            <button type="submit" class="btn-primary" [disabled]="savingNotifications">
+              @if (savingNotifications) {
+                <mat-icon class="spinner-icon">hourglass_top</mat-icon>
+                <span>Saving...</span>
+              } @else {
+                <mat-icon>check_circle</mat-icon>
+                <span>Save Preferences</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    <!-- SECURITY TAB -->
+    @if (activeTab === 'security') {
+      <div class="content-card">
+        <div class="card-header-pro">
+          <div class="header-badge security-badge">
+            <mat-icon>security</mat-icon>
+          </div>
+          <div class="header-info-pro">
+            <h2>Security & Privacy</h2>
+            <p>Protect your account and manage access</p>
+          </div>
+        </div>
+
+        <div class="security-items">
+          <!-- Change Password -->
+          <div class="security-card">
+            <div class="security-content-pro">
+              <div class="security-icon lock-icon">
+                <mat-icon>lock</mat-icon>
+              </div>
+              <div class="security-text">
+                <h3>Change Password</h3>
+                <p>Update your account password regularly</p>
+                <span class="status-label">Recommended every 90 days</span>
+              </div>
+            </div>
+            <button type="button" class="btn-outline" (click)="openPasswordChange()">
+              <mat-icon>edit</mat-icon>
+              <span>Update</span>
+            </button>
+          </div>
+
+          <!-- Two-Factor Authentication -->
+          <div class="security-card">
+            <div class="security-content-pro">
+              <div class="security-icon shield-icon">
+                <mat-icon>verified_user</mat-icon>
+              </div>
+              <div class="security-text">
+                <h3>Two-Factor Authentication</h3>
+                <p>Add an extra layer of security to protect your account</p>
+                <span class="status-badge" [class.enabled]="twoFactorEnabled">
+                  {{ twoFactorEnabled ? '✓ Enabled' : '○ Disabled' }}
+                </span>
+              </div>
+            </div>
+            <button type="button" class="btn-outline" (click)="toggleTwoFactor()">
+              <mat-icon>{{ twoFactorEnabled ? 'close' : 'shield' }}</mat-icon>
+              <span>{{ twoFactorEnabled ? 'Disable' : 'Enable' }}</span>
+            </button>
+          </div>
+
+          <!-- Active Sessions -->
+          <div class="security-card">
+            <div class="security-content-pro">
+              <div class="security-icon devices-icon">
+                <mat-icon>devices</mat-icon>
+              </div>
+              <div class="security-text">
+                <h3>Active Sessions</h3>
+                <p>View and manage devices logged into your account</p>
+                <span class="status-count">{{ activeSessions.length }} session(s) active</span>
+              </div>
+            </div>
+            <button type="button" class="btn-outline" (click)="viewActiveSessions()">
+              <mat-icon>visibility</mat-icon>
+              <span>View</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- PASSWORD CHANGE MODAL -->
   @if (showPasswordDialog) {
-    <div class="modal-overlay">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h3>Change Password</h3>
-          <button (click)="closePasswordChange()" class="btn-close">
+    <div class="modal-overlay" (click)="closePasswordChange()">
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
+        <div class="modal-header-pro">
+          <div class="modal-title">
+            <mat-icon>lock</mat-icon>
+            <h3>Change Your Password</h3>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closePasswordChange()">
             <mat-icon>close</mat-icon>
           </button>
         </div>
-        <form [formGroup]="passwordForm" (ngSubmit)="submitPasswordChange()" class="modal-form">
-          <div class="form-group">
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Current Password</mat-label>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="submitPasswordChange()" class="form-pro modal-form">
+          <div class="form-group-pro">
+            <label class="form-label">Current Password</label>
+            <mat-form-field appearance="fill">
+              <mat-label>Enter current password</mat-label>
+              <input matInput type="password" formControlName="oldPassword">
               <mat-icon matPrefix>lock</mat-icon>
-              <input matInput type="password" formControlName="oldPassword" placeholder="Enter current password">
             </mat-form-field>
           </div>
-          <div class="form-group">
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>New Password</mat-label>
+
+          <div class="form-group-pro">
+            <label class="form-label">New Password</label>
+            <mat-form-field appearance="fill">
+              <mat-label>Minimum 8 characters</mat-label>
+              <input matInput type="password" formControlName="newPassword">
               <mat-icon matPrefix>vpn_key</mat-icon>
-              <input matInput type="password" formControlName="newPassword" placeholder="Minimum 8 characters">
+              <mat-hint>Use a strong, unique password</mat-hint>
             </mat-form-field>
           </div>
-          <div class="form-group">
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Confirm New Password</mat-label>
+
+          <div class="form-group-pro">
+            <label class="form-label">Confirm New Password</label>
+            <mat-form-field appearance="fill">
+              <mat-label>Re-enter new password</mat-label>
+              <input matInput type="password" formControlName="confirmPassword">
               <mat-icon matPrefix>check_circle</mat-icon>
-              <input matInput type="password" formControlName="confirmPassword" placeholder="Repeat new password">
+              @if (passwordForm.get('newPassword')?.value && passwordForm.get('newPassword')?.value !== passwordForm.get('confirmPassword')?.value) {
+                <mat-error>Passwords do not match</mat-error>
+              }
             </mat-form-field>
           </div>
+
           <div class="modal-actions">
-            <button mat-button class="btn-secondary" type="button" (click)="closePasswordChange()">Cancel</button>
-            <button mat-raised-button color="primary" class="btn-primary" type="submit" [disabled]="passwordForm.invalid || savingPassword">
+            <button type="button" class="btn-secondary" (click)="closePasswordChange()">
+              <span>Cancel</span>
+            </button>
+            <button type="submit" class="btn-primary" [disabled]="passwordForm.invalid || savingPassword">
               @if (savingPassword) {
-                <span class="spinner"></span>
+                <mat-icon class="spinner-icon">hourglass_top</mat-icon>
+                <span>Updating...</span>
               } @else {
-                Update Password
+                <mat-icon>check</mat-icon>
+                <span>Update Password</span>
               }
             </button>
           </div>
@@ -364,33 +382,45 @@
     </div>
   }
 
-  <!-- Active Sessions Dialog -->
+  <!-- ACTIVE SESSIONS MODAL -->
   @if (showSessionsDialog) {
-    <div class="modal-overlay">
-      <div class="modal-card wide">
-        <div class="modal-header">
-          <h3>Active Sessions</h3>
-          <button (click)="closeSessions()" class="btn-close">
+    <div class="modal-overlay" (click)="closeSessions()">
+      <div class="modal-dialog modal-large" (click)="$event.stopPropagation()">
+        <div class="modal-header-pro">
+          <div class="modal-title">
+            <mat-icon>devices</mat-icon>
+            <h3>Your Active Sessions</h3>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeSessions()">
             <mat-icon>close</mat-icon>
           </button>
         </div>
-        <div class="modal-content">
-          <div class="session-list">
-            @for (session of activeSessions; track session.sessionId) {
-              <div class="session-record">
-                <div class="session-info">
-                  <mat-icon>laptop</mat-icon>
-                  <div>
-                    <div class="device-name">{{ session.device }}</div>
-                    <div class="device-meta">{{ session.ip }} • Last active {{ session.lastActive | date:'short' }}</div>
+
+        <div class="modal-content-pro">
+          @if (activeSessions.length > 0) {
+            <div class="sessions-list">
+              @for (session of activeSessions; track session.sessionId) {
+                <div class="session-row">
+                  <div class="session-icon">
+                    <mat-icon>device_unknown</mat-icon>
                   </div>
+                  <div class="session-info">
+                    <div class="session-device">{{ session.device || 'Unknown Device' }}</div>
+                    <div class="session-meta">{{ session.ip }} • Last active {{ session.lastActive | date:'short' }}</div>
+                  </div>
+                  <button type="button" class="btn-danger-sm" (click)="revokeSession(session.sessionId)">
+                    <mat-icon>block</mat-icon>
+                    <span>Revoke</span>
+                  </button>
                 </div>
-                <button class="btn-revoke" (click)="revokeSession(session.sessionId)">Revoke</button>
-              </div>
-            } @empty {
-              <p class="empty-state">No active sessions found.</p>
-            }
-          </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-state">
+              <mat-icon>devices_off</mat-icon>
+              <p>No active sessions found</p>
+            </div>
+          }
         </div>
       </div>
     </div>

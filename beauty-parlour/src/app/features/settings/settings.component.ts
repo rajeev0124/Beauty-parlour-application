@@ -117,6 +117,17 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  resetBusinessForm(): void {
+    this.businessForm.reset({
+      businessName: this.currentUser?.businessName || 'Beauty Parlour',
+      email: this.currentUser?.email || '',
+      phone: this.currentUser?.phone || '',
+      address: this.currentUser?.address || '',
+      openTime: '09:00',
+      closeTime: '21:00'
+    });
+  }
+
   saveNotificationSettings(): void {
     this.savingNotifications = true;
     setTimeout(() => {
