@@ -2,9 +2,6 @@ import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -16,154 +13,164 @@ import { ServiceService } from '../../core/services/service.service';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule, MatFormFieldModule,
-    MatInputModule, MatSelectModule,
-    MatSlideToggleModule, MatIconModule, MatSnackBarModule
+    ReactiveFormsModule,
+    MatSlideToggleModule,
+    MatIconModule,
+    MatSnackBarModule
   ],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="premium-service-dialog">
-      <!-- Accent Bar -->
-      <div class="psd-accent"></div>
-      
+    <div class="service-dialog">
+      <!-- Decorative Shimmer Accent Bar -->
+      <div class="dialog-accent-bar"></div>
+
       <!-- Header -->
-      <div class="psd-header">
-        <div class="psd-header-content">
-          <div class="psd-icon" [class.edit]="data">
-            <mat-icon>{{ data ? 'edit' : 'spa' }}</mat-icon>
-          </div>
-          <div class="psd-titles">
-            <h2>{{ data ? 'Edit Service' : 'New Service' }}</h2>
-            <p>{{ data ? 'Update service details' : 'Add a new service to your catalog' }}</p>
-          </div>
+      <div class="sd-header">
+        <div class="sd-header-icon" [class.edit]="data">
+          <mat-icon>{{ data ? 'edit_note' : 'spa' }}</mat-icon>
         </div>
-        <button type="button" class="psd-close" (click)="dialogRef.close()">
+        <div class="sd-header-text">
+          <h2>{{ data ? 'Edit Service' : 'New Service' }}</h2>
+          <p>{{ data ? 'Update service details' : 'Add a new service to your catalog' }}</p>
+        </div>
+        <button type="button" class="sd-close-btn" (click)="dialogRef.close()" aria-label="Close">
           <mat-icon>close</mat-icon>
         </button>
       </div>
 
       <!-- Body -->
-      <div class="psd-body">
-        <form [formGroup]="form" class="psd-form">
-          
+      <div class="sd-body">
+        <form [formGroup]="form" class="sd-form">
           <!-- Service Name -->
-          <div class="psd-card">
-            <div class="psd-card-header">
-              <div class="psd-card-icon name"><mat-icon>badge</mat-icon></div>
-              <span class="psd-card-title">Service Name</span>
-              <span class="psd-required">*</span>
+          <div class="sd-field">
+            <label class="sd-label">Service Name <span class="required">*</span></label>
+            <div class="sd-input-wrapper" [class.error]="form.get('name')?.invalid && form.get('name')?.touched" [class.focused]="nameFocused">
+              <mat-icon class="input-icon">badge</mat-icon>
+              <input 
+                type="text" 
+                formControlName="name" 
+                placeholder="e.g. Hair Cut, Facial, Manicure"
+                (focus)="nameFocused = true"
+                (blur)="nameFocused = false">
             </div>
-            <mat-form-field appearance="outline" class="psd-field">
-              <input matInput formControlName="name" placeholder="e.g. Hair Cut, Facial, Manicure">
-              @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
-                <mat-error>Service name is required</mat-error>
-              }
-            </mat-form-field>
+            @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+              <span class="sd-error">
+                <mat-icon>error</mat-icon>
+                Service name is required
+              </span>
+            }
           </div>
 
           <!-- Category -->
-          <div class="psd-card">
-            <div class="psd-card-header">
-              <div class="psd-card-icon category"><mat-icon>category</mat-icon></div>
-              <span class="psd-card-title">Category</span>
-              <span class="psd-required">*</span>
+          <div class="sd-field">
+            <label class="sd-label">Category <span class="required">*</span></label>
+            <div class="sd-input-wrapper" [class.error]="form.get('category')?.invalid && form.get('category')?.touched" [class.focused]="categoryFocused">
+              <mat-icon class="input-icon">category</mat-icon>
+              <select 
+                formControlName="category"
+                (focus)="categoryFocused = true"
+                (blur)="categoryFocused = false">
+                <option value="" disabled selected>Select category</option>
+                <option value="hair">Hair Services</option>
+                <option value="skin">Skin & Facial</option>
+                <option value="nails">Nails & Manicures</option>
+                <option value="makeup">Professional Makeup</option>
+                <option value="spa">Spa & Massage</option>
+                <option value="other">Other</option>
+              </select>
+              <mat-icon class="select-arrow">expand_more</mat-icon>
             </div>
-            <mat-form-field appearance="outline" class="psd-field">
-              <mat-select formControlName="category" placeholder="Select category">
-                <mat-option value="hair">
-                  <div class="psd-option"><mat-icon>content_cut</mat-icon><span>Hair</span></div>
-                </mat-option>
-                <mat-option value="skin">
-                  <div class="psd-option"><mat-icon>face</mat-icon><span>Skin</span></div>
-                </mat-option>
-                <mat-option value="nails">
-                  <div class="psd-option"><mat-icon>back_hand</mat-icon><span>Nails</span></div>
-                </mat-option>
-                <mat-option value="makeup">
-                  <div class="psd-option"><mat-icon>brush</mat-icon><span>Makeup</span></div>
-                </mat-option>
-                <mat-option value="spa">
-                  <div class="psd-option"><mat-icon>spa</mat-icon><span>Spa</span></div>
-                </mat-option>
-                <mat-option value="other">
-                  <div class="psd-option"><mat-icon>more_horiz</mat-icon><span>Other</span></div>
-                </mat-option>
-              </mat-select>
-              @if (form.get('category')?.hasError('required') && form.get('category')?.touched) {
-                <mat-error>Category is required</mat-error>
-              }
-            </mat-form-field>
+            @if (form.get('category')?.hasError('required') && form.get('category')?.touched) {
+              <span class="sd-error">
+                <mat-icon>error</mat-icon>
+                Category is required
+              </span>
+            }
           </div>
 
           <!-- Price & Duration Row -->
-          <div class="psd-grid">
-            <div class="psd-card">
-              <div class="psd-card-header">
-                <div class="psd-card-icon price"><mat-icon>currency_rupee</mat-icon></div>
-                <span class="psd-card-title">Price</span>
-                <span class="psd-required">*</span>
+          <div class="sd-row">
+            <!-- Price -->
+            <div class="sd-field">
+              <label class="sd-label">Price <span class="required">*</span></label>
+              <div class="sd-input-wrapper" [class.error]="form.get('price')?.invalid && form.get('price')?.touched" [class.focused]="priceFocused">
+                <mat-icon class="input-icon">currency_rupee</mat-icon>
+                <input 
+                  type="number" 
+                  formControlName="price" 
+                  placeholder="0"
+                  (focus)="priceFocused = true"
+                  (blur)="priceFocused = false">
               </div>
-              <mat-form-field appearance="outline" class="psd-field">
-                <span matPrefix class="psd-prefix">₹</span>
-                <input matInput formControlName="price" type="number" placeholder="0">
-                @if (form.get('price')?.invalid && form.get('price')?.touched) {
-                  <mat-error>Valid price required</mat-error>
-                }
-              </mat-form-field>
+              @if (form.get('price')?.invalid && form.get('price')?.touched) {
+                <span class="sd-error">
+                  <mat-icon>error</mat-icon>
+                  Valid price required
+                </span>
+              }
             </div>
-            
-            <div class="psd-card">
-              <div class="psd-card-header">
-                <div class="psd-card-icon duration"><mat-icon>timer</mat-icon></div>
-                <span class="psd-card-title">Duration</span>
-                <span class="psd-required">*</span>
+
+            <!-- Duration -->
+            <div class="sd-field">
+              <label class="sd-label">Duration <span class="required">*</span></label>
+              <div class="sd-input-wrapper" [class.error]="form.get('duration')?.invalid && form.get('duration')?.touched" [class.focused]="durationFocused">
+                <mat-icon class="input-icon">timer</mat-icon>
+                <input 
+                  type="number" 
+                  formControlName="duration" 
+                  placeholder="30"
+                  (focus)="durationFocused = true"
+                  (blur)="durationFocused = false">
+                <span class="input-suffix">min</span>
               </div>
-              <mat-form-field appearance="outline" class="psd-field">
-                <input matInput formControlName="duration" type="number" placeholder="30">
-                <span matSuffix class="psd-suffix">min</span>
-                @if (form.get('duration')?.invalid && form.get('duration')?.touched) {
-                  <mat-error>Valid duration required</mat-error>
-                }
-              </mat-form-field>
+              @if (form.get('duration')?.invalid && form.get('duration')?.touched) {
+                <span class="sd-error">
+                  <mat-icon>error</mat-icon>
+                  Valid duration required
+                </span>
+              }
             </div>
           </div>
 
           <!-- Description -->
-          <div class="psd-card desc-card">
-            <div class="psd-card-header">
-              <div class="psd-card-icon desc"><mat-icon>description</mat-icon></div>
-              <span class="psd-card-title">Description</span>
-              <span class="psd-optional">(Optional)</span>
+          <div class="sd-field">
+            <label class="sd-label">Description <span class="optional">(Optional)</span></label>
+            <div class="sd-input-wrapper textarea" [class.focused]="descFocused">
+              <mat-icon class="input-icon">description</mat-icon>
+              <textarea 
+                formControlName="description" 
+                rows="3" 
+                placeholder="Brief description of the service..."
+                (focus)="descFocused = true"
+                (blur)="descFocused = false"></textarea>
             </div>
-            <mat-form-field appearance="outline" class="psd-field textarea">
-              <textarea matInput formControlName="description" rows="2" 
-                        placeholder="Brief description of the service..."></textarea>
-            </mat-form-field>
           </div>
 
           <!-- Active Toggle -->
-          <div class="psd-toggle-row">
-            <div class="psd-toggle-info">
-              <mat-icon [class.active]="form.get('isActive')?.value">{{ form.get('isActive')?.value ? 'visibility' : 'visibility_off' }}</mat-icon>
-              <div class="psd-toggle-text">
-                <span class="label">Service Status</span>
-                <span class="hint">{{ form.get('isActive')?.value ? 'Visible to customers' : 'Hidden from catalog' }}</span>
+          <div class="sd-toggle-field">
+            <div class="sd-toggle-info">
+              <div class="sd-toggle-icon" [class.available]="form.get('isActive')?.value">
+                <mat-icon>{{ form.get('isActive')?.value ? 'visibility' : 'visibility_off' }}</mat-icon>
+              </div>
+              <div class="sd-toggle-text">
+                <span class="sd-toggle-label">Service Status</span>
+                <span class="sd-toggle-desc">{{ form.get('isActive')?.value ? 'Visible to customers' : 'Hidden from catalog' }}</span>
               </div>
             </div>
             <mat-slide-toggle formControlName="isActive" color="primary"></mat-slide-toggle>
           </div>
-
         </form>
       </div>
 
       <!-- Footer -->
-      <div class="psd-footer">
-        <button type="button" class="psd-btn cancel" (click)="dialogRef.close()">
+      <div class="sd-footer">
+        <button type="button" class="sd-btn cancel" (click)="dialogRef.close()">
+          <mat-icon>close</mat-icon>
           Cancel
         </button>
-        <button type="button" class="psd-btn submit" (click)="save()" [disabled]="form.invalid || saving">
+        <button type="button" class="sd-btn submit" (click)="save()" [disabled]="form.invalid || saving">
           @if (saving) {
-            <span class="psd-spinner"></span>
+            <span class="sd-spinner"></span>
           } @else {
             <mat-icon>{{ data ? 'save' : 'add_circle' }}</mat-icon>
           }
@@ -173,19 +180,27 @@ import { ServiceService } from '../../core/services/service.service';
     </div>
   `,
   styles: [`
-    /* ========== PREMIUM SERVICE DIALOG ========== */
-    .premium-service-dialog {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      max-width: 440px;
-      background: #fff;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    .cdk-overlay-pane:has(.service-dialog) {
+      max-width: 95vw !important;
     }
 
-    .psd-accent {
+    .mat-mdc-dialog-container:has(.service-dialog) {
+      --mdc-dialog-container-shape: 20px;
+      padding: 0 !important;
+    }
+
+    .service-dialog {
+      width: 480px;
+      max-width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialog-accent-bar {
       height: 4px;
       background: linear-gradient(90deg, #7c3aed, #ec4899, #7c3aed);
       background-size: 200% 100%;
@@ -197,346 +212,365 @@ import { ServiceService } from '../../core/services/service.service';
       100% { background-position: -200% 0; }
     }
 
-    /* Header */
-    .psd-header {
+    // ========== HEADER ==========
+    .sd-header {
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 16px 20px;
-      background: linear-gradient(135deg, #faf5ff 0%, #fff 100%);
-      border-bottom: 1px solid #f3e8ff;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fdfaff 0%, #fff 100%);
+      border-bottom: 1px solid #f6f3ff;
+      position: relative;
     }
 
-    .psd-header-content {
+    .sd-header-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: #fff;
+      }
+
+      &.edit {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+      }
+    }
+
+    .sd-header-text {
+      flex: 1;
+
+      h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+        letter-spacing: -0.01em;
+      }
+
+      p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: #6b7280;
+      }
+    }
+
+    .sd-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #6b7280;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
+      }
+    }
+
+    // ========== BODY ==========
+    .sd-body {
+      padding: 24px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .sd-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sd-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    // ========== FIELD ==========
+    .sd-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sd-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 1px;
+
+      .required {
+        color: #ef4444;
+      }
+
+      .optional {
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 500;
+      }
+    }
+
+    .sd-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f9fafb;
+      transition: all 0.2s ease;
+      overflow: hidden;
+
+      &.focused {
+        border-color: #7c3aed;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        
+        .input-icon {
+          color: #7c3aed;
+        }
+      }
+
+      &.error {
+        border-color: #ef4444;
+        background: #fef2f2;
+        
+        .input-icon {
+          color: #ef4444;
+        }
+      }
+
+      .input-icon {
+        margin-left: 14px;
+        color: #9ca3af;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: color 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      input, select, textarea {
+        flex: 1;
+        width: 100%;
+        padding: 13px 16px 13px 10px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        color: #1f2937;
+        outline: none;
+        box-sizing: border-box;
+        font-family: inherit;
+
+        &::placeholder {
+          color: #9ca3af;
+        }
+      }
+
+      textarea {
+        resize: none;
+        line-height: 1.5;
+        padding-top: 13px;
+      }
+
+      select {
+        appearance: none;
+        cursor: pointer;
+        padding-right: 40px;
+      }
+
+      .select-arrow {
+        position: absolute;
+        right: 14px;
+        color: #9ca3af;
+        pointer-events: none;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .input-suffix {
+        margin-right: 16px;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 500;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      &.textarea {
+        align-items: flex-start;
+        
+        .input-icon {
+          margin-top: 13px;
+        }
+      }
+    }
+
+    .sd-error {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #ef4444;
+      margin-top: 2px;
+
+      mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    // ========== TOGGLE ==========
+    .sd-toggle-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    .sd-toggle-info {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .psd-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #7c3aed, #9333ea);
+    .sd-toggle-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+      background: #fee2e2;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #dc2626;
+      }
+
+      &.available {
+        background: #d1fae5;
+
+        mat-icon {
+          color: #059669;
+        }
+      }
     }
 
-    .psd-icon.edit {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
-    }
-
-    .psd-icon mat-icon {
-      color: #fff;
-      font-size: 22px;
-      width: 22px;
-      height: 22px;
-    }
-
-    .psd-titles {
+    .sd-toggle-text {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .psd-titles h2 {
-      margin: 0;
-      font-size: 17px;
-      font-weight: 700;
+    .sd-toggle-label {
+      font-size: 13px;
+      font-weight: 600;
       color: #1f2937;
-      letter-spacing: -0.01em;
     }
 
-    .psd-titles p {
-      margin: 0;
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .psd-close {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: rgba(0,0,0,0.04);
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #9ca3af;
-      transition: all 0.15s ease;
-    }
-
-    .psd-close:hover {
-      background: rgba(0,0,0,0.08);
-      color: #374151;
-    }
-
-    .psd-close mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
-
-    /* Body */
-    .psd-body {
-      padding: 16px 20px;
-      flex: 1;
-      overflow-y: auto;
-      max-height: 60vh;
-    }
-
-    .psd-form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* Cards */
-    .psd-card {
-      background: #fafafa;
-      border: 1px solid #f0f0f0;
-      border-radius: 10px;
-      padding: 12px;
-      transition: all 0.15s ease;
-    }
-
-    .psd-card:focus-within {
-      background: #fff;
-      border-color: #e9d5ff;
-      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
-    }
-
-    .psd-card-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .psd-card-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .psd-card-icon mat-icon {
-      font-size: 14px;
-      width: 14px;
-      height: 14px;
-    }
-
-    .psd-card-icon.name { background: #dbeafe; }
-    .psd-card-icon.name mat-icon { color: #2563eb; }
-    .psd-card-icon.category { background: #fce7f3; }
-    .psd-card-icon.category mat-icon { color: #db2777; }
-    .psd-card-icon.price { background: #d1fae5; }
-    .psd-card-icon.price mat-icon { color: #059669; }
-    .psd-card-icon.duration { background: #fef3c7; }
-    .psd-card-icon.duration mat-icon { color: #d97706; }
-    .psd-card-icon.desc { background: #e0e7ff; }
-    .psd-card-icon.desc mat-icon { color: #4f46e5; }
-
-    .psd-card-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: #374151;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .psd-required {
-      color: #ef4444;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .psd-optional {
-      font-size: 10px;
-      color: #9ca3af;
-      margin-left: auto;
-    }
-
-    /* Grid Layout */
-    .psd-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    /* Form Fields */
-    .psd-field {
-      width: 100%;
-    }
-
-    .psd-field .mat-mdc-form-field-subscript-wrapper {
-      display: none;
-    }
-
-    .psd-field.textarea .mat-mdc-form-field-subscript-wrapper {
-      display: block;
-    }
-
-    .psd-field .mat-mdc-text-field-wrapper {
-      background: #fff !important;
-      border-radius: 8px !important;
-    }
-
-    .psd-field .mdc-notched-outline__leading,
-    .psd-field .mdc-notched-outline__notch,
-    .psd-field .mdc-notched-outline__trailing {
-      border-color: #e5e7eb !important;
-    }
-
-    .psd-field.mat-focused .mdc-notched-outline__leading,
-    .psd-field.mat-focused .mdc-notched-outline__notch,
-    .psd-field.mat-focused .mdc-notched-outline__trailing {
-      border-color: #7c3aed !important;
-    }
-
-    .psd-field .mat-mdc-form-field-infix {
-      min-height: 40px !important;
-      padding: 8px 0 !important;
-    }
-
-    .psd-field input,
-    .psd-field .mat-mdc-select-value,
-    .psd-field textarea {
-      font-size: 13px !important;
-    }
-
-    .psd-prefix, .psd-suffix {
-      font-size: 13px;
-      color: #6b7280;
-      font-weight: 500;
-    }
-
-    /* Option styling */
-    .psd-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .psd-option mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-      color: #6b7280;
-    }
-
-    /* Toggle Row */
-    .psd-toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-      border: 1px solid #bbf7d0;
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-top: 4px;
-    }
-
-    .psd-toggle-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .psd-toggle-info mat-icon {
-      font-size: 22px;
-      width: 22px;
-      height: 22px;
-      color: #9ca3af;
-      transition: color 0.2s ease;
-    }
-
-    .psd-toggle-info mat-icon.active {
-      color: #22c55e;
-    }
-
-    .psd-toggle-text {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
-    .psd-toggle-text .label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #374151;
-    }
-
-    .psd-toggle-text .hint {
+    .sd-toggle-desc {
       font-size: 11px;
       color: #6b7280;
     }
 
-    /* Footer */
-    .psd-footer {
+    // ========== FOOTER ==========
+    .sd-footer {
       display: flex;
-      gap: 10px;
-      padding: 14px 20px;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px 24px;
       background: #f9fafb;
       border-top: 1px solid #f3f4f6;
     }
 
-    .psd-btn {
-      flex: 1;
+    .sd-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 11px 16px;
-      border-radius: 8px;
-      font-size: 13px;
+      gap: 8px;
+      padding: 11px 22px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s ease;
-      border: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &.cancel {
+        background: #fff;
+        color: #6b7280;
+        border: 1px solid #e5e7eb;
+
+        &:hover {
+          background: #f9fafb;
+          border-color: #d1d5db;
+        }
+      }
+
+      &.submit {
+        background: linear-gradient(135deg, #7c3aed, #ec4899);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+      }
     }
 
-    .psd-btn mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-    }
-
-    .psd-btn.cancel {
-      background: #fff;
-      color: #6b7280;
-      border: 1px solid #e5e7eb;
-    }
-
-    .psd-btn.cancel:hover {
-      background: #f9fafb;
-      border-color: #d1d5db;
-    }
-
-    .psd-btn.submit {
-      background: linear-gradient(135deg, #7c3aed, #9333ea);
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
-    }
-
-    .psd-btn.submit:hover:not(:disabled) {
-      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
-      transform: translateY(-1px);
-    }
-
-    .psd-btn.submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .psd-spinner {
+    .sd-spinner {
       width: 16px;
       height: 16px;
       border: 2px solid rgba(255,255,255,0.3);
@@ -549,177 +583,126 @@ import { ServiceService } from '../../core/services/service.service';
       to { transform: rotate(360deg); }
     }
 
-    /* ========== MOBILE RESPONSIVE ========== */
-    @media (max-width: 480px) {
-      .premium-service-dialog {
-        max-width: 100%;
-        border-radius: 12px;
+    // ========== RESPONSIVE ==========
+    @media (max-width: 600px) {
+      .service-dialog {
+        width: 100%;
+        border-radius: 16px;
       }
 
-      .psd-accent {
-        height: 3px;
+      .sd-header {
+        padding: 16px 20px;
+        gap: 12px;
       }
 
-      .psd-header {
-        padding: 12px 14px;
+      .sd-header-icon {
+        width: 40px;
+        height: 40px;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
       }
 
-      .psd-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
+      .sd-header-text h2 {
+        font-size: 16px;
       }
 
-      .psd-icon mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-      }
-
-      .psd-titles h2 {
-        font-size: 15px;
-      }
-
-      .psd-titles p {
-        font-size: 11px;
-      }
-
-      .psd-close {
+      .sd-close-btn {
+        top: 12px;
+        right: 12px;
         width: 28px;
         height: 28px;
       }
 
-      .psd-close mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-      }
-
-      .psd-body {
-        padding: 12px 14px;
+      .sd-body {
+        padding: 20px;
         max-height: 55vh;
       }
 
-      .psd-form {
+      .sd-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .sd-input-wrapper input, 
+      .sd-input-wrapper select,
+      .sd-input-wrapper textarea {
+        padding: 11px 14px 11px 10px;
+      }
+
+      .sd-toggle-field {
+        padding: 12px;
+      }
+
+      .sd-footer {
+        padding: 16px 20px;
+        flex-direction: column-reverse;
         gap: 10px;
       }
 
-      .psd-card {
-        padding: 10px;
-        border-radius: 8px;
-      }
-
-      .psd-card-header {
-        margin-bottom: 6px;
-      }
-
-      .psd-card-icon {
-        width: 22px;
-        height: 22px;
-      }
-
-      .psd-card-icon mat-icon {
-        font-size: 12px;
-        width: 12px;
-        height: 12px;
-      }
-
-      .psd-card-title {
-        font-size: 10px;
-      }
-
-      .psd-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-
-      .psd-field .mat-mdc-form-field-infix {
-        min-height: 36px !important;
-      }
-
-      .psd-field input,
-      .psd-field .mat-mdc-select-value,
-      .psd-field textarea {
-        font-size: 12px !important;
-      }
-
-      .psd-toggle-row {
-        padding: 10px 12px;
-      }
-
-      .psd-toggle-info mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-      }
-
-      .psd-toggle-text .label {
-        font-size: 12px;
-      }
-
-      .psd-toggle-text .hint {
-        font-size: 10px;
-      }
-
-      .psd-footer {
-        padding: 12px 14px;
-        gap: 8px;
-      }
-
-      .psd-btn {
-        padding: 10px 12px;
-        font-size: 12px;
-        border-radius: 6px;
-      }
-
-      .psd-btn mat-icon {
-        font-size: 14px;
-        width: 14px;
-        height: 14px;
+      .sd-btn {
+        width: 100%;
+        padding: 13px 24px;
       }
     }
 
-    /* Extra small */
-    @media (max-width: 360px) {
-      .psd-header {
-        padding: 10px 12px;
+    @media (max-width: 400px) {
+      .sd-header {
+        padding: 12px 16px;
       }
 
-      .psd-icon {
-        width: 34px;
-        height: 34px;
+      .sd-header-icon {
+        width: 36px;
+        height: 36px;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
       }
 
-      .psd-titles h2 {
-        font-size: 14px;
+      .sd-header-text {
+        h2 { font-size: 15px; }
+        p { font-size: 11px; }
       }
 
-      .psd-body {
-        padding: 10px 12px;
+      .sd-body {
+        padding: 16px;
       }
 
-      .psd-card {
-        padding: 8px;
+      .sd-form {
+        gap: 12px;
       }
 
-      .psd-grid {
-        gap: 8px;
+      .sd-toggle-icon {
+        width: 32px;
+        height: 32px;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
       }
 
-      .psd-footer {
-        padding: 10px 12px;
-      }
-
-      .psd-btn {
-        padding: 8px 10px;
-        font-size: 11px;
-      }
+      .sd-toggle-label { font-size: 12px; }
+      .sd-toggle-desc { font-size: 10px; }
     }
   `]
 })
 export class ServiceDialogComponent {
   form: FormGroup;
   saving = false;
+
+  nameFocused = false;
+  categoryFocused = false;
+  priceFocused = false;
+  durationFocused = false;
+  descFocused = false;
 
   constructor(
     private fb: FormBuilder,
