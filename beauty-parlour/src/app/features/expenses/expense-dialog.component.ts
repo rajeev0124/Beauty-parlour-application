@@ -206,7 +206,7 @@ interface PaymentMethod {
           </div>
           <div class="receipt-total">
             <span class="total-label">TOTAL</span>
-            <span class="total-amount">₹{{ expense.amount | number:'1.0-0' }}</span>
+            <span class="total-amount">₹{{ (expense.amount || 0) | number:'1.0-0' }}</span>
           </div>
         </div>
 
@@ -581,6 +581,8 @@ interface PaymentMethod {
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      flex-wrap: nowrap;
+
 
       &::before {
         content: '';
