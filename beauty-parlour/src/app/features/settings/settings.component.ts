@@ -128,6 +128,15 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  getFormattedHours(): string {
+    const openTime = this.businessForm.get('openTime')?.value;
+    const closeTime = this.businessForm.get('closeTime')?.value;
+    if (openTime && closeTime) {
+      return `${openTime} - ${closeTime}`;
+    }
+    return '09:00 - 21:00';
+  }
+
   saveNotificationSettings(): void {
     this.savingNotifications = true;
     setTimeout(() => {

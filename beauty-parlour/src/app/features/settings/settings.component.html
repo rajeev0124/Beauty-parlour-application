@@ -45,108 +45,162 @@
           </div>
         </div>
 
-        <form [formGroup]="businessForm" (ngSubmit)="saveBusinessSettings()" class="form-pro">
+        <form [formGroup]="businessForm" (ngSubmit)="saveBusinessSettings()" class="form-pro business-form">
           <!-- Basic Information Section -->
           <div class="form-section-pro">
-            <h3 class="section-heading">
-              <mat-icon>badge</mat-icon>
-              Basic Information
-            </h3>
+            <div class="section-header">
+              <div class="section-icon">
+                <mat-icon>badge</mat-icon>
+              </div>
+              <h3 class="section-heading">Basic Information</h3>
+            </div>
             
-            <div class="form-group-pro full-width">
-              <label class="form-label">Business Name</label>
-              <mat-form-field appearance="fill">
-                <mat-label>Enter salon name</mat-label>
-                <input matInput formControlName="businessName" placeholder="e.g., Beauty Palace Salon">
-                <mat-icon matPrefix>store_mall_directory</mat-icon>
-              </mat-form-field>
-            </div>
-
-            <div class="form-grid-2">
-              <div class="form-group-pro">
-                <label class="form-label">Email Address</label>
-                <mat-form-field appearance="fill">
-                  <mat-label>Contact email</mat-label>
-                  <input matInput type="email" formControlName="email" placeholder="salon@example.com">
-                  <mat-icon matPrefix>email</mat-icon>
-                  <mat-error *ngIf="businessForm.get('email')?.hasError('required')">Email is required</mat-error>
-                  <mat-error *ngIf="businessForm.get('email')?.hasError('email')">Enter a valid email</mat-error>
-                </mat-form-field>
+            <div class="business-info-grid">
+              <!-- Business Name -->
+              <div class="form-group-pro full-width">
+                <div class="input-wrapper">
+                  <label class="form-label premium-label">
+                    <mat-icon>store_mall_directory</mat-icon>
+                    <span>Business Name</span>
+                  </label>
+                  <mat-form-field appearance="fill" class="premium-field">
+                    <mat-label>Enter your salon name</mat-label>
+                    <input matInput formControlName="businessName" placeholder="e.g., Beauty Palace Salon">
+                    <mat-icon matPrefix class="input-icon">badge</mat-icon>
+                  </mat-form-field>
+                  <p class="field-hint">This name will appear to customers</p>
+                </div>
               </div>
 
-              <div class="form-group-pro">
-                <label class="form-label">Phone Number</label>
-                <mat-form-field appearance="fill">
-                  <mat-label>Contact number</mat-label>
-                  <input matInput type="tel" formControlName="phone" placeholder="+91 98765 43210">
-                  <mat-icon matPrefix>phone</mat-icon>
-                  <mat-error *ngIf="businessForm.get('phone')?.hasError('required')">Phone is required</mat-error>
-                </mat-form-field>
-              </div>
-            </div>
+              <!-- Email & Phone Grid -->
+              <div class="form-grid-2-premium">
+                <div class="form-group-pro">
+                  <div class="input-wrapper">
+                    <label class="form-label premium-label">
+                      <mat-icon>email</mat-icon>
+                      <span>Email Address</span>
+                    </label>
+                    <mat-form-field appearance="fill" class="premium-field">
+                      <mat-label>Contact email</mat-label>
+                      <input matInput type="email" formControlName="email" placeholder="salon@example.com">
+                      <mat-icon matPrefix class="input-icon">email</mat-icon>
+                    </mat-form-field>
+                    <p class="field-hint">For customer inquiries</p>
+                  </div>
+                </div>
 
-            <div class="form-group-pro full-width">
-              <label class="form-label">Address</label>
-              <mat-form-field appearance="fill">
-                <mat-label>Complete address</mat-label>
-                <textarea matInput formControlName="address" rows="3" placeholder="Shop No., Street, Area, City, Pin code"></textarea>
-                <mat-icon matPrefix>location_on</mat-icon>
-              </mat-form-field>
+                <div class="form-group-pro">
+                  <div class="input-wrapper">
+                    <label class="form-label premium-label">
+                      <mat-icon>phone</mat-icon>
+                      <span>Phone Number</span>
+                    </label>
+                    <mat-form-field appearance="fill" class="premium-field">
+                      <mat-label>Contact number</mat-label>
+                      <input matInput type="tel" formControlName="phone" placeholder="+91 98765 43210">
+                      <mat-icon matPrefix class="input-icon">phone</mat-icon>
+                    </mat-form-field>
+                    <p class="field-hint">WhatsApp enabled</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Address -->
+              <div class="form-group-pro full-width">
+                <div class="input-wrapper">
+                  <label class="form-label premium-label">
+                    <mat-icon>location_on</mat-icon>
+                    <span>Address</span>
+                  </label>
+                  <mat-form-field appearance="fill" class="premium-field textarea-field">
+                    <mat-label>Complete address</mat-label>
+                    <textarea matInput formControlName="address" rows="3" placeholder="Shop No., Street, Area, City, Pin code"></textarea>
+                    <mat-icon matPrefix class="input-icon">location_on</mat-icon>
+                  </mat-form-field>
+                  <p class="field-hint">Visible to customers on your business profile</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Business Hours Section -->
-          <div class="form-section-pro">
-            <h3 class="section-heading">
-              <mat-icon>schedule</mat-icon>
-              Operating Hours
-            </h3>
+          <!-- Operating Hours Section -->
+          <div class="form-section-pro hours-section">
+            <div class="section-header">
+              <div class="section-icon">
+                <mat-icon>schedule</mat-icon>
+              </div>
+              <h3 class="section-heading">Operating Hours</h3>
+            </div>
             
-            <div class="hours-grid">
-              <div class="time-card-pro">
-                <div class="time-badge open">
-                  <mat-icon>wb_sunny</mat-icon>
+            <div class="hours-grid-premium">
+              <!-- Opening Time -->
+              <div class="time-card-premium">
+                <div class="time-header">
+                  <div class="time-badge open">
+                    <mat-icon>wb_sunny</mat-icon>
+                  </div>
+                  <div class="time-label">
+                    <span class="time-label-title">Opening Time</span>
+                    <span class="time-label-subtitle">When you open</span>
+                  </div>
                 </div>
-                <div class="time-input-wrapper">
-                  <label class="form-label">Opening Time</label>
-                  <mat-form-field appearance="fill">
-                    <mat-label>Open</mat-label>
-                    <input matInput type="time" formControlName="openTime">
-                  </mat-form-field>
-                </div>
+                <mat-form-field appearance="fill" class="premium-field time-field">
+                  <mat-label>Opening time</mat-label>
+                  <input matInput type="time" formControlName="openTime">
+                  <mat-icon matPrefix class="input-icon">schedule</mat-icon>
+                </mat-form-field>
               </div>
 
-              <div class="time-separator">
-                <span class="time-text">to</span>
+              <!-- Time Divider -->
+              <div class="time-divider-premium">
+                <div class="divider-line"></div>
+                <div class="divider-text">to</div>
+                <div class="divider-line"></div>
               </div>
 
-              <div class="time-card-pro">
-                <div class="time-badge close">
-                  <mat-icon>nights_stay</mat-icon>
+              <!-- Closing Time -->
+              <div class="time-card-premium">
+                <div class="time-header">
+                  <div class="time-badge close">
+                    <mat-icon>nights_stay</mat-icon>
+                  </div>
+                  <div class="time-label">
+                    <span class="time-label-title">Closing Time</span>
+                    <span class="time-label-subtitle">When you close</span>
+                  </div>
                 </div>
-                <div class="time-input-wrapper">
-                  <label class="form-label">Closing Time</label>
-                  <mat-form-field appearance="fill">
-                    <mat-label>Close</mat-label>
-                    <input matInput type="time" formControlName="closeTime">
-                  </mat-form-field>
+                <mat-form-field appearance="fill" class="premium-field time-field">
+                  <mat-label>Closing time</mat-label>
+                  <input matInput type="time" formControlName="closeTime">
+                  <mat-icon matPrefix class="input-icon">schedule</mat-icon>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Hours Summary -->
+            <div class="hours-summary">
+              <div class="summary-item">
+                <mat-icon>info</mat-icon>
+                <div class="summary-text">
+                  <strong>{{ getFormattedHours() }}</strong>
+                  <span>Operating Hours</span>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Form Actions -->
-          <div class="form-actions-pro">
+          <div class="form-actions-premium">
             <button type="button" class="btn-secondary" (click)="resetBusinessForm()">
               <mat-icon>refresh</mat-icon>
               <span>Reset</span>
             </button>
-            <button type="submit" class="btn-primary" [disabled]="businessForm.invalid || savingBusiness">
+            <button type="submit" class="btn-primary premium-save-btn" [disabled]="businessForm.invalid || savingBusiness">
               @if (savingBusiness) {
                 <mat-icon class="spinner-icon">hourglass_top</mat-icon>
-                <span>Saving...</span>
+                <span>Saving changes...</span>
               } @else {
-                <mat-icon>save</mat-icon>
+                <mat-icon>check_circle</mat-icon>
                 <span>Save Changes</span>
               }
             </button>
