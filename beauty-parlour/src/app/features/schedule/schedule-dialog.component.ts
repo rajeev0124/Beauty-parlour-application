@@ -2,11 +2,6 @@ import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -25,215 +20,215 @@ export interface ScheduleDialogData {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     MatSlideToggleModule,
     MatIconModule,
     MatSnackBarModule
   ],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="premium-schedule-dialog" [class.leave-mode]="data.mode === 'leave'">
-      <!-- Decorative top bar -->
+    <div class="schedule-dialog" [class.leave-mode]="data.mode === 'leave'">
+      <!-- Decorative top accent bar -->
       <div class="dialog-accent-bar"></div>
-      
+
       <!-- Header -->
-      <div class="psd-header">
-        <div class="psd-header-content">
-          <div class="psd-icon-wrapper" [class.leave]="data.mode === 'leave'">
-            <mat-icon>{{ getHeaderIcon() }}</mat-icon>
-          </div>
-          <div class="psd-title-group">
-            <h2 class="psd-title">{{ getTitle() }}</h2>
-            <p class="psd-subtitle">{{ getSubtitle() }}</p>
-          </div>
+      <div class="sd-header">
+        <div class="sd-header-icon" [class.leave]="data.mode === 'leave'">
+          <mat-icon>{{ getHeaderIcon() }}</mat-icon>
         </div>
-        <button type="button" class="psd-close-btn" (click)="dialogRef.close()" aria-label="Close">
+        <div class="sd-header-text">
+          <h2>{{ getTitle() }}</h2>
+          <p>{{ getSubtitle() }}</p>
+        </div>
+        <button type="button" class="sd-close-btn" (click)="dialogRef.close()" aria-label="Close">
           <mat-icon>close</mat-icon>
         </button>
       </div>
 
       <!-- Body -->
-      <div class="psd-body">
-        <form [formGroup]="form" class="psd-form">
-          
-          <!-- Staff Selection Card -->
-          <div class="psd-field-card">
-            <div class="psd-field-header">
-              <div class="psd-field-icon"><mat-icon>person_outline</mat-icon></div>
-              <span class="psd-field-title">Staff Member</span>
-            </div>
-            <mat-form-field appearance="outline" class="psd-input">
-              <mat-select formControlName="staffId" placeholder="Choose a team member">
+      <div class="sd-body">
+        <form [formGroup]="form" class="sd-form">
+          <!-- Staff Selection Field -->
+          <div class="sd-field">
+            <label class="sd-label">Staff Member <span class="required">*</span></label>
+            <div class="sd-input-wrapper" [class.error]="form.get('staffId')?.invalid && form.get('staffId')?.touched" [class.focused]="staffFocused">
+              <mat-icon class="input-icon">person_outline</mat-icon>
+              <select 
+                formControlName="staffId"
+                (focus)="staffFocused = true"
+                (blur)="staffFocused = false">
+                <option value="" disabled selected>Choose a team member</option>
                 @for (staff of data.staffList; track staff._id) {
-                  <mat-option [value]="staff._id">
-                    <div class="psd-staff-option">
-                      <span class="name">{{ staff.name }}</span>
-                      <span class="role">{{ staff.role || 'Staff' }}</span>
-                    </div>
-                  </mat-option>
+                  <option [value]="staff._id">{{ staff.name }} ({{ staff.role || 'Staff' }})</option>
                 }
-              </mat-select>
-              @if (form.get('staffId')?.hasError('required') && form.get('staffId')?.touched) {
-                <mat-error>Please select a staff member</mat-error>
-              }
-            </mat-form-field>
+              </select>
+              <mat-icon class="select-arrow">expand_more</mat-icon>
+            </div>
+            @if (form.get('staffId')?.hasError('required') && form.get('staffId')?.touched) {
+              <span class="sd-error">
+                <mat-icon>error</mat-icon>
+                Please select a staff member
+              </span>
+            }
           </div>
 
-          <!-- Date Card -->
-          <div class="psd-field-card">
-            <div class="psd-field-header">
-              <div class="psd-field-icon"><mat-icon>calendar_today</mat-icon></div>
-              <span class="psd-field-title">{{ data.mode === 'leave' ? 'Leave Date' : 'Schedule Date' }}</span>
+          <!-- Date Field -->
+          <div class="sd-field">
+            <label class="sd-label">{{ data.mode === 'leave' ? 'Leave Date' : 'Schedule Date' }} <span class="required">*</span></label>
+            <div class="sd-input-wrapper" [class.error]="form.get('date')?.invalid && form.get('date')?.touched" [class.focused]="dateFocused">
+              <mat-icon class="input-icon">calendar_today</mat-icon>
+              <input 
+                type="date" 
+                formControlName="date"
+                (focus)="dateFocused = true"
+                (blur)="dateFocused = false">
             </div>
-            <mat-form-field appearance="outline" class="psd-input">
-              <input matInput [matDatepicker]="picker" formControlName="date" placeholder="Pick a date">
-              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-              @if (form.get('date')?.hasError('required') && form.get('date')?.touched) {
-                <mat-error>Date is required</mat-error>
-              }
-            </mat-form-field>
+            @if (form.get('date')?.hasError('required') && form.get('date')?.touched) {
+              <span class="sd-error">
+                <mat-icon>error</mat-icon>
+                Date is required
+              </span>
+            }
           </div>
 
           @if (data.mode !== 'leave') {
-            <!-- Time Selection -->
-            <div class="psd-time-grid">
-              <div class="psd-field-card time-card">
-                <div class="psd-field-header">
-                  <div class="psd-field-icon start"><mat-icon>login</mat-icon></div>
-                  <span class="psd-field-title">Start</span>
-                </div>
-                <mat-form-field appearance="outline" class="psd-input">
-                  <mat-select formControlName="startTime">
+            <!-- Shift Time Row -->
+            <div class="sd-row">
+              <!-- Start Time -->
+              <div class="sd-field">
+                <label class="sd-label">Start Time</label>
+                <div class="sd-input-wrapper" [class.focused]="startFocused">
+                  <mat-icon class="input-icon">login</mat-icon>
+                  <select 
+                    formControlName="startTime"
+                    (focus)="startFocused = true"
+                    (blur)="startFocused = false">
                     @for (time of timeSlots; track time) {
-                      <mat-option [value]="time">{{ time }}</mat-option>
+                      <option [value]="time">{{ time }}</option>
                     }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="psd-time-arrow">
-                <mat-icon>east</mat-icon>
-              </div>
-              <div class="psd-field-card time-card">
-                <div class="psd-field-header">
-                  <div class="psd-field-icon end"><mat-icon>logout</mat-icon></div>
-                  <span class="psd-field-title">End</span>
+                  </select>
+                  <mat-icon class="select-arrow">expand_more</mat-icon>
                 </div>
-                <mat-form-field appearance="outline" class="psd-input">
-                  <mat-select formControlName="endTime">
+              </div>
+
+              <!-- End Time -->
+              <div class="sd-field">
+                <label class="sd-label">End Time</label>
+                <div class="sd-input-wrapper" [class.focused]="endFocused">
+                  <mat-icon class="input-icon">logout</mat-icon>
+                  <select 
+                    formControlName="endTime"
+                    (focus)="endFocused = true"
+                    (blur)="endFocused = false">
                     @for (time of timeSlots; track time) {
-                      <mat-option [value]="time">{{ time }}</mat-option>
+                      <option [value]="time">{{ time }}</option>
                     }
-                  </mat-select>
-                </mat-form-field>
+                  </select>
+                  <mat-icon class="select-arrow">expand_more</mat-icon>
+                </div>
               </div>
             </div>
 
-            <!-- Break Toggle -->
-            <div class="psd-break-section">
-              <mat-slide-toggle formControlName="hasBreak" color="primary">
-                <span class="break-label">Include break time</span>
-              </mat-slide-toggle>
-              
-              @if (form.get('hasBreak')?.value) {
-                <div class="psd-break-times">
-                  <div class="psd-mini-field">
-                    <label>Break Start</label>
-                    <mat-form-field appearance="outline" class="psd-input mini">
-                      <mat-select formControlName="breakStart">
-                        @for (time of timeSlots; track time) {
-                          <mat-option [value]="time">{{ time }}</mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="psd-mini-field">
-                    <label>Break End</label>
-                    <mat-form-field appearance="outline" class="psd-input mini">
-                      <mat-select formControlName="breakEnd">
-                        @for (time of timeSlots; track time) {
-                          <mat-option [value]="time">{{ time }}</mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
+            <!-- Include Break Toggle Wrapper -->
+            <div class="sd-toggle-field">
+              <div class="sd-toggle-info">
+                <div class="sd-toggle-icon available">
+                  <mat-icon>coffee</mat-icon>
+                </div>
+                <div class="sd-toggle-text">
+                  <span class="sd-toggle-label">Shift Break Time</span>
+                  <span class="sd-toggle-desc">Include staff break intervals</span>
+                </div>
+              </div>
+              <mat-slide-toggle formControlName="hasBreak" color="primary"></mat-slide-toggle>
+            </div>
+
+            <!-- Break Times Row (conditional) -->
+            @if (form.get('hasBreak')?.value) {
+              <div class="sd-row break-times-fade">
+                <!-- Break Start -->
+                <div class="sd-field">
+                  <label class="sd-label">Break Start</label>
+                  <div class="sd-input-wrapper" [class.focused]="breakStartFocused">
+                    <mat-icon class="input-icon">schedule</mat-icon>
+                    <select 
+                      formControlName="breakStart"
+                      (focus)="breakStartFocused = true"
+                      (blur)="breakStartFocused = false">
+                      @for (time of timeSlots; track time) {
+                        <option [value]="time">{{ time }}</option>
+                      }
+                    </select>
+                    <mat-icon class="select-arrow">expand_more</mat-icon>
                   </div>
                 </div>
-              }
-            </div>
+
+                <!-- Break End -->
+                <div class="sd-field">
+                  <label class="sd-label">Break End</label>
+                  <div class="sd-input-wrapper" [class.focused]="breakEndFocused">
+                    <mat-icon class="input-icon">done</mat-icon>
+                    <select 
+                      formControlName="breakEnd"
+                      (focus)="breakEndFocused = true"
+                      (blur)="breakEndFocused = false">
+                      @for (time of timeSlots; track time) {
+                        <option [value]="time">{{ time }}</option>
+                      }
+                    </select>
+                    <mat-icon class="select-arrow">expand_more</mat-icon>
+                  </div>
+                </div>
+              </div>
+            }
           } @else {
-            <!-- Leave Type Card -->
-            <div class="psd-field-card">
-              <div class="psd-field-header">
-                <div class="psd-field-icon leave"><mat-icon>event_busy</mat-icon></div>
-                <span class="psd-field-title">Leave Type</span>
+            <!-- Leave Type -->
+            <div class="sd-field">
+              <label class="sd-label">Leave Type <span class="required">*</span></label>
+              <div class="sd-input-wrapper" [class.focused]="leaveTypeFocused">
+                <mat-icon class="input-icon">event_busy</mat-icon>
+                <select 
+                  formControlName="leaveType"
+                  (focus)="leaveTypeFocused = true"
+                  (blur)="leaveTypeFocused = false">
+                  <option value="personal">Personal Leave</option>
+                  <option value="sick">Sick Leave</option>
+                  <option value="vacation">Vacation</option>
+                  <option value="emergency">Emergency Time Off</option>
+                  <option value="other">Other</option>
+                </select>
+                <mat-icon class="select-arrow">expand_more</mat-icon>
               </div>
-              <mat-form-field appearance="outline" class="psd-input">
-                <mat-select formControlName="leaveType" placeholder="Select reason">
-                  <mat-option value="sick">
-                    <div class="psd-leave-option">
-                      <mat-icon>healing</mat-icon>
-                      <span>Sick Leave</span>
-                    </div>
-                  </mat-option>
-                  <mat-option value="vacation">
-                    <div class="psd-leave-option">
-                      <mat-icon>beach_access</mat-icon>
-                      <span>Vacation</span>
-                    </div>
-                  </mat-option>
-                  <mat-option value="personal">
-                    <div class="psd-leave-option">
-                      <mat-icon>person</mat-icon>
-                      <span>Personal Leave</span>
-                    </div>
-                  </mat-option>
-                  <mat-option value="emergency">
-                    <div class="psd-leave-option">
-                      <mat-icon>warning</mat-icon>
-                      <span>Emergency</span>
-                    </div>
-                  </mat-option>
-                  <mat-option value="other">
-                    <div class="psd-leave-option">
-                      <mat-icon>more_horiz</mat-icon>
-                      <span>Other</span>
-                    </div>
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
             </div>
 
-            <!-- Notes Card -->
-            <div class="psd-field-card notes-card">
-              <div class="psd-field-header">
-                <div class="psd-field-icon notes"><mat-icon>edit_note</mat-icon></div>
-                <span class="psd-field-title">Additional Notes</span>
-                <span class="psd-field-hint">(Optional)</span>
+            <!-- Notes Description -->
+            <div class="sd-field">
+              <label class="sd-label">Additional Notes</label>
+              <div class="sd-input-wrapper textarea" [class.focused]="notesFocused">
+                <mat-icon class="input-icon">edit_note</mat-icon>
+                <textarea 
+                  formControlName="leaveReason" 
+                  rows="3" 
+                  placeholder="Explain reason for leave..."
+                  (focus)="notesFocused = true"
+                  (blur)="notesFocused = false"></textarea>
               </div>
-              <mat-form-field appearance="outline" class="psd-input textarea">
-                <textarea matInput formControlName="leaveReason" rows="2" 
-                          placeholder="Add any details here..."></textarea>
-              </mat-form-field>
             </div>
           }
         </form>
       </div>
 
       <!-- Footer -->
-      <div class="psd-footer">
-        <button type="button" class="psd-btn cancel" (click)="dialogRef.close()">
+      <div class="sd-footer">
+        <button type="button" class="sd-btn cancel" (click)="dialogRef.close()">
+          <mat-icon>close</mat-icon>
           Cancel
         </button>
-        <button type="button" class="psd-btn submit" [class.leave]="data.mode === 'leave'" 
+        <button type="button" class="sd-btn submit" [class.leave]="data.mode === 'leave'" 
                 (click)="save()" [disabled]="form.invalid || saving">
           @if (saving) {
-            <span class="psd-spinner"></span>
+            <span class="sd-spinner"></span>
           } @else {
-            <mat-icon>{{ data.mode === 'leave' ? 'check_circle' : 'save' }}</mat-icon>
+            <mat-icon>{{ data.mode === 'leave' ? 'check_circle' : (data.mode === 'edit' ? 'save' : 'calendar_today') }}</mat-icon>
           }
           <span>{{ getButtonText() }}</span>
         </button>
@@ -241,16 +236,24 @@ export interface ScheduleDialogData {
     </div>
   `,
   styles: [`
-    /* ========== PREMIUM SCHEDULE DIALOG ========== */
-    .premium-schedule-dialog {
+    .cdk-overlay-pane:has(.schedule-dialog) {
+      max-width: 95vw !important;
+    }
+
+    .mat-mdc-dialog-container:has(.schedule-dialog) {
+      --mdc-dialog-container-shape: 20px;
+      padding: 0 !important;
+    }
+
+    .schedule-dialog {
+      width: 480px;
+      max-width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
-      width: 100%;
-      max-width: 420px;
-      background: #fff;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
 
     .dialog-accent-bar {
@@ -260,7 +263,7 @@ export interface ScheduleDialogData {
       animation: shimmer 2s linear infinite;
     }
 
-    .premium-schedule-dialog.leave-mode .dialog-accent-bar {
+    .schedule-dialog.leave-mode .dialog-accent-bar {
       background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
       background-size: 200% 100%;
     }
@@ -270,390 +273,379 @@ export interface ScheduleDialogData {
       100% { background-position: -200% 0; }
     }
 
-    /* Header */
-    .psd-header {
+    // ========== HEADER ==========
+    .sd-header {
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 16px 20px;
-      background: linear-gradient(135deg, #f8f7ff 0%, #fff 100%);
-      border-bottom: 1px solid #f0ecfc;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fbfaff 0%, #fff 100%);
+      border-bottom: 1px solid #f3f0ff;
+      position: relative;
     }
 
-    .premium-schedule-dialog.leave-mode .psd-header {
+    .schedule-dialog.leave-mode .sd-header {
       background: linear-gradient(135deg, #fffbeb 0%, #fff 100%);
       border-bottom-color: #fef3c7;
     }
 
-    .psd-header-content {
+    .sd-header-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: #fff;
+      }
+
+      &.leave {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+      }
+    }
+
+    .sd-header-text {
+      flex: 1;
+
+      h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+        letter-spacing: -0.01em;
+      }
+
+      p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: #6b7280;
+      }
+    }
+
+    .sd-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #6b7280;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
+      }
+    }
+
+    // ========== BODY ==========
+    .sd-body {
+      padding: 24px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .sd-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sd-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .break-times-fade {
+      animation: slideDownFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideDownFade {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    // ========== FIELD ==========
+    .sd-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sd-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 1px;
+
+      .required {
+        color: #ef4444;
+      }
+    }
+
+    .sd-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f9fafb;
+      transition: all 0.2s ease;
+      overflow: hidden;
+
+      &.focused {
+        border-color: #7c3aed;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        
+        .input-icon {
+          color: #7c3aed;
+        }
+      }
+
+      .schedule-dialog.leave-mode &.focused {
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+
+        .input-icon {
+          color: #f59e0b;
+        }
+      }
+
+      &.error {
+        border-color: #ef4444;
+        background: #fef2f2;
+        
+        .input-icon {
+          color: #ef4444;
+        }
+      }
+
+      .input-icon {
+        margin-left: 14px;
+        color: #9ca3af;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: color 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      input, select, textarea {
+        flex: 1;
+        width: 100%;
+        padding: 13px 16px 13px 10px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        color: #1f2937;
+        outline: none;
+        box-sizing: border-box;
+        font-family: inherit;
+
+        &::placeholder {
+          color: #9ca3af;
+        }
+      }
+
+      textarea {
+        resize: none;
+        line-height: 1.5;
+        padding-top: 13px;
+      }
+
+      select {
+        appearance: none;
+        cursor: pointer;
+        padding-right: 40px;
+      }
+
+      .select-arrow {
+        position: absolute;
+        right: 14px;
+        color: #9ca3af;
+        pointer-events: none;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &.textarea {
+        align-items: flex-start;
+        
+        .input-icon {
+          margin-top: 13px;
+        }
+      }
+    }
+
+    .sd-error {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #ef4444;
+      margin-top: 2px;
+
+      mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    // ========== TOGGLE ==========
+    .sd-toggle-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #fbfaff;
+      border: 1px solid #ede9fe;
+      border-radius: 12px;
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    .schedule-dialog.leave-mode .sd-toggle-field {
+      background: #fffbeb;
+      border-color: #fef3c7;
+    }
+
+    .sd-toggle-info {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .psd-icon-wrapper {
-      width: 40px;
-      height: 40px;
+    .sd-toggle-icon {
+      width: 38px;
+      height: 38px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #7c3aed, #9333ea);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+      background: #ede9fe;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #7c3aed;
+      }
     }
 
-    .psd-icon-wrapper.leave {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-    }
-
-    .psd-icon-wrapper mat-icon {
-      color: #fff;
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-
-    .psd-title-group {
+    .sd-toggle-text {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .psd-title {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 700;
+    .sd-toggle-label {
+      font-size: 13px;
+      font-weight: 600;
       color: #1f2937;
-      letter-spacing: -0.01em;
     }
 
-    .psd-subtitle {
-      margin: 0;
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .psd-close-btn {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: rgba(0,0,0,0.04);
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #9ca3af;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
-    }
-
-    .psd-close-btn:hover {
-      background: rgba(0,0,0,0.08);
-      color: #374151;
-    }
-
-    .psd-close-btn mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
-
-    /* Body */
-    .psd-body {
-      padding: 16px 20px;
-      flex: 1;
-      overflow-y: auto;
-      max-height: 60vh;
-    }
-
-    .psd-form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* Field Cards */
-    .psd-field-card {
-      background: #fafafa;
-      border: 1px solid #f0f0f0;
-      border-radius: 10px;
-      padding: 12px;
-      transition: all 0.15s ease;
-    }
-
-    .psd-field-card:focus-within {
-      background: #fff;
-      border-color: #e9d5ff;
-      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
-    }
-
-    .psd-field-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .psd-field-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
-      background: #ede9fe;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .psd-field-icon mat-icon {
-      font-size: 14px;
-      width: 14px;
-      height: 14px;
-      color: #7c3aed;
-    }
-
-    .psd-field-icon.leave { background: #fef3c7; }
-    .psd-field-icon.leave mat-icon { color: #d97706; }
-    .psd-field-icon.notes { background: #e0e7ff; }
-    .psd-field-icon.notes mat-icon { color: #4f46e5; }
-    .psd-field-icon.start { background: #d1fae5; }
-    .psd-field-icon.start mat-icon { color: #059669; }
-    .psd-field-icon.end { background: #fee2e2; }
-    .psd-field-icon.end mat-icon { color: #dc2626; }
-
-    .psd-field-title {
+    .sd-toggle-desc {
       font-size: 11px;
-      font-weight: 600;
-      color: #374151;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .psd-field-hint {
-      font-size: 10px;
-      color: #9ca3af;
-      margin-left: auto;
-    }
-
-    /* Form Field Overrides */
-    .psd-input {
-      width: 100%;
-    }
-
-    .psd-input .mat-mdc-form-field-subscript-wrapper {
-      display: none;
-    }
-
-    .psd-input.textarea .mat-mdc-form-field-subscript-wrapper {
-      display: block;
-    }
-
-    .psd-input .mat-mdc-text-field-wrapper {
-      background: #fff !important;
-      border-radius: 8px !important;
-    }
-
-    .psd-input .mdc-notched-outline__leading,
-    .psd-input .mdc-notched-outline__notch,
-    .psd-input .mdc-notched-outline__trailing {
-      border-color: #e5e7eb !important;
-    }
-
-    .psd-input.mat-focused .mdc-notched-outline__leading,
-    .psd-input.mat-focused .mdc-notched-outline__notch,
-    .psd-input.mat-focused .mdc-notched-outline__trailing {
-      border-color: #7c3aed !important;
-    }
-
-    .psd-input .mat-mdc-form-field-infix {
-      min-height: 40px !important;
-      padding: 8px 0 !important;
-    }
-
-    .psd-input .mat-mdc-select-value,
-    .psd-input input {
-      font-size: 13px !important;
-    }
-
-    .psd-input textarea {
-      font-size: 13px !important;
-      line-height: 1.5;
-    }
-
-    /* Staff Option in dropdown */
-    .psd-staff-option {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-    }
-
-    .psd-staff-option .name {
-      font-weight: 500;
-      font-size: 13px;
-    }
-
-    .psd-staff-option .role {
-      font-size: 11px;
-      color: #9ca3af;
-      text-transform: capitalize;
-    }
-
-    /* Leave Option */
-    .psd-leave-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .psd-leave-option mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
       color: #6b7280;
     }
 
-    /* Time Grid */
-    .psd-time-grid {
+    // ========== FOOTER ==========
+    .sd-footer {
       display: flex;
-      align-items: stretch;
-      gap: 8px;
-    }
-
-    .psd-time-grid .time-card {
-      flex: 1;
-    }
-
-    .psd-time-arrow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #d1d5db;
-      padding-top: 28px;
-    }
-
-    .psd-time-arrow mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
-
-    /* Break Section */
-    .psd-break-section {
-      background: linear-gradient(135deg, #f5f3ff, #faf5ff);
-      border: 1px solid #ede9fe;
-      border-radius: 10px;
-      padding: 12px;
-    }
-
-    .psd-break-section mat-slide-toggle {
-      font-size: 13px;
-    }
-
-    .break-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: #4b5563;
-    }
-
-    .psd-break-times {
-      display: flex;
+      justify-content: flex-end;
       gap: 12px;
-      margin-top: 12px;
-      animation: fadeIn 0.2s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .psd-mini-field {
-      flex: 1;
-    }
-
-    .psd-mini-field label {
-      display: block;
-      font-size: 10px;
-      font-weight: 600;
-      color: #6b7280;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .psd-input.mini .mat-mdc-form-field-infix {
-      min-height: 36px !important;
-    }
-
-    /* Footer */
-    .psd-footer {
-      display: flex;
-      gap: 10px;
-      padding: 14px 20px;
+      padding: 16px 24px;
       background: #f9fafb;
       border-top: 1px solid #f3f4f6;
     }
 
-    .psd-btn {
-      flex: 1;
+    .sd-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 13px;
+      gap: 8px;
+      padding: 11px 22px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s ease;
-      border: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &.cancel {
+        background: #fff;
+        color: #6b7280;
+        border: 1px solid #e5e7eb;
+
+        &:hover {
+          background: #f9fafb;
+          border-color: #d1d5db;
+        }
+      }
+
+      &.submit {
+        background: linear-gradient(135deg, #7c3aed, #9333ea);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        &.leave {
+          background: linear-gradient(135deg, #f59e0b, #d97706);
+          box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+
+          &:hover:not(:disabled) {
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+          }
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+      }
     }
 
-    .psd-btn mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-    }
-
-    .psd-btn.cancel {
-      background: #fff;
-      color: #6b7280;
-      border: 1px solid #e5e7eb;
-    }
-
-    .psd-btn.cancel:hover {
-      background: #f9fafb;
-      border-color: #d1d5db;
-    }
-
-    .psd-btn.submit {
-      background: linear-gradient(135deg, #7c3aed, #9333ea);
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
-    }
-
-    .psd-btn.submit:hover:not(:disabled) {
-      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
-      transform: translateY(-1px);
-    }
-
-    .psd-btn.submit.leave {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-    }
-
-    .psd-btn.submit.leave:hover:not(:disabled) {
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-    }
-
-    .psd-btn.submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .psd-spinner {
+    .sd-spinner {
       width: 16px;
       height: 16px;
       border: 2px solid rgba(255,255,255,0.3);
@@ -666,162 +658,114 @@ export interface ScheduleDialogData {
       to { transform: rotate(360deg); }
     }
 
-    /* ========== MOBILE RESPONSIVE ========== */
-    @media (max-width: 480px) {
-      .premium-schedule-dialog {
-        max-width: 100%;
-        border-radius: 12px;
+    // ========== RESPONSIVE ==========
+    @media (max-width: 600px) {
+      .schedule-dialog {
+        width: 100%;
+        border-radius: 16px;
       }
 
-      .dialog-accent-bar {
-        height: 3px;
+      .sd-header {
+        padding: 16px 20px;
+        gap: 12px;
       }
 
-      .psd-header {
-        padding: 12px 14px;
+      .sd-header-icon {
+        width: 40px;
+        height: 40px;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
       }
 
-      .psd-icon-wrapper {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
+      .sd-header-text h2 {
+        font-size: 16px;
       }
 
-      .psd-icon-wrapper mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-      }
-
-      .psd-title {
-        font-size: 14px;
-      }
-
-      .psd-subtitle {
-        font-size: 11px;
-      }
-
-      .psd-close-btn {
+      .sd-close-btn {
+        top: 12px;
+        right: 12px;
         width: 28px;
         height: 28px;
       }
 
-      .psd-close-btn mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-      }
-
-      .psd-body {
-        padding: 12px 14px;
+      .sd-body {
+        padding: 20px;
         max-height: 55vh;
       }
 
-      .psd-form {
+      .sd-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .sd-input-wrapper input, 
+      .sd-input-wrapper select,
+      .sd-input-wrapper textarea {
+        padding: 11px 14px 11px 10px;
+      }
+
+      .sd-toggle-field {
+        padding: 12px;
+      }
+
+      .sd-footer {
+        padding: 16px 20px;
+        flex-direction: column-reverse;
         gap: 10px;
       }
 
-      .psd-field-card {
-        padding: 10px;
-        border-radius: 8px;
-      }
-
-      .psd-field-header {
-        margin-bottom: 6px;
-      }
-
-      .psd-field-icon {
-        width: 22px;
-        height: 22px;
-      }
-
-      .psd-field-icon mat-icon {
-        font-size: 12px;
-        width: 12px;
-        height: 12px;
-      }
-
-      .psd-field-title {
-        font-size: 10px;
-      }
-
-      .psd-input .mat-mdc-form-field-infix {
-        min-height: 36px !important;
-      }
-
-      .psd-input .mat-mdc-select-value,
-      .psd-input input,
-      .psd-input textarea {
-        font-size: 12px !important;
-      }
-
-      .psd-time-grid {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .psd-time-arrow {
-        display: none;
-      }
-
-      .psd-break-section {
-        padding: 10px;
-      }
-
-      .psd-break-times {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .psd-footer {
-        padding: 12px 14px;
-        gap: 8px;
-      }
-
-      .psd-btn {
-        padding: 10px 12px;
-        font-size: 12px;
-        border-radius: 6px;
-      }
-
-      .psd-btn mat-icon {
-        font-size: 14px;
-        width: 14px;
-        height: 14px;
+      .sd-btn {
+        width: 100%;
+        padding: 13px 24px;
       }
     }
 
-    /* Extra small */
-    @media (max-width: 360px) {
-      .psd-header {
-        padding: 10px 12px;
+    @media (max-width: 400px) {
+      .sd-header {
+        padding: 12px 16px;
       }
 
-      .psd-icon-wrapper {
+      .sd-header-icon {
+        width: 36px;
+        height: 36px;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .sd-header-text {
+        h2 { font-size: 15px; }
+        p { font-size: 11px; }
+      }
+
+      .sd-body {
+        padding: 16px;
+      }
+
+      .sd-form {
+        gap: 12px;
+      }
+
+      .sd-toggle-icon {
         width: 32px;
         height: 32px;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
       }
 
-      .psd-title {
-        font-size: 13px;
-      }
-
-      .psd-body {
-        padding: 10px 12px;
-      }
-
-      .psd-field-card {
-        padding: 8px;
-      }
-
-      .psd-footer {
-        padding: 10px 12px;
-      }
-
-      .psd-btn {
-        padding: 8px 10px;
-        font-size: 11px;
-      }
+      .sd-toggle-label { font-size: 12px; }
+      .sd-toggle-desc { font-size: 10px; }
     }
   `]
 })
@@ -829,6 +773,15 @@ export class ScheduleDialogComponent implements OnInit {
   form: FormGroup;
   saving = false;
   timeSlots: string[] = [];
+
+  staffFocused = false;
+  dateFocused = false;
+  startFocused = false;
+  endFocused = false;
+  breakStartFocused = false;
+  breakEndFocused = false;
+  leaveTypeFocused = false;
+  notesFocused = false;
 
   constructor(
     private fb: FormBuilder,
@@ -839,7 +792,7 @@ export class ScheduleDialogComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       staffId: [data.schedule?.staff?._id || '', Validators.required],
-      date: [data.schedule?.date ? new Date(data.schedule.date) : new Date(), Validators.required],
+      date: [this.formatDate(data.schedule?.date || new Date()), Validators.required],
       startTime: [data.schedule?.startTime || '09:00'],
       endTime: [data.schedule?.endTime || '18:00'],
       hasBreak: [!!data.schedule?.breakStart],
@@ -853,6 +806,15 @@ export class ScheduleDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  formatDate(date: any): string {
+    const d = new Date(date);
+    const month = '' + (d.getMonth() + 1);
+    const day = '' + d.getDate();
+    const year = d.getFullYear();
+
+    return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
+  }
 
   generateTimeSlots(): void {
     for (let hour = 6; hour <= 22; hour++) {
@@ -895,10 +857,14 @@ export class ScheduleDialogComponent implements OnInit {
     this.saving = true;
     const values = this.form.value;
 
+    const dateStr = typeof values.date === 'string' 
+      ? values.date 
+      : values.date.toISOString().split('T')[0];
+
     if (this.data.mode === 'leave') {
       this.scheduleService.createLeave(
         values.staffId,
-        values.date.toISOString().split('T')[0],
+        dateStr,
         values.leaveType,
         values.leaveReason || undefined
       ).subscribe({
@@ -915,7 +881,7 @@ export class ScheduleDialogComponent implements OnInit {
     } else {
       const scheduleData: any = {
         staff: values.staffId,
-        date: values.date,
+        date: typeof values.date === 'string' ? new Date(values.date) : values.date,
         startTime: values.startTime,
         endTime: values.endTime,
         isAvailable: true,
