@@ -245,6 +245,8 @@
       <div class="mobile-cards">
         @for (coupon of paginatedCoupons; track coupon._id) {
           <div class="coupon-card" [class]="getCardStatusClass(coupon)">
+            <div class="ticket-notch-left" [class]="getCardStatusClass(coupon)"></div>
+            <div class="ticket-notch-right" [class]="getCardStatusClass(coupon)"></div>
             <div class="card-header">
               <div class="coupon-code-cell">
                 <div class="code-icon" [class]="getDiscountClass(coupon)">
