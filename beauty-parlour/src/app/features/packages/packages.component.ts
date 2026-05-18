@@ -22,153 +22,220 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
   selector: 'app-package-dialog',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatSelectModule, MatSlideToggleModule, MatSnackBarModule
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSlideToggleModule,
+    MatSnackBarModule
   ],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="premium-package-dialog">
-      <div class="ppd-accent"></div>
-      
-      <div class="ppd-header">
-        <div class="ppd-header-content">
-          <div class="ppd-icon" [class.edit]="data">
-            <mat-icon>{{ data ? 'edit' : 'inventory_2' }}</mat-icon>
-          </div>
-          <div class="ppd-titles">
-            <h2>{{ data ? 'Edit Package' : 'New Package' }}</h2>
-            <p>{{ data ? 'Update package details' : 'Create a service bundle for customers' }}</p>
-          </div>
+    <div class="package-dialog" [class.edit-mode]="data">
+      <!-- Decorative shimmer bar -->
+      <div class="dialog-accent-bar"></div>
+
+      <!-- Header -->
+      <div class="sd-header">
+        <div class="sd-header-icon" [class.edit]="data">
+          <mat-icon>{{ data ? 'edit_note' : 'inventory_2' }}</mat-icon>
         </div>
-        <button type="button" class="ppd-close" (click)="dialogRef.close()">
+        <div class="sd-header-text">
+          <h2>{{ data ? 'Edit Package' : 'New Package' }}</h2>
+          <p>{{ data ? 'Update package details' : 'Create a service bundle for customers' }}</p>
+        </div>
+        <button type="button" class="sd-close-btn" (click)="dialogRef.close()" aria-label="Close">
           <mat-icon>close</mat-icon>
         </button>
       </div>
 
-      <div class="ppd-body">
-        <form [formGroup]="form" class="ppd-form">
-          
-          <div class="ppd-card">
-            <div class="ppd-card-header">
-              <div class="ppd-card-icon name"><mat-icon>badge</mat-icon></div>
-              <span class="ppd-card-title">Package Name</span>
-              <span class="ppd-required">*</span>
+      <!-- Body -->
+      <div class="sd-body">
+        <form [formGroup]="form" class="sd-form">
+          <!-- Package Name -->
+          <div class="sd-field">
+            <label class="sd-label">Package Name <span class="required">*</span></label>
+            <div class="sd-input-wrapper" [class.error]="form.get('name')?.invalid && form.get('name')?.touched" [class.focused]="nameFocused">
+              <mat-icon class="input-icon">badge</mat-icon>
+              <input 
+                type="text" 
+                formControlName="name" 
+                placeholder="e.g. Bridal Glow Package"
+                (focus)="nameFocused = true"
+                (blur)="nameFocused = false">
             </div>
-            <mat-form-field appearance="outline" class="ppd-field">
-              <input matInput formControlName="name" placeholder="e.g. Bridal Glow Package">
-            </mat-form-field>
+            @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+              <span class="sd-error">
+                <mat-icon>error</mat-icon>
+                Package name is required
+              </span>
+            }
           </div>
 
-          <div class="ppd-card">
-            <div class="ppd-card-header">
-              <div class="ppd-card-icon category"><mat-icon>category</mat-icon></div>
-              <span class="ppd-card-title">Category</span>
+          <!-- Category -->
+          <div class="sd-field">
+            <label class="sd-label">Category</label>
+            <div class="sd-input-wrapper" [class.focused]="categoryFocused">
+              <mat-icon class="input-icon">category</mat-icon>
+              <select 
+                formControlName="category"
+                (focus)="categoryFocused = true"
+                (blur)="categoryFocused = false">
+                <option value="standard">Standard</option>
+                <option value="premium">Premium</option>
+                <option value="bridal">Bridal</option>
+                <option value="seasonal">Seasonal</option>
+              </select>
+              <mat-icon class="select-arrow">expand_more</mat-icon>
             </div>
-            <mat-form-field appearance="outline" class="ppd-field">
-              <mat-select formControlName="category" placeholder="Select category">
-                <mat-option value="standard">Standard</mat-option>
-                <mat-option value="premium">Premium</mat-option>
-                <mat-option value="bridal">Bridal</mat-option>
-                <mat-option value="seasonal">Seasonal</mat-option>
-              </mat-select>
-            </mat-form-field>
           </div>
 
-          <div class="ppd-card">
-            <div class="ppd-card-header">
-              <div class="ppd-card-icon services"><mat-icon>spa</mat-icon></div>
-              <span class="ppd-card-title">Included Services</span>
-              <span class="ppd-required">*</span>
+          <!-- Included Services (Custom Click-Badges Grid) -->
+          <div class="sd-field">
+            <label class="sd-label">Included Services <span class="required">*</span></label>
+            <p class="sd-field-desc">Tap on services to bundle them into this package:</p>
+            
+            <div class="sd-services-grid">
+              @for (service of availableServices; track service._id) {
+                <button 
+                  type="button" 
+                  class="service-badge-btn" 
+                  [class.active]="isServiceSelected(service._id)"
+                  (click)="toggleService(service._id)">
+                  <mat-icon class="badge-icon">{{ getCategoryMatIcon(service.category) }}</mat-icon>
+                  <span class="name">{{ service.name }}</span>
+                  <span class="price">₹{{ service.price }}</span>
+                  @if (isServiceSelected(service._id)) {
+                    <mat-icon class="check-mark">check_circle</mat-icon>
+                  }
+                </button>
+              }
             </div>
-            <mat-form-field appearance="outline" class="ppd-field">
-              <mat-select formControlName="selectedServices" multiple placeholder="Select services">
-                @for (service of availableServices; track service._id) {
-                  <mat-option [value]="service._id">{{ service.name }} - ₹{{ service.price }}</mat-option>
+            @if (form.get('selectedServices')?.hasError('required') && form.get('selectedServices')?.touched) {
+              <span class="sd-error">
+                <mat-icon>error</mat-icon>
+                Please select at least one service
+              </span>
+            }
+          </div>
+
+          <!-- Price & Discount Sum Grid -->
+          <div class="sd-row">
+            <!-- Original Price (Auto Summed) -->
+            <div class="sd-field">
+              <div class="sd-label-with-badge">
+                <label class="sd-label">Original Price</label>
+                <span class="auto-sum-badge">Auto Summed</span>
+              </div>
+              <div class="sd-input-wrapper readonly" [class.focused]="originalPriceFocused">
+                <mat-icon class="input-icon">sell</mat-icon>
+                <input 
+                  type="number" 
+                  formControlName="originalPrice" 
+                  placeholder="0"
+                  readonly
+                  (focus)="originalPriceFocused = true"
+                  (blur)="originalPriceFocused = false">
+              </div>
+            </div>
+
+            <!-- Package Price (Discounted) -->
+            <div class="sd-field">
+              <label class="sd-label">Package Price <span class="required">*</span></label>
+              <div class="sd-input-wrapper" [class.error]="form.get('packagePrice')?.invalid && form.get('packagePrice')?.touched" [class.focused]="packagePriceFocused">
+                <mat-icon class="input-icon">local_offer</mat-icon>
+                <input 
+                  type="number" 
+                  formControlName="packagePrice" 
+                  placeholder="0"
+                  (focus)="packagePriceFocused = true"
+                  (blur)="packagePriceFocused = false"
+                  (input)="calculateDiscount()">
+                @if (discountPercent > 0) {
+                  <span class="discount-percent-tag">{{ discountPercent }}% OFF</span>
                 }
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="ppd-grid">
-            <div class="ppd-card">
-              <div class="ppd-card-header">
-                <div class="ppd-card-icon price"><mat-icon>sell</mat-icon></div>
-                <span class="ppd-card-title">Original Price</span>
               </div>
-              <mat-form-field appearance="outline" class="ppd-field">
-                <span matPrefix class="ppd-prefix">₹</span>
-                <input matInput formControlName="originalPrice" type="number" placeholder="0">
-              </mat-form-field>
-            </div>
-            
-            <div class="ppd-card">
-              <div class="ppd-card-header">
-                <div class="ppd-card-icon discount"><mat-icon>local_offer</mat-icon></div>
-                <span class="ppd-card-title">Package Price</span>
-                <span class="ppd-required">*</span>
-              </div>
-              <mat-form-field appearance="outline" class="ppd-field">
-                <span matPrefix class="ppd-prefix">₹</span>
-                <input matInput formControlName="packagePrice" type="number" placeholder="0">
-              </mat-form-field>
+              @if (form.get('packagePrice')?.invalid && form.get('packagePrice')?.touched) {
+                <span class="sd-error">
+                  <mat-icon>error</mat-icon>
+                  Valid package price required
+                </span>
+              }
             </div>
           </div>
 
-          <div class="ppd-grid">
-            <div class="ppd-card">
-              <div class="ppd-card-header">
-                <div class="ppd-card-icon validity"><mat-icon>event</mat-icon></div>
-                <span class="ppd-card-title">Validity</span>
+          <!-- Validity & Redemptions -->
+          <div class="sd-row">
+            <!-- Validity -->
+            <div class="sd-field">
+              <label class="sd-label">Validity</label>
+              <div class="sd-input-wrapper" [class.focused]="validityFocused">
+                <mat-icon class="input-icon">event</mat-icon>
+                <input 
+                  type="number" 
+                  formControlName="validityDays" 
+                  placeholder="30"
+                  (focus)="validityFocused = true"
+                  (blur)="validityFocused = false">
+                <span class="input-suffix">days</span>
               </div>
-              <mat-form-field appearance="outline" class="ppd-field">
-                <input matInput formControlName="validityDays" type="number" placeholder="30">
-                <span matSuffix class="ppd-suffix">days</span>
-              </mat-form-field>
             </div>
-            
-            <div class="ppd-card">
-              <div class="ppd-card-header">
-                <div class="ppd-card-icon uses"><mat-icon>replay</mat-icon></div>
-                <span class="ppd-card-title">Max Redemptions</span>
+
+            <!-- Max Redemptions -->
+            <div class="sd-field">
+              <label class="sd-label">Max Redemptions</label>
+              <div class="sd-input-wrapper" [class.focused]="redemptionsFocused">
+                <mat-icon class="input-icon">replay</mat-icon>
+                <input 
+                  type="number" 
+                  formControlName="maxRedemptions" 
+                  placeholder="1"
+                  (focus)="redemptionsFocused = true"
+                  (blur)="redemptionsFocused = false">
+                <span class="input-suffix">times</span>
               </div>
-              <mat-form-field appearance="outline" class="ppd-field">
-                <input matInput formControlName="maxRedemptions" type="number" placeholder="1">
-                <span matSuffix class="ppd-suffix">times</span>
-              </mat-form-field>
             </div>
           </div>
 
-          <div class="ppd-card desc-card">
-            <div class="ppd-card-header">
-              <div class="ppd-card-icon desc"><mat-icon>description</mat-icon></div>
-              <span class="ppd-card-title">Description</span>
-              <span class="ppd-optional">(Optional)</span>
+          <!-- Description -->
+          <div class="sd-field">
+            <label class="sd-label">Description <span class="optional">(Optional)</span></label>
+            <div class="sd-input-wrapper textarea" [class.focused]="descriptionFocused">
+              <mat-icon class="input-icon">description</mat-icon>
+              <textarea 
+                formControlName="description" 
+                rows="3" 
+                placeholder="Describe what's included in this package..."
+                (focus)="descriptionFocused = true"
+                (blur)="descriptionFocused = false"></textarea>
             </div>
-            <mat-form-field appearance="outline" class="ppd-field textarea">
-              <textarea matInput formControlName="description" rows="2" 
-                        placeholder="Describe what's included in this package..."></textarea>
-            </mat-form-field>
           </div>
 
-          <div class="ppd-toggle-row">
-            <div class="ppd-toggle-info">
-              <mat-icon [class.active]="form.get('isActive')?.value">{{ form.get('isActive')?.value ? 'visibility' : 'visibility_off' }}</mat-icon>
-              <div class="ppd-toggle-text">
-                <span class="label">Package Status</span>
-                <span class="hint">{{ form.get('isActive')?.value ? 'Available to customers' : 'Hidden from catalog' }}</span>
+          <!-- Active Toggler -->
+          <div class="sd-toggle-field">
+            <div class="sd-toggle-info">
+              <div class="sd-toggle-icon" [class.available]="form.get('isActive')?.value">
+                <mat-icon>{{ form.get('isActive')?.value ? 'visibility' : 'visibility_off' }}</mat-icon>
+              </div>
+              <div class="sd-toggle-text">
+                <span class="sd-toggle-label">Package Status</span>
+                <span class="sd-toggle-desc">{{ form.get('isActive')?.value ? 'Available to customers' : 'Hidden from catalog' }}</span>
               </div>
             </div>
             <mat-slide-toggle formControlName="isActive" color="primary"></mat-slide-toggle>
           </div>
-
         </form>
       </div>
 
-      <div class="ppd-footer">
-        <button type="button" class="ppd-btn cancel" (click)="dialogRef.close()">Cancel</button>
-        <button type="button" class="ppd-btn submit" (click)="save()" [disabled]="form.invalid || saving">
+      <!-- Footer -->
+      <div class="sd-footer">
+        <button type="button" class="sd-btn cancel" (click)="dialogRef.close()">
+          <mat-icon>close</mat-icon>
+          Cancel
+        </button>
+        <button type="button" class="sd-btn submit" (click)="save()" [disabled]="form.invalid || saving">
           @if (saving) {
-            <span class="ppd-spinner"></span>
+            <span class="sd-spinner"></span>
           } @else {
             <mat-icon>{{ data ? 'save' : 'add_circle' }}</mat-icon>
           }
@@ -178,228 +245,653 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
     </div>
   `,
   styles: [`
-    .premium-package-dialog {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      max-width: 480px;
-      background: #fff;
-      border-radius: 16px;
-      overflow: hidden;
+    .cdk-overlay-pane:has(.package-dialog) {
+      max-width: 95vw !important;
     }
 
-    .ppd-accent {
+    .mat-mdc-dialog-container:has(.package-dialog) {
+      --mdc-dialog-container-shape: 20px;
+      padding: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .mat-mdc-dialog-container:has(.package-dialog) .mdc-dialog__surface {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 20px !important;
+      overflow: visible !important;
+    }
+
+    .package-dialog {
+      width: 520px;
+      max-width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialog-accent-bar {
       height: 4px;
       background: linear-gradient(90deg, #7c3aed, #06b6d4, #7c3aed);
       background-size: 200% 100%;
       animation: shimmer 2s linear infinite;
     }
 
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+    .package-dialog.edit-mode .dialog-accent-bar {
+      background: linear-gradient(90deg, #06b6d4, #22d3ee, #06b6d4);
+      background-size: 200% 100%;
     }
 
-    .ppd-header {
+    // ========== HEADER ==========
+    .sd-header {
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 16px 20px;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 24px;
       background: linear-gradient(135deg, #f0f9ff 0%, #fff 100%);
       border-bottom: 1px solid #e0f2fe;
+      position: relative;
     }
 
-    .ppd-header-content { display: flex; align-items: center; gap: 12px; }
-
-    .ppd-icon {
-      width: 44px;
-      height: 44px;
+    .sd-header-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
       border-radius: 12px;
-      background: linear-gradient(135deg, #7c3aed, #9333ea);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: #fff;
+      }
+
+      &.edit {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
+      }
     }
 
-    .ppd-icon.edit {
-      background: linear-gradient(135deg, #06b6d4, #0891b2);
-      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.35);
+    .sd-header-text {
+      flex: 1;
+
+      h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+        letter-spacing: -0.01em;
+      }
+
+      p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: #6b7280;
+      }
     }
 
-    .ppd-icon mat-icon { color: #fff; font-size: 22px; width: 22px; height: 22px; }
-
-    .ppd-titles { display: flex; flex-direction: column; gap: 2px; }
-    .ppd-titles h2 { margin: 0; font-size: 17px; font-weight: 700; color: #1f2937; }
-    .ppd-titles p { margin: 0; font-size: 12px; color: #6b7280; }
-
-    .ppd-close {
-      width: 32px; height: 32px;
+    .sd-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
       border: none;
-      background: rgba(0,0,0,0.04);
+      background: rgba(0, 0, 0, 0.05);
       border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #9ca3af;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #6b7280;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
+      }
     }
 
-    .ppd-close:hover { background: rgba(0,0,0,0.08); color: #374151; }
-    .ppd-close mat-icon { font-size: 18px; width: 18px; height: 18px; }
-
-    .ppd-body {
-      padding: 16px 20px;
-      flex: 1;
+    // ========== BODY ==========
+    .sd-body {
+      padding: 24px;
+      max-height: 60vh;
       overflow-y: auto;
-      max-height: 55vh;
     }
 
-    .ppd-form { display: flex; flex-direction: column; gap: 12px; }
-
-    .ppd-card {
-      background: #fafafa;
-      border: 1px solid #f0f0f0;
-      border-radius: 10px;
-      padding: 12px;
-      transition: all 0.15s ease;
+    .sd-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .ppd-card:focus-within {
-      background: #fff;
-      border-color: #c4b5fd;
-      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
+    .sd-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
 
-    .ppd-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    // ========== FIELD ==========
+    .sd-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-    .ppd-card-icon {
-      width: 24px; height: 24px;
-      border-radius: 6px;
+    .sd-field-desc {
+      font-size: 11px;
+      color: #6b7280;
+      margin: 0 0 2px;
+    }
+
+    .sd-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 1px;
+
+      .required {
+        color: #ef4444;
+      }
+
+      .optional {
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 500;
+      }
+    }
+
+    .sd-label-with-badge {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .auto-sum-badge {
+        font-size: 10px;
+        background: #ede9fe;
+        color: #7c3aed;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+    }
+
+    .sd-input-wrapper {
+      position: relative;
       display: flex;
       align-items: center;
-      justify-content: center;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f9fafb;
+      transition: all 0.2s ease;
+      overflow: hidden;
+
+      &.focused {
+        border-color: #7c3aed;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        
+        .input-icon {
+          color: #7c3aed;
+        }
+      }
+
+      &.readonly {
+        background: #f3f4f6;
+        border-color: #e5e7eb;
+        
+        input {
+          cursor: not-allowed;
+          color: #6b7280;
+        }
+      }
+
+      &.error {
+        border-color: #ef4444;
+        background: #fef2f2;
+        
+        .input-icon {
+          color: #ef4444;
+        }
+      }
+
+      .input-icon {
+        margin-left: 14px;
+        color: #9ca3af;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: color 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      input, select, textarea {
+        flex: 1;
+        width: 100%;
+        padding: 13px 16px 13px 10px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        color: #1f2937;
+        outline: none;
+        box-sizing: border-box;
+        font-family: inherit;
+
+        &::placeholder {
+          color: #9ca3af;
+        }
+      }
+
+      textarea {
+        resize: none;
+        line-height: 1.5;
+        padding-top: 13px;
+      }
+
+      select {
+        appearance: none;
+        cursor: pointer;
+        padding-right: 40px;
+      }
+
+      .select-arrow {
+        position: absolute;
+        right: 14px;
+        color: #9ca3af;
+        pointer-events: none;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .input-suffix {
+        margin-right: 16px;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 500;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .discount-percent-tag {
+        margin-right: 12px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 20px;
+        animation: pulse 1.5s infinite;
+      }
+
+      &.textarea {
+        align-items: flex-start;
+        
+        .input-icon {
+          margin-top: 13px;
+        }
+      }
     }
 
-    .ppd-card-icon mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
 
-    .ppd-card-icon.name { background: #dbeafe; }
-    .ppd-card-icon.name mat-icon { color: #2563eb; }
-    .ppd-card-icon.category { background: #fce7f3; }
-    .ppd-card-icon.category mat-icon { color: #db2777; }
-    .ppd-card-icon.services { background: #f3e8ff; }
-    .ppd-card-icon.services mat-icon { color: #9333ea; }
-    .ppd-card-icon.price { background: #fef3c7; }
-    .ppd-card-icon.price mat-icon { color: #d97706; }
-    .ppd-card-icon.discount { background: #d1fae5; }
-    .ppd-card-icon.discount mat-icon { color: #059669; }
-    .ppd-card-icon.validity { background: #e0e7ff; }
-    .ppd-card-icon.validity mat-icon { color: #4f46e5; }
-    .ppd-card-icon.uses { background: #fce7f3; }
-    .ppd-card-icon.uses mat-icon { color: #be185d; }
-    .ppd-card-icon.desc { background: #f3f4f6; }
-    .ppd-card-icon.desc mat-icon { color: #6b7280; }
+    .sd-error {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #ef4444;
+      margin-top: 2px;
 
-    .ppd-card-title { font-size: 11px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; }
-    .ppd-required { color: #ef4444; font-size: 12px; font-weight: 600; }
-    .ppd-optional { font-size: 10px; color: #9ca3af; margin-left: auto; }
+      mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+      }
+    }
 
-    .ppd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    // ========== CUSTOM SERVICES GRID ==========
+    .sd-services-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-height: 160px;
+      overflow-y: auto;
+      padding: 6px;
+      border: 2px dashed #e5e7eb;
+      border-radius: 12px;
+      background: #f9fafb;
+      
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 10px;
+      }
+    }
 
-    .ppd-field { width: 100%; }
-    .ppd-field .mat-mdc-form-field-subscript-wrapper { display: none; }
-    .ppd-field .mat-mdc-text-field-wrapper { background: #fff !important; border-radius: 8px !important; }
-    .ppd-field .mdc-notched-outline__leading,
-    .ppd-field .mdc-notched-outline__notch,
-    .ppd-field .mdc-notched-outline__trailing { border-color: #e5e7eb !important; }
-    .ppd-field.mat-focused .mdc-notched-outline__leading,
-    .ppd-field.mat-focused .mdc-notched-outline__notch,
-    .ppd-field.mat-focused .mdc-notched-outline__trailing { border-color: #7c3aed !important; }
-    .ppd-field .mat-mdc-form-field-infix { min-height: 40px !important; padding: 8px 0 !important; }
-    .ppd-field input, .ppd-field .mat-mdc-select-value, .ppd-field textarea { font-size: 13px !important; }
+    .service-badge-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #fff;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #4b5563;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      font-family: inherit;
 
-    .ppd-prefix, .ppd-suffix { font-size: 13px; color: #6b7280; font-weight: 500; }
+      .badge-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+        color: #9ca3af;
+      }
 
-    .ppd-toggle-row {
+      .price {
+        font-weight: 700;
+        color: #6b7280;
+        margin-left: 2px;
+      }
+
+      .check-mark {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+        color: #7c3aed;
+        margin-left: 4px;
+      }
+
+      &:hover {
+        border-color: #c4b5fd;
+        background: #fbfaff;
+      }
+
+      &.active {
+        background: #f5f3ff;
+        border-color: #7c3aed;
+        color: #7c3aed;
+        box-shadow: 0 2px 6px rgba(124, 58, 237, 0.12);
+
+        .badge-icon {
+          color: #7c3aed;
+        }
+
+        .price {
+          color: #7c3aed;
+        }
+      }
+    }
+
+    // ========== TOGGLE ==========
+    .sd-toggle-field {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      padding: 14px 16px;
+      background: #f0fdf4;
       border: 1px solid #bbf7d0;
-      border-radius: 10px;
-      padding: 12px 14px;
+      border-radius: 12px;
+      gap: 16px;
       margin-top: 4px;
     }
 
-    .ppd-toggle-info { display: flex; align-items: center; gap: 10px; }
-    .ppd-toggle-info mat-icon { font-size: 22px; width: 22px; height: 22px; color: #9ca3af; transition: color 0.2s ease; }
-    .ppd-toggle-info mat-icon.active { color: #22c55e; }
-    .ppd-toggle-text { display: flex; flex-direction: column; gap: 1px; }
-    .ppd-toggle-text .label { font-size: 13px; font-weight: 600; color: #374151; }
-    .ppd-toggle-text .hint { font-size: 11px; color: #6b7280; }
-
-    .ppd-footer {
+    .sd-toggle-info {
       display: flex;
-      gap: 10px;
-      padding: 14px 20px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sd-toggle-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fee2e2;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #dc2626;
+      }
+
+      &.available {
+        background: #d1fae5;
+
+        mat-icon {
+          color: #059669;
+        }
+      }
+    }
+
+    .sd-toggle-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .sd-toggle-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .sd-toggle-desc {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    // ========== FOOTER ==========
+    .sd-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px 24px;
       background: #f9fafb;
       border-top: 1px solid #f3f4f6;
     }
 
-    .ppd-btn {
-      flex: 1;
+    .sd-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 11px 16px;
-      border-radius: 8px;
-      font-size: 13px;
+      gap: 8px;
+      padding: 11px 22px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s ease;
-      border: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &.cancel {
+        background: #fff;
+        color: #6b7280;
+        border: 1px solid #e5e7eb;
+
+        &:hover {
+          background: #f9fafb;
+          border-color: #d1d5db;
+        }
+      }
+
+      &.submit {
+        background: linear-gradient(135deg, #7c3aed, #06b6d4);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+      }
     }
 
-    .ppd-btn mat-icon { font-size: 16px; width: 16px; height: 16px; }
-
-    .ppd-btn.cancel { background: #fff; color: #6b7280; border: 1px solid #e5e7eb; }
-    .ppd-btn.cancel:hover { background: #f9fafb; border-color: #d1d5db; }
-
-    .ppd-btn.submit {
-      background: linear-gradient(135deg, #7c3aed, #9333ea);
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
-    }
-
-    .ppd-btn.submit:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4); transform: translateY(-1px); }
-    .ppd-btn.submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    .ppd-spinner {
-      width: 16px; height: 16px;
+    .sd-spinner {
+      width: 16px;
+      height: 16px;
       border: 2px solid rgba(255,255,255,0.3);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    @media (max-width: 480px) {
-      .premium-package-dialog { max-width: 100%; border-radius: 12px; }
-      .ppd-header { padding: 12px 14px; }
-      .ppd-icon { width: 38px; height: 38px; }
-      .ppd-titles h2 { font-size: 15px; }
-      .ppd-body { padding: 12px 14px; max-height: 50vh; }
-      .ppd-card { padding: 10px; }
-      .ppd-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-      .ppd-footer { padding: 12px 14px; }
-      .ppd-btn { padding: 10px 12px; font-size: 12px; }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
-    @media (max-width: 360px) {
-      .ppd-grid { grid-template-columns: 1fr; }
+    // ========== RESPONSIVE ==========
+    @media (max-width: 600px) {
+      .package-dialog {
+        width: 100%;
+        border-radius: 16px;
+      }
+
+      .sd-header {
+        padding: 16px 20px;
+        gap: 12px;
+      }
+
+      .sd-header-icon {
+        width: 40px;
+        height: 40px;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .sd-header-text h2 {
+        font-size: 16px;
+      }
+
+      .sd-close-btn {
+        top: 12px;
+        right: 12px;
+        width: 28px;
+        height: 28px;
+      }
+
+      .sd-body {
+        padding: 20px;
+        max-height: 55vh;
+      }
+
+      .sd-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .sd-input-wrapper input, 
+      .sd-input-wrapper select,
+      .sd-input-wrapper textarea {
+        padding: 11px 14px 11px 10px;
+      }
+
+      .sd-toggle-field {
+        padding: 12px;
+      }
+
+      .sd-footer {
+        padding: 16px 20px;
+        flex-direction: column-reverse;
+        gap: 10px;
+      }
+
+      .sd-btn {
+        width: 100%;
+        padding: 13px 24px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .sd-header {
+        padding: 12px 16px;
+      }
+
+      .sd-header-icon {
+        width: 36px;
+        height: 36px;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .sd-header-text {
+        h2 { font-size: 15px; }
+        p { font-size: 11px; }
+      }
+
+      .sd-body {
+        padding: 16px;
+      }
+
+      .sd-form {
+        gap: 12px;
+      }
+
+      .sd-toggle-icon {
+        width: 32px;
+        height: 32px;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      .sd-toggle-label { font-size: 12px; }
+      .sd-toggle-desc { font-size: 10px; }
     }
   `]
 })
@@ -407,6 +899,15 @@ export class PackageDialogComponent {
   form: FormGroup;
   saving = false;
   availableServices: any[] = [];
+  discountPercent = 0;
+
+  nameFocused = false;
+  categoryFocused = false;
+  originalPriceFocused = false;
+  packagePriceFocused = false;
+  validityFocused = false;
+  redemptionsFocused = false;
+  descriptionFocused = false;
 
   constructor(
     private fb: FormBuilder,
@@ -433,9 +934,67 @@ export class PackageDialogComponent {
 
   loadServices(): void {
     this.serviceService.getAll().subscribe({
-      next: (services) => this.availableServices = services,
+      next: (services) => {
+        this.availableServices = services;
+        this.calculateOriginalPrice();
+      },
       error: (err) => console.error('Failed to load services:', err)
     });
+  }
+
+  getCategoryMatIcon(category: string): string {
+    const icons: Record<string, string> = {
+      hair: 'content_cut',
+      skin: 'face',
+      nails: 'back_hand',
+      makeup: 'brush',
+      spa: 'spa'
+    };
+    return icons[category?.toLowerCase()] || 'spa';
+  }
+
+  isServiceSelected(serviceId: string): boolean {
+    return this.form.get('selectedServices')?.value.includes(serviceId);
+  }
+
+  toggleService(serviceId: string): void {
+    const selected = [...this.form.get('selectedServices')?.value];
+    const index = selected.indexOf(serviceId);
+    if (index > -1) {
+      selected.splice(index, 1);
+    } else {
+      selected.push(serviceId);
+    }
+    this.form.get('selectedServices')?.setValue(selected);
+    this.form.get('selectedServices')?.markAsTouched();
+    
+    // Auto-calculate sum and update discount percent!
+    this.calculateOriginalPrice();
+  }
+
+  calculateOriginalPrice(): void {
+    const selectedIds = this.form.get('selectedServices')?.value || [];
+    let sum = 0;
+    
+    selectedIds.forEach((id: string) => {
+      const match = this.availableServices.find(s => s._id === id);
+      if (match) {
+        sum += match.price;
+      }
+    });
+
+    this.form.get('originalPrice')?.setValue(sum);
+    this.calculateDiscount();
+  }
+
+  calculateDiscount(): void {
+    const orig = Number(this.form.get('originalPrice')?.value || 0);
+    const pack = Number(this.form.get('packagePrice')?.value || 0);
+    if (orig > 0 && pack > 0 && orig > pack) {
+      this.discountPercent = Math.round(((orig - pack) / orig) * 100);
+    } else {
+      this.discountPercent = 0;
+    }
   }
 
   save(): void {
