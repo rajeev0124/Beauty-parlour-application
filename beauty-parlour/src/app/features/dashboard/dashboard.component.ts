@@ -44,6 +44,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Debounce resize to avoid excessive rebuilds
     if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
     this.resizeTimeout = setTimeout(() => {
+      this.revenueChartOptions = this.buildRevenueOptions();
       this.serviceChartOptions = this.buildServiceOptions();
       this.appointmentChartOptions = this.buildAppointmentOptions();
       this.cdr.detectChanges();
@@ -97,7 +98,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const tooltipBg = cssVar('--ink') || '#111827';
     return {
       responsive: true,
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
       interaction: { intersect: false, mode: 'index' },
       plugins: {
         legend: { display: false },
