@@ -35,14 +35,16 @@ interface PaymentMethod {
   ],
   template: `
     <div class="expense-dialog">
+      <div class="dialog-accent-bar"></div>
+      
       <!-- Header -->
       <div class="dialog-header">
         <div class="header-icon">
-          <mat-icon>{{ data ? 'edit' : 'add_card' }}</mat-icon>
+          <mat-icon>{{ data ? 'edit_square' : 'account_balance_wallet' }}</mat-icon>
         </div>
         <div class="header-text">
-          <h2>{{ data ? 'Edit Expense' : 'Add New Expense' }}</h2>
-          <p>{{ data ? 'Update expense details' : 'Record a new business expense' }}</p>
+          <h2>{{ data ? 'Edit Expense' : 'Record New Expense' }}</h2>
+          <p>{{ data ? 'Update your business expense details' : 'Log a new transaction to the business ledger' }}</p>
         </div>
         <button class="close-btn" (click)="dialogRef.close()" matTooltip="Close">
           <mat-icon>close</mat-icon>
@@ -51,11 +53,12 @@ interface PaymentMethod {
 
       <!-- Content -->
       <div class="dialog-body">
+        
         <!-- Category Selection -->
         <div class="form-group">
           <label class="form-label">
             <mat-icon>category</mat-icon>
-            Category
+            Select Category
           </label>
           <div class="category-grid">
             @for (cat of categories; track cat.id) {
@@ -65,7 +68,9 @@ interface PaymentMethod {
                 [class.active]="expense.category === cat.id"
                 [style.--cat-color]="cat.color"
                 (click)="expense.category = cat.id">
-                <mat-icon>{{ cat.icon }}</mat-icon>
+                <div class="icon-circle">
+                  <mat-icon>{{ cat.icon }}</mat-icon>
+                </div>
                 <span>{{ cat.name }}</span>
               </button>
             }
@@ -78,12 +83,15 @@ interface PaymentMethod {
             <mat-icon>title</mat-icon>
             Expense Title <span class="required">*</span>
           </label>
-          <div class="input-wrapper">
+          <div class="input-wrapper" [class.focused]="focusedField === 'title'">
+            <mat-icon class="prefix-icon">description</mat-icon>
             <input 
               type="text" 
               [(ngModel)]="expense.title" 
               placeholder="e.g., Monthly Electricity Bill"
-              class="form-input">
+              class="form-input"
+              (focus)="focusedField = 'title'" 
+              (blur)="focusedField = null">
           </div>
         </div>
 
@@ -91,32 +99,36 @@ interface PaymentMethod {
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">
-              <mat-icon>currency_rupee</mat-icon>
+              <mat-icon>payments</mat-icon>
               Amount <span class="required">*</span>
             </label>
-            <div class="input-wrapper amount-input">
+            <div class="input-wrapper amount-input" [class.focused]="focusedField === 'amount'">
               <span class="currency-symbol">₹</span>
               <input 
                 type="number" 
                 [(ngModel)]="expense.amount" 
                 placeholder="0.00"
                 min="0"
-                class="form-input">
+                class="form-input"
+                (focus)="focusedField = 'amount'" 
+                (blur)="focusedField = null">
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">
-              <mat-icon>calendar_today</mat-icon>
+              <mat-icon>calendar_month</mat-icon>
               Date
             </label>
-            <div class="input-wrapper date-input">
+            <div class="input-wrapper date-input" [class.focused]="focusedField === 'date'">
               <input 
                 matInput 
                 [matDatepicker]="picker" 
                 [(ngModel)]="expense.date"
                 placeholder="Select date"
-                class="form-input">
+                class="form-input"
+                (focus)="focusedField = 'date'" 
+                (blur)="focusedField = null">
               <mat-datepicker-toggle [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </div>
@@ -126,7 +138,7 @@ interface PaymentMethod {
         <!-- Payment Method -->
         <div class="form-group">
           <label class="form-label">
-            <mat-icon>payments</mat-icon>
+            <mat-icon>wallet</mat-icon>
             Payment Method
           </label>
           <div class="payment-grid">
@@ -143,114 +155,149 @@ interface PaymentMethod {
           </div>
         </div>
 
-        <!-- Vendor -->
-        <div class="form-group">
-          <label class="form-label">
-            <mat-icon>store</mat-icon>
-            Vendor / Payee
-            <span class="optional">(Optional)</span>
-          </label>
-          <div class="input-wrapper">
-            <input 
-              type="text" 
-              [(ngModel)]="expense.vendor" 
-              placeholder="e.g., ABC Suppliers"
-              class="form-input">
+        <!-- Vendor & Description -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              <mat-icon>storefront</mat-icon>
+              Vendor / Payee <span class="optional">(Optional)</span>
+            </label>
+            <div class="input-wrapper" [class.focused]="focusedField === 'vendor'">
+              <mat-icon class="prefix-icon">person</mat-icon>
+              <input 
+                type="text" 
+                [(ngModel)]="expense.vendor" 
+                placeholder="e.g., ABC Suppliers"
+                class="form-input"
+                (focus)="focusedField = 'vendor'" 
+                (blur)="focusedField = null">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">
+              <mat-icon>notes</mat-icon>
+              Notes <span class="optional">(Optional)</span>
+            </label>
+            <div class="input-wrapper" [class.focused]="focusedField === 'desc'">
+              <input 
+                type="text" 
+                [(ngModel)]="expense.description" 
+                placeholder="Additional details..."
+                class="form-input"
+                (focus)="focusedField = 'desc'" 
+                (blur)="focusedField = null">
+            </div>
           </div>
         </div>
 
-        <!-- Description -->
-        <div class="form-group">
-          <label class="form-label">
-            <mat-icon>notes</mat-icon>
-            Description
-            <span class="optional">(Optional)</span>
-          </label>
-          <div class="input-wrapper">
-            <textarea 
-              [(ngModel)]="expense.description" 
-              placeholder="Add any additional notes about this expense..."
-              rows="2"
-              class="form-input textarea"></textarea>
+        <!-- Sleek Receipt Preview Card -->
+        <div class="receipt-preview" [style.--theme-color]="getSelectedCategory()?.color || '#10b981'">
+          <div class="receipt-icon">
+            <mat-icon>{{ getSelectedCategory()?.icon || 'receipt' }}</mat-icon>
+          </div>
+          <div class="receipt-details">
+            <div class="receipt-title">{{ expense.title || 'Expense Summary' }}</div>
+            <div class="receipt-badges">
+              <span class="badge category-badge">{{ getSelectedCategory()?.name || 'Uncategorized' }}</span>
+              <span class="badge method-badge"><mat-icon>{{ getPaymentIcon() }}</mat-icon> {{ getPaymentName() }}</span>
+              <span class="badge date-badge">{{ expense.date | date:'MMM d, y' }}</span>
+            </div>
+          </div>
+          <div class="receipt-total">
+            <span class="total-label">TOTAL</span>
+            <span class="total-amount">₹{{ expense.amount | number:'1.0-0' }}</span>
           </div>
         </div>
 
-        <!-- Preview Card -->
-        <div class="preview-card" [style.--preview-color]="getSelectedCategory()?.color || '#10b981'">
-          <div class="preview-left">
-            <div class="preview-icon">
-              <mat-icon>{{ getSelectedCategory()?.icon || 'receipt' }}</mat-icon>
-            </div>
-            <div class="preview-info">
-              <span class="preview-title">{{ expense.title || 'Expense Title' }}</span>
-              <div class="preview-meta">
-                <span class="preview-category">{{ getSelectedCategory()?.name || 'Category' }}</span>
-                <span class="preview-date">{{ expense.date | date:'mediumDate' }}</span>
-                <span class="preview-payment">
-                  <mat-icon>{{ getPaymentIcon() }}</mat-icon>
-                  {{ getPaymentName() }}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="preview-amount">
-            <span class="amount-value">₹{{ expense.amount | number:'1.0-0' }}</span>
-          </div>
-        </div>
       </div>
 
       <!-- Actions -->
       <div class="dialog-actions">
-        <button class="btn-secondary" (click)="dialogRef.close()">
-          Cancel
+        <button class="btn-cancel" (click)="dialogRef.close()">
+          <mat-icon>close</mat-icon> Cancel
         </button>
-        <button class="btn-primary" (click)="save()" [disabled]="!isValid() || saving">
+        <button class="btn-submit" (click)="save()" [disabled]="!isValid() || saving">
           @if (saving) {
-            <span class="spinner"></span>
-            Saving...
+            <span class="spinner"></span> Processing...
           } @else {
-            <mat-icon>{{ data ? 'check' : 'add' }}</mat-icon>
-            {{ data ? 'Update Expense' : 'Add Expense' }}
+            <mat-icon>{{ data ? 'check_circle' : 'add_circle' }}</mat-icon>
+            {{ data ? 'Update Expense' : 'Save Expense' }}
           }
         </button>
       </div>
     </div>
   `,
   styles: [`
-    .expense-dialog {
-      width: 560px;
-      max-width: 95vw;
-      display: flex;
-      flex-direction: column;
-      background: white;
-      border-radius: 16px;
-      overflow: hidden;
+    .cdk-overlay-pane:has(.expense-dialog) {
+      max-width: 95vw !important;
     }
 
-    // Header
+    .mat-mdc-dialog-container:has(.expense-dialog) {
+      --mdc-dialog-container-shape: 24px;
+      padding: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .mat-mdc-dialog-container:has(.expense-dialog) .mdc-dialog__surface {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 24px !important;
+      overflow: visible !important;
+    }
+
+    .expense-dialog {
+      width: 100%;
+      max-width: 600px;
+      background: #ffffff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      font-family: 'Outfit', 'Inter', sans-serif;
+    }
+
+    .dialog-accent-bar {
+      height: 5px;
+      background: linear-gradient(90deg, #10b981, #34d399, #059669);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    // ========== HEADER ==========
     .dialog-header {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 18px 20px;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: white;
-      flex-shrink: 0;
+      gap: 16px;
+      padding: 24px;
+      background: linear-gradient(to right, #f8fafc, #ffffff);
+      border-bottom: 1px solid #f1f5f9;
+      position: relative;
     }
 
     .header-icon {
-      width: 44px;
-      height: 44px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
+      flex-shrink: 0;
 
       mat-icon {
         font-size: 24px;
         width: 24px;
         height: 24px;
+        color: #ffffff;
       }
     }
 
@@ -259,24 +306,29 @@ interface PaymentMethod {
 
       h2 {
         margin: 0;
-        font-size: 18px;
-        font-weight: 600;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1e293b;
+        letter-spacing: -0.01em;
       }
 
       p {
-        margin: 2px 0 0;
+        margin: 4px 0 0;
         font-size: 13px;
-        opacity: 0.9;
+        color: #64748b;
       }
     }
 
     .close-btn {
-      width: 34px;
-      height: 34px;
-      background: rgba(255, 255, 255, 0.15);
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 32px;
+      height: 32px;
+      background: #f1f5f9;
       border: none;
       border-radius: 8px;
-      color: white;
+      color: #64748b;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -284,26 +336,26 @@ interface PaymentMethod {
       transition: all 0.2s ease;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.25);
+        background: #e2e8f0;
+        color: #0f172a;
+        transform: scale(1.05);
       }
 
       mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
       }
     }
 
-    // Body
+    // ========== BODY ==========
     .dialog-body {
-      padding: 20px;
+      padding: 24px;
       overflow-y: auto;
-      max-height: calc(80vh - 140px);
-    }
-
-    // Form Groups
-    .form-group {
-      margin-bottom: 16px;
+      max-height: calc(85vh - 150px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     .form-row {
@@ -312,14 +364,19 @@ interface PaymentMethod {
       gap: 16px;
     }
 
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .form-label {
       display: flex;
       align-items: center;
       gap: 6px;
       font-size: 13px;
       font-weight: 600;
-      color: #475569;
-      margin-bottom: 8px;
+      color: #334155;
 
       mat-icon {
         font-size: 16px;
@@ -328,172 +385,177 @@ interface PaymentMethod {
         color: #94a3b8;
       }
 
-      .required {
-        color: #ef4444;
-      }
-
-      .optional {
-        font-weight: 400;
-        color: #94a3b8;
-        font-size: 11px;
-      }
+      .required { color: #ef4444; }
+      .optional { font-weight: 400; color: #94a3b8; font-size: 11px; }
     }
 
+    // ========== PREMIUM INPUTS ==========
     .input-wrapper {
       position: relative;
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      overflow: hidden;
 
-      &.amount-input {
-        .currency-symbol {
-          position: absolute;
-          left: 12px;
-          top: 50%;
-          transform: translateY(-50%);
+      &.focused {
+        background: #ffffff;
+        border-color: #10b981;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+
+        .prefix-icon, .currency-symbol {
           color: #10b981;
-          font-weight: 600;
-          font-size: 15px;
         }
+      }
 
-        .form-input {
-          padding-left: 28px;
+      .prefix-icon {
+        margin-left: 12px;
+        color: #94a3b8;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: color 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .currency-symbol {
+        margin-left: 14px;
+        color: #64748b;
+        font-weight: 700;
+        font-size: 16px;
+        transition: color 0.2s ease;
+      }
+
+      .form-input {
+        flex: 1;
+        width: 100%;
+        padding: 12px 14px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1e293b;
+        outline: none;
+        font-family: inherit;
+
+        &::placeholder {
+          color: #94a3b8;
+          font-weight: 400;
         }
       }
 
       &.date-input {
-        .form-input {
-          padding-right: 36px;
-        }
-
         .mat-datepicker-toggle {
-          position: absolute;
-          right: 2px;
-          top: 50%;
-          transform: translateY(-50%);
-          --mat-datepicker-toggle-icon-color: #94a3b8;
+          margin-right: 4px;
+          --mat-datepicker-toggle-icon-color: #64748b;
         }
       }
     }
 
-    .form-input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 14px;
-      color: #1e293b;
-      background: #f8fafc;
-      transition: all 0.2s ease;
-      outline: none;
-      font-family: inherit;
-      box-sizing: border-box;
-
-      &::placeholder {
-        color: #94a3b8;
-      }
-
-      &:hover {
-        border-color: #cbd5e1;
-      }
-
-      &:focus {
-        border-color: #10b981;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-      }
-
-      &.textarea {
-        resize: vertical;
-        min-height: 60px;
-      }
-    }
-
-    // Category Grid
+    // ========== CATEGORY GRID ==========
     .category-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 10px;
     }
 
     .category-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      padding: 10px 6px;
-      background: #f8fafc;
+      gap: 6px;
+      padding: 12px 6px;
+      background: #ffffff;
       border: 2px solid #e2e8f0;
-      border-radius: 8px;
+      border-radius: 14px;
       cursor: pointer;
       transition: all 0.2s ease;
 
-      mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        color: #64748b;
+      .icon-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          color: #64748b;
+          transition: all 0.2s ease;
+        }
       }
 
       span {
-        font-size: 10px;
-        font-weight: 500;
+        font-size: 11px;
+        font-weight: 600;
         color: #64748b;
         text-align: center;
-        line-height: 1.2;
+        transition: all 0.2s ease;
       }
 
       &:hover {
         border-color: #cbd5e1;
-        background: #f1f5f9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       }
 
       &.active {
-        border-color: var(--cat-color, #10b981);
-        background: color-mix(in srgb, var(--cat-color, #10b981) 10%, white);
+        border-color: var(--cat-color);
+        background: color-mix(in srgb, var(--cat-color) 4%, white);
 
-        mat-icon {
-          color: var(--cat-color, #10b981);
+        .icon-circle {
+          background: var(--cat-color);
+          box-shadow: 0 4px 10px color-mix(in srgb, var(--cat-color) 40%, transparent);
+
+          mat-icon { color: white; }
         }
 
-        span {
-          color: var(--cat-color, #10b981);
-          font-weight: 600;
-        }
+        span { color: #0f172a; }
       }
     }
 
-    // Payment Grid
+    // ========== PAYMENT GRID ==========
     .payment-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 10px;
     }
 
     .payment-btn {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 4px;
-      padding: 10px 6px;
-      background: #f8fafc;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px;
+      background: #ffffff;
       border: 2px solid #e2e8f0;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s ease;
 
       mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
         color: #64748b;
       }
 
       span {
-        font-size: 10px;
-        font-weight: 500;
+        font-size: 12px;
+        font-weight: 600;
         color: #64748b;
       }
 
       &:hover {
         border-color: #cbd5e1;
+        background: #f8fafc;
       }
 
       &.active {
@@ -503,170 +565,183 @@ interface PaymentMethod {
         mat-icon, span {
           color: #10b981;
         }
-
-        span {
-          font-weight: 600;
-        }
       }
     }
 
-    // Preview Card
-    .preview-card {
+    // ========== RECEIPT PREVIEW ==========
+    .receipt-preview {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 16px;
-      padding: 14px 16px;
-      background: linear-gradient(135deg, color-mix(in srgb, var(--preview-color) 8%, white) 0%, color-mix(in srgb, var(--preview-color) 4%, white) 100%);
-      border: 1px solid color-mix(in srgb, var(--preview-color) 20%, #e2e8f0);
-      border-radius: 12px;
       margin-top: 8px;
-    }
+      padding: 16px 20px;
+      background: #ffffff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 
-    .preview-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-      flex: 1;
-    }
-
-    .preview-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--preview-color);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-
-      mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        color: white;
-      }
-    }
-
-    .preview-info {
-      min-width: 0;
-      flex: 1;
-
-      .preview-title {
-        display: block;
-        font-size: 14px;
-        font-weight: 600;
-        color: #1e293b;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-bottom: 4px;
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        background: var(--theme-color);
       }
 
-      .preview-meta {
+      .receipt-icon {
+        width: 44px;
+        height: 44px;
+        background: color-mix(in srgb, var(--theme-color) 15%, white);
+        border-radius: 12px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      .preview-category {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--preview-color);
-        background: color-mix(in srgb, var(--preview-color) 15%, white);
-        padding: 2px 8px;
-        border-radius: 4px;
-      }
-
-      .preview-date {
-        font-size: 11px;
-        color: #64748b;
-      }
-
-      .preview-payment {
-        display: flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 11px;
-        color: #64748b;
+        justify-content: center;
+        flex-shrink: 0;
 
         mat-icon {
-          font-size: 12px;
-          width: 12px;
-          height: 12px;
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+          color: var(--theme-color);
+        }
+      }
+
+      .receipt-details {
+        flex: 1;
+        min-width: 0;
+
+        .receipt-title {
+          font-size: 15px;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 6px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .receipt-badges {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+
+          .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            
+            &.category-badge {
+              background: color-mix(in srgb, var(--theme-color) 10%, white);
+              color: var(--theme-color);
+            }
+
+            &.method-badge {
+              background: #f1f5f9;
+              color: #475569;
+
+              mat-icon {
+                font-size: 12px;
+                width: 12px;
+                height: 12px;
+              }
+            }
+
+            &.date-badge {
+              color: #64748b;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+
+      .receipt-total {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        flex-shrink: 0;
+
+        .total-label {
+          font-size: 10px;
+          font-weight: 700;
+          color: #94a3b8;
+          letter-spacing: 0.05em;
+        }
+
+        .total-amount {
+          font-size: 22px;
+          font-weight: 800;
+          color: #0f172a;
+          font-variant-numeric: tabular-nums;
         }
       }
     }
 
-    .preview-amount {
-      flex-shrink: 0;
-
-      .amount-value {
-        font-size: 20px;
-        font-weight: 700;
-        color: #dc2626;
-      }
-    }
-
-    // Actions
+    // ========== ACTIONS ==========
     .dialog-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
-      padding: 14px 20px;
+      gap: 12px;
+      padding: 16px 24px;
       background: #f8fafc;
-      border-top: 1px solid #e2e8f0;
-      flex-shrink: 0;
+      border-top: 1px solid #f1f5f9;
     }
 
-    .btn-primary {
+    .btn-cancel, .btn-submit {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 12px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      font-family: inherit;
 
       mat-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
       }
+    }
+
+    .btn-cancel {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      color: #475569;
+
+      &:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+      }
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: none;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 
       &:hover:not(:disabled) {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(16, 185, 129, 0.35);
       }
 
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
-      }
-    }
-
-    .btn-secondary {
-      padding: 10px 18px;
-      background: white;
-      color: #64748b;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-
-      &:hover {
-        border-color: #cbd5e1;
-        background: #f8fafc;
+        box-shadow: none;
+        transform: none;
       }
     }
 
@@ -679,90 +754,66 @@ interface PaymentMethod {
       animation: spin 0.8s linear infinite;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    // Responsive
+    // ========== RESPONSIVE ==========
     @media (max-width: 600px) {
       .expense-dialog {
-        width: 100%;
-        max-width: 100%;
-        border-radius: 16px 16px 0 0;
+        border-radius: 20px;
+      }
+
+      .dialog-header {
+        padding: 20px;
       }
 
       .dialog-body {
-        max-height: calc(85vh - 140px);
-        padding: 16px;
+        padding: 20px;
+        gap: 16px;
       }
 
       .form-row {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 16px;
       }
 
       .category-grid {
         grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
-      }
-
-      .category-btn {
-        padding: 8px 4px;
-
-        mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
-        }
-
-        span {
-          font-size: 9px;
-        }
+        gap: 8px;
       }
 
       .payment-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
+        grid-template-columns: repeat(2, 1fr);
       }
 
-      .payment-btn {
-        padding: 8px 4px;
+      .receipt-preview {
+        padding: 12px 14px;
+        gap: 12px;
 
-        mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
+        .receipt-icon {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
         }
 
-        span {
-          font-size: 9px;
+        .receipt-badges {
+          .date-badge {
+            display: none; // Hide on very small screens to save space
+          }
         }
-      }
-
-      .preview-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-
-      .preview-left {
-        width: 100%;
-      }
-
-      .preview-amount {
-        width: 100%;
-        text-align: right;
-        padding-top: 8px;
-        border-top: 1px dashed #e2e8f0;
       }
 
       .dialog-actions {
-        padding: 12px 16px;
+        padding: 16px 20px;
       }
 
-      .btn-primary, .btn-secondary {
-        padding: 10px 16px;
+      .btn-cancel, .btn-submit {
+        padding: 12px 16px;
         font-size: 13px;
+        flex: 1;
       }
     }
   `],
@@ -771,6 +822,7 @@ interface PaymentMethod {
 })
 export class ExpenseDialogComponent {
   saving = false;
+  focusedField: string | null = null;
   
   categories: ExpenseCategory[] = [
     { id: 'rent', name: 'Rent', icon: 'home', color: '#ef4444' },
@@ -793,7 +845,7 @@ export class ExpenseDialogComponent {
   expense: any = {
     title: '',
     category: 'other',
-    amount: 0,
+    amount: null,
     date: new Date(),
     paymentMethod: 'cash',
     vendor: '',
@@ -823,7 +875,7 @@ export class ExpenseDialogComponent {
   }
 
   isValid(): boolean {
-    return this.expense.title && this.expense.category && this.expense.amount > 0;
+    return !!(this.expense.title && this.expense.category && this.expense.amount > 0);
   }
 
   save() {
@@ -839,7 +891,7 @@ export class ExpenseDialogComponent {
         this.saving = false;
         this.dialogRef.close(true);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.saving = false;
         alert(err.error?.message || 'Error saving expense');
       }
