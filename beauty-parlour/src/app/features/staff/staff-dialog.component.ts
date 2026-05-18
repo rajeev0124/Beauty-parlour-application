@@ -1,9 +1,6 @@
 import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -14,9 +11,10 @@ import { StaffService } from '../../core/services/staff.service';
   selector: 'app-staff-dialog',
   standalone: true,
   imports: [
-    ReactiveFormsModule, MatFormFieldModule,
-    MatInputModule, MatSelectModule,
-    MatSlideToggleModule, MatIconModule, MatSnackBarModule
+    ReactiveFormsModule,
+    MatSlideToggleModule,
+    MatIconModule,
+    MatSnackBarModule
   ],
   encapsulation: ViewEncapsulation.None,
   template: `
@@ -24,7 +22,7 @@ import { StaffService } from '../../core/services/staff.service';
       <!-- Header -->
       <div class="sd-header">
         <div class="sd-header-icon">
-          <mat-icon>{{ data ? 'edit' : 'person_add' }}</mat-icon>
+          <mat-icon>{{ data ? 'edit_note' : 'person_add' }}</mat-icon>
         </div>
         <div class="sd-header-text">
           <h2>{{ data ? 'Edit Staff Member' : 'Add New Staff' }}</h2>
@@ -40,11 +38,9 @@ import { StaffService } from '../../core/services/staff.service';
         <form [formGroup]="form" class="sd-form">
           <!-- Name Field -->
           <div class="sd-field">
-            <label class="sd-label">
-              <mat-icon>person</mat-icon>
-              Full Name <span class="required">*</span>
-            </label>
+            <label class="sd-label">Full Name <span class="required">*</span></label>
             <div class="sd-input-wrapper" [class.error]="form.get('name')?.invalid && form.get('name')?.touched" [class.focused]="nameFocused">
+              <mat-icon class="input-icon">person</mat-icon>
               <input 
                 type="text" 
                 formControlName="name" 
@@ -62,35 +58,24 @@ import { StaffService } from '../../core/services/staff.service';
 
           <!-- Role Field -->
           <div class="sd-field">
-            <label class="sd-label">
-              <mat-icon>work</mat-icon>
-              Role <span class="required">*</span>
-            </label>
-            <mat-form-field appearance="outline" class="sd-select">
-              <mat-select formControlName="role" placeholder="Select role">
-                <mat-option value="Senior Stylist">
-                  <mat-icon>star</mat-icon> Senior Stylist
-                </mat-option>
-                <mat-option value="Junior Stylist">
-                  <mat-icon>content_cut</mat-icon> Junior Stylist
-                </mat-option>
-                <mat-option value="Skin Specialist">
-                  <mat-icon>spa</mat-icon> Skin Specialist
-                </mat-option>
-                <mat-option value="Massage Therapist">
-                  <mat-icon>self_improvement</mat-icon> Massage Therapist
-                </mat-option>
-                <mat-option value="Nail Technician">
-                  <mat-icon>brush</mat-icon> Nail Technician
-                </mat-option>
-                <mat-option value="Bridal Expert">
-                  <mat-icon>favorite</mat-icon> Bridal Expert
-                </mat-option>
-                <mat-option value="Manager">
-                  <mat-icon>admin_panel_settings</mat-icon> Manager
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+            <label class="sd-label">Role <span class="required">*</span></label>
+            <div class="sd-input-wrapper" [class.error]="form.get('role')?.invalid && form.get('role')?.touched" [class.focused]="roleFocused">
+              <mat-icon class="input-icon">work</mat-icon>
+              <select 
+                formControlName="role"
+                (focus)="roleFocused = true"
+                (blur)="roleFocused = false">
+                <option value="" disabled selected>Select role</option>
+                <option value="Senior Stylist">Senior Stylist</option>
+                <option value="Junior Stylist">Junior Stylist</option>
+                <option value="Skin Specialist">Skin Specialist</option>
+                <option value="Massage Therapist">Massage Therapist</option>
+                <option value="Nail Technician">Nail Technician</option>
+                <option value="Bridal Expert">Bridal Expert</option>
+                <option value="Manager">Manager</option>
+              </select>
+              <mat-icon class="select-arrow">expand_more</mat-icon>
+            </div>
             @if (form.get('role')?.hasError('required') && form.get('role')?.touched) {
               <span class="sd-error">
                 <mat-icon>error</mat-icon>
@@ -99,15 +84,13 @@ import { StaffService } from '../../core/services/staff.service';
             }
           </div>
 
-          <!-- Two Column Row -->
+          <!-- Two Column Row (responsive) -->
           <div class="sd-row">
             <!-- Phone Field -->
             <div class="sd-field">
-              <label class="sd-label">
-                <mat-icon>phone</mat-icon>
-                Phone <span class="required">*</span>
-              </label>
+              <label class="sd-label">Phone <span class="required">*</span></label>
               <div class="sd-input-wrapper" [class.error]="form.get('phone')?.invalid && form.get('phone')?.touched" [class.focused]="phoneFocused">
+                <mat-icon class="input-icon">phone</mat-icon>
                 <input 
                   type="tel" 
                   formControlName="phone" 
@@ -125,11 +108,9 @@ import { StaffService } from '../../core/services/staff.service';
 
             <!-- Email Field -->
             <div class="sd-field">
-              <label class="sd-label">
-                <mat-icon>email</mat-icon>
-                Email
-              </label>
+              <label class="sd-label">Email</label>
               <div class="sd-input-wrapper" [class.focused]="emailFocused">
+                <mat-icon class="input-icon">mail</mat-icon>
                 <input 
                   type="email" 
                   formControlName="email" 
@@ -142,11 +123,9 @@ import { StaffService } from '../../core/services/staff.service';
 
           <!-- Specialization Field -->
           <div class="sd-field">
-            <label class="sd-label">
-              <mat-icon>auto_awesome</mat-icon>
-              Specialization
-            </label>
+            <label class="sd-label">Specialization</label>
             <div class="sd-input-wrapper" [class.focused]="specFocused">
+              <mat-icon class="input-icon">auto_awesome</mat-icon>
               <input 
                 type="text" 
                 formControlName="specialization" 
@@ -202,6 +181,7 @@ import { StaffService } from '../../core/services/staff.service';
       background: #fff;
       border-radius: 20px;
       overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
 
     // ========== HEADER ==========
@@ -240,6 +220,7 @@ import { StaffService } from '../../core/services/staff.service';
         font-size: 20px;
         font-weight: 700;
         color: #fff;
+        letter-spacing: -0.01em;
       }
 
       p {
@@ -273,13 +254,14 @@ import { StaffService } from '../../core/services/staff.service';
 
       &:hover {
         background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.05);
       }
     }
 
     // ========== BODY ==========
     .sd-body {
       padding: 24px;
-      max-height: 60vh;
+      max-height: 65vh;
       overflow-y: auto;
     }
 
@@ -299,23 +281,14 @@ import { StaffService } from '../../core/services/staff.service';
     .sd-field {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .sd-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
       font-size: 13px;
       font-weight: 600;
       color: #374151;
-
-      mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-        color: #7c3aed;
-      }
+      margin-bottom: 2px;
 
       .required {
         color: #ef4444;
@@ -324,35 +297,74 @@ import { StaffService } from '../../core/services/staff.service';
 
     .sd-input-wrapper {
       position: relative;
+      display: flex;
+      align-items: center;
       border: 2px solid #e5e7eb;
       border-radius: 12px;
       background: #f9fafb;
       transition: all 0.2s ease;
+      overflow: hidden;
 
       &.focused {
         border-color: #7c3aed;
         background: #fff;
         box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        
+        .input-icon {
+          color: #7c3aed;
+        }
       }
 
       &.error {
         border-color: #ef4444;
         background: #fef2f2;
+        
+        .input-icon {
+          color: #ef4444;
+        }
       }
 
-      input {
+      .input-icon {
+        margin-left: 14px;
+        color: #9ca3af;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: color 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      input, select {
+        flex: 1;
         width: 100%;
-        padding: 14px 16px;
+        padding: 14px 16px 14px 10px;
         border: none;
         background: transparent;
         font-size: 14px;
         color: #1f2937;
         outline: none;
         box-sizing: border-box;
+        font-family: inherit;
 
         &::placeholder {
           color: #9ca3af;
         }
+      }
+
+      select {
+        appearance: none;
+        cursor: pointer;
+        padding-right: 40px;
+      }
+
+      .select-arrow {
+        position: absolute;
+        right: 14px;
+        color: #9ca3af;
+        pointer-events: none;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
       }
     }
 
@@ -362,6 +374,7 @@ import { StaffService } from '../../core/services/staff.service';
       gap: 6px;
       font-size: 12px;
       color: #ef4444;
+      margin-top: 2px;
 
       mat-icon {
         font-size: 14px;
@@ -373,45 +386,7 @@ import { StaffService } from '../../core/services/staff.service';
     .sd-hint {
       font-size: 12px;
       color: #6b7280;
-    }
-
-    // ========== SELECT ==========
-    .sd-select {
-      width: 100%;
-
-      .mat-mdc-form-field-subscript-wrapper {
-        display: none;
-      }
-
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: #e5e7eb !important;
-        border-width: 2px !important;
-      }
-
-      .mdc-notched-outline__leading {
-        border-radius: 12px 0 0 12px !important;
-      }
-
-      .mdc-notched-outline__trailing {
-        border-radius: 0 12px 12px 0 !important;
-      }
-
-      &.mat-focused .mdc-notched-outline__leading,
-      &.mat-focused .mdc-notched-outline__notch,
-      &.mat-focused .mdc-notched-outline__trailing {
-        border-color: #7c3aed !important;
-      }
-
-      .mat-mdc-select-trigger {
-        padding: 4px 0;
-      }
-
-      .mat-mdc-form-field-infix {
-        padding: 12px 0 !important;
-        min-height: auto !important;
-      }
+      margin-top: 2px;
     }
 
     // ========== TOGGLE ==========
@@ -424,6 +399,7 @@ import { StaffService } from '../../core/services/staff.service';
       border: 1px solid #e5e7eb;
       border-radius: 12px;
       gap: 16px;
+      margin-top: 4px;
     }
 
     .sd-toggle-info {
@@ -441,6 +417,7 @@ import { StaffService } from '../../core/services/staff.service';
       justify-content: center;
       background: #fee2e2;
       transition: all 0.2s ease;
+      flex-shrink: 0;
 
       mat-icon {
         font-size: 22px;
@@ -488,6 +465,7 @@ import { StaffService } from '../../core/services/staff.service';
     .sd-btn {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       padding: 12px 24px;
       border: none;
@@ -496,6 +474,7 @@ import { StaffService } from '../../core/services/staff.service';
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      font-family: inherit;
 
       mat-icon {
         font-size: 18px;
@@ -528,6 +507,7 @@ import { StaffService } from '../../core/services/staff.service';
           opacity: 0.5;
           cursor: not-allowed;
           transform: none;
+          box-shadow: none;
         }
       }
     }
@@ -568,7 +548,7 @@ import { StaffService } from '../../core/services/staff.service';
 
       .sd-body {
         padding: 20px;
-        max-height: 55vh;
+        max-height: 60vh;
       }
 
       .sd-row {
@@ -576,24 +556,23 @@ import { StaffService } from '../../core/services/staff.service';
         gap: 20px;
       }
 
-      .sd-input-wrapper input {
-        padding: 12px 14px;
+      .sd-input-wrapper input, 
+      .sd-input-wrapper select {
+        padding: 12px 14px 12px 10px;
       }
 
       .sd-toggle-field {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+        padding: 14px;
       }
 
       .sd-footer {
         padding: 16px 20px;
         flex-direction: column-reverse;
+        gap: 10px;
       }
 
       .sd-btn {
         width: 100%;
-        justify-content: center;
         padding: 14px 24px;
       }
     }
@@ -646,6 +625,7 @@ import { StaffService } from '../../core/services/staff.service';
 export class StaffDialogComponent {
   form: FormGroup;
   nameFocused = false;
+  roleFocused = false;
   phoneFocused = false;
   emailFocused = false;
   specFocused = false;
