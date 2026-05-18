@@ -628,6 +628,10 @@
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px !important;
     z-index: var(--z-fixed, 200);
     height: 100vh;
     height: 100dvh; /* Modern dynamic viewport height for mobile browser toolbars */
@@ -635,7 +639,7 @@
     -webkit-overflow-scrolling: touch; /* Momentum scrolling */
     
     &.collapsed { 
-      width: 0; 
+      width: 0 !important; 
       border: none; 
       overflow: hidden !important; 
     }
