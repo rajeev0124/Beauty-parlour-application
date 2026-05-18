@@ -257,6 +257,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 25,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Argan Oil Conditioner',
@@ -265,6 +266,7 @@ async function seedDatabase() {
       rating: 4.3,
       stock: 18,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Hair Serum – Silk Shine',
@@ -274,6 +276,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 30,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1608248597481-496100c80836?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Vitamin C Face Wash',
@@ -283,6 +286,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 40,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Hyaluronic Moisturizer',
@@ -292,6 +296,7 @@ async function seedDatabase() {
       rating: 4.8,
       stock: 15,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Sunscreen SPF 50+',
@@ -300,6 +305,7 @@ async function seedDatabase() {
       rating: 4.4,
       stock: 35,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Night Repair Cream',
@@ -308,6 +314,7 @@ async function seedDatabase() {
       rating: 4.5,
       stock: 10,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1608248597481-496100c80836?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Matte Lipstick Set',
@@ -316,6 +323,7 @@ async function seedDatabase() {
       rating: 4.6,
       stock: 20,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Foundation – Natural Glow',
@@ -325,6 +333,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 22,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Gel Nail Polish Kit',
@@ -333,6 +342,7 @@ async function seedDatabase() {
       rating: 4.4,
       stock: 28,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Professional Hair Dryer',
@@ -343,6 +353,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 8,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&auto=format&fit=crop&q=60',
     },
     {
       name: 'Straightening Iron',
@@ -351,6 +362,7 @@ async function seedDatabase() {
       rating: 4.5,
       stock: 10,
       isActive: true,
+      image: 'https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?w=500&auto=format&fit=crop&q=60',
     },
   ]);
   console.log('✅ Products seeded (12 products)');
