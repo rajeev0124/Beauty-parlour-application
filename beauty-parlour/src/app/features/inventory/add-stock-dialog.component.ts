@@ -2,10 +2,6 @@ import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
@@ -23,84 +19,84 @@ interface Product {
   selector: 'app-add-stock-dialog',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, 
-    MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatSnackBarModule
+    CommonModule,
+    FormsModule,
+    MatDialogModule,
+    MatIconModule,
+    MatSnackBarModule
   ],
   encapsulation: ViewEncapsulation.None,
   template: `
     <div class="add-stock-dialog">
+      <!-- Decorative shimmer bar -->
+      <div class="dialog-accent-bar"></div>
+
       <!-- Header -->
-      <div class="asd-header">
-        <div class="asd-header-icon">
-          <mat-icon>add_shopping_cart</mat-icon>
+      <div class="sd-header">
+        <div class="sd-header-icon">
+          <mat-icon>inventory_2</mat-icon>
         </div>
-        <div class="asd-header-text">
+        <div class="sd-header-text">
           <h2>Add Stock</h2>
           <p>Increase inventory for a product</p>
         </div>
-        <button class="asd-close-btn" (click)="dialogRef.close()">
+        <button type="button" class="sd-close-btn" (click)="dialogRef.close()" aria-label="Close">
           <mat-icon>close</mat-icon>
         </button>
       </div>
 
       <!-- Body -->
-      <div class="asd-body">
+      <div class="sd-body">
         <!-- Product Selection -->
-        <div class="asd-field">
-          <label class="asd-label">
-            <mat-icon>inventory_2</mat-icon>
-            Select Product <span class="required">*</span>
-          </label>
-          <div class="asd-select-wrap">
-            <mat-form-field appearance="outline" class="asd-select">
-              <mat-select [(ngModel)]="selectedProduct" placeholder="Choose a product" (selectionChange)="onProductChange()">
-                @for (product of data.products; track product._id) {
-                  <mat-option [value]="product._id">
-                    <div class="product-option">
-                      <span class="product-name">{{ product.name }}</span>
-                      <span class="product-stock" [class.low]="product.stock <= 10" [class.out]="product.stock === 0">
-                        {{ product.stock }} in stock
-                      </span>
-                    </div>
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+        <div class="sd-field">
+          <label class="sd-label">Select Product <span class="required">*</span></label>
+          <div class="sd-input-wrapper" [class.focused]="productFocused">
+            <mat-icon class="input-icon">storefront</mat-icon>
+            <select 
+              [(ngModel)]="selectedProduct" 
+              (change)="onProductChange()" 
+              (focus)="productFocused = true"
+              (blur)="productFocused = false">
+              <option value="" disabled>Choose a product</option>
+              @for (product of data.products; track product._id) {
+                <option [value]="product._id">
+                  {{ product.name }} ({{ product.stock }} in stock)
+                </option>
+              }
+            </select>
+            <mat-icon class="select-arrow">expand_more</mat-icon>
           </div>
         </div>
 
         <!-- Selected Product Preview -->
         @if (selectedProductData) {
-          <div class="asd-preview">
+          <div class="asd-preview-card">
             <div class="preview-avatar" [style.background]="getCategoryGradient(selectedProductData.category)">
               @if (selectedProductData.image) {
-                <img [src]="selectedProductData.image" [alt]="selectedProductData.name">
+                <img [src]="selectedProductData.image" [alt]="selectedProductData.name" (error)="selectedProductData.image = undefined">
               } @else {
                 <span>{{ getCategoryIcon(selectedProductData.category) }}</span>
               }
             </div>
             <div class="preview-info">
               <span class="preview-name">{{ selectedProductData.name }}</span>
-              <div class="preview-stock">
-                <span class="current">Current: <strong>{{ selectedProductData.stock }}</strong></span>
-                <mat-icon>arrow_forward</mat-icon>
-                <span class="new">New: <strong>{{ selectedProductData.stock + quantity }}</strong></span>
+              <div class="preview-stock-badge">
+                <span class="stock-num current">Current: <strong>{{ selectedProductData.stock }}</strong></span>
+                <mat-icon class="stock-arrow-icon">trending_flat</mat-icon>
+                <span class="stock-num new">New: <strong>{{ selectedProductData.stock + quantity }}</strong></span>
               </div>
             </div>
           </div>
         }
 
         <!-- Quantity Input -->
-        <div class="asd-field">
-          <label class="asd-label">
-            <mat-icon>add_circle</mat-icon>
-            Quantity to Add <span class="required">*</span>
-          </label>
-          <div class="asd-quantity">
-            <button class="qty-btn minus" (click)="decreaseQty()" [disabled]="quantity <= 1">
+        <div class="sd-field">
+          <label class="sd-label">Quantity to Add <span class="required">*</span></label>
+          <div class="asd-quantity-control">
+            <button type="button" class="qty-btn decrease" (click)="decreaseQty()" [disabled]="quantity <= 1">
               <mat-icon>remove</mat-icon>
             </button>
-            <div class="qty-input-wrap" [class.focused]="qtyFocused">
+            <div class="qty-input-wrapper" [class.focused]="qtyFocused">
               <input 
                 type="number" 
                 [(ngModel)]="quantity" 
@@ -108,28 +104,28 @@ interface Product {
                 max="9999"
                 (focus)="qtyFocused = true"
                 (blur)="qtyFocused = false">
-              <span class="qty-unit">units</span>
+              <span class="qty-suffix">units</span>
             </div>
-            <button class="qty-btn plus" (click)="increaseQty()">
+            <button type="button" class="qty-btn increase" (click)="increaseQty()">
               <mat-icon>add</mat-icon>
             </button>
           </div>
+          
+          <!-- Preset Fast Badges -->
           <div class="qty-presets">
-            <button class="preset-btn" (click)="quantity = 5" [class.active]="quantity === 5">+5</button>
-            <button class="preset-btn" (click)="quantity = 10" [class.active]="quantity === 10">+10</button>
-            <button class="preset-btn" (click)="quantity = 25" [class.active]="quantity === 25">+25</button>
-            <button class="preset-btn" (click)="quantity = 50" [class.active]="quantity === 50">+50</button>
-            <button class="preset-btn" (click)="quantity = 100" [class.active]="quantity === 100">+100</button>
+            <button type="button" class="preset-btn" (click)="quantity = 5" [class.active]="quantity === 5">+5</button>
+            <button type="button" class="preset-btn" (click)="quantity = 10" [class.active]="quantity === 10">+10</button>
+            <button type="button" class="preset-btn" (click)="quantity = 25" [class.active]="quantity === 25">+25</button>
+            <button type="button" class="preset-btn" (click)="quantity = 50" [class.active]="quantity === 50">+50</button>
+            <button type="button" class="preset-btn" (click)="quantity = 100" [class.active]="quantity === 100">+100</button>
           </div>
         </div>
 
         <!-- Notes (Optional) -->
-        <div class="asd-field">
-          <label class="asd-label">
-            <mat-icon>notes</mat-icon>
-            Notes <span class="optional">(optional)</span>
-          </label>
-          <div class="asd-textarea-wrap" [class.focused]="notesFocused">
+        <div class="sd-field">
+          <label class="sd-label">Notes <span class="optional">(Optional)</span></label>
+          <div class="sd-input-wrapper textarea" [class.focused]="notesFocused">
+            <mat-icon class="input-icon">description</mat-icon>
             <textarea 
               [(ngModel)]="notes" 
               placeholder="Add any notes about this stock addition..."
@@ -141,18 +137,18 @@ interface Product {
       </div>
 
       <!-- Footer -->
-      <div class="asd-footer">
-        <button class="asd-btn cancel" (click)="dialogRef.close()">
+      <div class="sd-footer">
+        <button type="button" class="sd-btn cancel" (click)="dialogRef.close()">
           <mat-icon>close</mat-icon>
           Cancel
         </button>
-        <button class="asd-btn submit" (click)="addStock()" [disabled]="!selectedProduct || !quantity || loading">
+        <button type="button" class="sd-btn submit" (click)="addStock()" [disabled]="!selectedProduct || !quantity || loading">
           @if (loading) {
             <div class="btn-spinner"></div>
-            Adding...
+            <span>Adding...</span>
           } @else {
-            <mat-icon>add</mat-icon>
-            Add Stock
+            <mat-icon>save</mat-icon>
+            <span>Add Stock</span>
           }
         </button>
       </div>
@@ -166,70 +162,97 @@ interface Product {
     .mat-mdc-dialog-container:has(.add-stock-dialog) {
       --mdc-dialog-container-shape: 20px;
       padding: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .mat-mdc-dialog-container:has(.add-stock-dialog) .mdc-dialog__surface {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 20px !important;
+      overflow: visible !important;
     }
 
     .add-stock-dialog {
-      width: 480px;
+      width: 460px;
       max-width: 100%;
       background: #fff;
       border-radius: 20px;
       overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialog-accent-bar {
+      height: 4px;
+      background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
 
     // ========== HEADER ==========
-    .asd-header {
+    .sd-header {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 24px;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #ecfdf5 0%, #fff 100%);
+      border-bottom: 1px solid #d1fae5;
       position: relative;
     }
 
-    .asd-header-icon {
-      width: 52px;
-      height: 52px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 14px;
+    .sd-header-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 
       mat-icon {
-        font-size: 26px;
-        width: 26px;
-        height: 26px;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
         color: #fff;
       }
     }
 
-    .asd-header-text {
+    .sd-header-text {
       flex: 1;
 
       h2 {
         margin: 0;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 700;
-        color: #fff;
+        color: #1f2937;
+        letter-spacing: -0.01em;
       }
 
       p {
-        margin: 4px 0 0;
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.85);
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: #6b7280;
       }
     }
 
-    .asd-close-btn {
+    .sd-close-btn {
       position: absolute;
       top: 16px;
       right: 16px;
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border: none;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -237,148 +260,151 @@ interface Product {
       transition: all 0.2s ease;
 
       mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        color: #fff;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #6b7280;
       }
 
       &:hover {
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
       }
     }
 
     // ========== BODY ==========
-    .asd-body {
+    .sd-body {
       padding: 24px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
       max-height: 60vh;
       overflow-y: auto;
     }
 
-    .asd-field {
+    .sd-field {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
     }
 
-    .asd-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .sd-label {
       font-size: 13px;
       font-weight: 600;
       color: #374151;
-
-      mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-        color: #10b981;
-      }
+      margin-bottom: 1px;
 
       .required {
         color: #ef4444;
       }
 
       .optional {
+        font-size: 11px;
         color: #9ca3af;
-        font-weight: 400;
-      }
-    }
-
-    // ========== SELECT ==========
-    .asd-select-wrap {
-      width: 100%;
-    }
-
-    .asd-select {
-      width: 100%;
-
-      .mat-mdc-form-field-subscript-wrapper {
-        display: none;
-      }
-
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: #e5e7eb !important;
-        border-width: 2px !important;
-      }
-
-      .mdc-notched-outline__leading {
-        border-radius: 12px 0 0 12px !important;
-      }
-
-      .mdc-notched-outline__trailing {
-        border-radius: 0 12px 12px 0 !important;
-      }
-
-      &.mat-focused .mdc-notched-outline__leading,
-      &.mat-focused .mdc-notched-outline__notch,
-      &.mat-focused .mdc-notched-outline__trailing {
-        border-color: #10b981 !important;
-      }
-
-      .mat-mdc-form-field-infix {
-        padding: 14px 0 !important;
-        min-height: auto !important;
-      }
-    }
-
-    .product-option {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      gap: 12px;
-
-      .product-name {
         font-weight: 500;
       }
+    }
 
-      .product-stock {
-        font-size: 12px;
-        padding: 2px 8px;
-        border-radius: 12px;
-        background: #d1fae5;
-        color: #059669;
+    .sd-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f9fafb;
+      transition: all 0.2s ease;
+      overflow: hidden;
 
-        &.low {
-          background: #fef3c7;
-          color: #d97706;
+      &.focused {
+        border-color: #10b981;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        
+        .input-icon {
+          color: #10b981;
         }
+      }
 
-        &.out {
-          background: #fee2e2;
-          color: #dc2626;
+      .input-icon {
+        margin-left: 14px;
+        color: #9ca3af;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: color 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      select, textarea {
+        flex: 1;
+        width: 100%;
+        padding: 13px 16px 13px 10px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        color: #1f2937;
+        outline: none;
+        box-sizing: border-box;
+        font-family: inherit;
+
+        &::placeholder {
+          color: #9ca3af;
+        }
+      }
+
+      textarea {
+        resize: none;
+        line-height: 1.5;
+        padding-top: 13px;
+      }
+
+      select {
+        appearance: none;
+        cursor: pointer;
+        padding-right: 40px;
+      }
+
+      .select-arrow {
+        position: absolute;
+        right: 14px;
+        color: #9ca3af;
+        pointer-events: none;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &.textarea {
+        align-items: flex-start;
+        
+        .input-icon {
+          margin-top: 13px;
         }
       }
     }
 
-    // ========== PREVIEW ==========
-    .asd-preview {
+    // ========== PREVIEW CARD ==========
+    .asd-preview-card {
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 16px;
-      background: #f9fafb;
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
+      padding: 14px;
+      background: #f0fdf4;
+      border-radius: 12px;
+      border: 1.5px dashed #a7f3d0;
     }
 
     .preview-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 22px;
       flex-shrink: 0;
       overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
       img {
         width: 100%;
@@ -389,51 +415,61 @@ interface Product {
 
     .preview-info {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
 
-      .preview-name {
-        display: block;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 6px;
-      }
+    .preview-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1f2937;
+    }
 
-      .preview-stock {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
+    .preview-stock-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
 
-        .current {
+      .stock-num {
+        font-weight: 500;
+        
+        strong {
+          font-weight: 700;
+        }
+
+        &.current {
           color: #6b7280;
         }
 
-        mat-icon {
-          font-size: 16px;
-          width: 16px;
-          height: 16px;
-          color: #10b981;
-        }
-
-        .new {
-          color: #059669;
-
+        &.new {
+          color: #047857;
+          
           strong {
             color: #10b981;
           }
         }
       }
+
+      .stock-arrow-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: #10b981;
+      }
     }
 
-    // ========== QUANTITY ==========
-    .asd-quantity {
+    // ========== QUANTITY CONTROL ==========
+    .asd-quantity-control {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
     .qty-btn {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       border: 2px solid #e5e7eb;
       border-radius: 12px;
       background: #fff;
@@ -445,28 +481,22 @@ interface Product {
       flex-shrink: 0;
 
       mat-icon {
-        font-size: 22px;
-        width: 22px;
-        height: 22px;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
         color: #6b7280;
       }
 
-      &.plus {
-        &:hover {
-          border-color: #10b981;
-          background: #ecfdf5;
-
-          mat-icon { color: #059669; }
-        }
+      &.increase:hover {
+        border-color: #10b981;
+        background: #ecfdf5;
+        mat-icon { color: #059669; }
       }
 
-      &.minus {
-        &:hover:not(:disabled) {
-          border-color: #ef4444;
-          background: #fef2f2;
-
-          mat-icon { color: #dc2626; }
-        }
+      &.decrease:hover:not(:disabled) {
+        border-color: #ef4444;
+        background: #fef2f2;
+        mat-icon { color: #dc2626; }
       }
 
       &:disabled {
@@ -475,7 +505,7 @@ interface Product {
       }
     }
 
-    .qty-input-wrap {
+    .qty-input-wrapper {
       flex: 1;
       display: flex;
       align-items: center;
@@ -483,7 +513,7 @@ interface Product {
       border-radius: 12px;
       background: #f9fafb;
       padding: 0 16px;
-      height: 48px;
+      height: 46px;
       transition: all 0.2s ease;
 
       &.focused {
@@ -496,50 +526,52 @@ interface Product {
         flex: 1;
         border: none;
         background: transparent;
-        font-size: 18px;
-        font-weight: 600;
+        font-size: 16px;
+        font-weight: 700;
         color: #1f2937;
         text-align: center;
         outline: none;
-        min-width: 60px;
+        min-width: 50px;
 
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button {
           -webkit-appearance: none;
           margin: 0;
         }
-
         -moz-appearance: textfield;
       }
 
-      .qty-unit {
-        font-size: 13px;
+      .qty-suffix {
+        font-size: 12px;
         color: #9ca3af;
-        margin-left: 8px;
+        margin-left: 6px;
+        font-weight: 500;
       }
     }
 
     .qty-presets {
       display: flex;
-      gap: 8px;
-      margin-top: 8px;
+      gap: 6px;
+      margin-top: 4px;
     }
 
     .preset-btn {
       flex: 1;
-      padding: 8px 12px;
+      padding: 8px 10px;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       background: #fff;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       color: #6b7280;
       cursor: pointer;
       transition: all 0.15s ease;
+      font-family: inherit;
 
       &:hover {
         border-color: #10b981;
         color: #059669;
+        background: #ecfdf5;
       }
 
       &.active {
@@ -549,58 +581,29 @@ interface Product {
       }
     }
 
-    // ========== TEXTAREA ==========
-    .asd-textarea-wrap {
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      background: #f9fafb;
-      transition: all 0.2s ease;
-
-      &.focused {
-        border-color: #10b981;
-        background: #fff;
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-      }
-
-      textarea {
-        width: 100%;
-        padding: 14px 16px;
-        border: none;
-        background: transparent;
-        font-size: 14px;
-        color: #1f2937;
-        outline: none;
-        resize: none;
-        font-family: inherit;
-        box-sizing: border-box;
-
-        &::placeholder {
-          color: #9ca3af;
-        }
-      }
-    }
-
     // ========== FOOTER ==========
-    .asd-footer {
+    .sd-footer {
       display: flex;
       justify-content: flex-end;
       gap: 12px;
-      padding: 20px 24px;
+      padding: 16px 24px;
       background: #f9fafb;
       border-top: 1px solid #f3f4f6;
     }
 
-    .asd-btn {
+    .sd-btn {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      padding: 12px 24px;
+      padding: 11px 22px;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      font-family: inherit;
 
       mat-icon {
         font-size: 18px;
@@ -622,22 +625,23 @@ interface Product {
       &.submit {
         background: linear-gradient(135deg, #10b981, #059669);
         color: #fff;
-        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
 
         &:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
 
         &:disabled {
-          opacity: 0.6;
+          opacity: 0.5;
           cursor: not-allowed;
           transform: none;
+          box-shadow: none;
         }
 
         .btn-spinner {
-          width: 18px;
-          height: 18px;
+          width: 16px;
+          height: 16px;
           border: 2px solid rgba(255, 255, 255, 0.3);
           border-top-color: #fff;
           border-radius: 50%;
@@ -657,48 +661,48 @@ interface Product {
         border-radius: 16px;
       }
 
-      .asd-header {
-        padding: 20px;
+      .sd-header {
+        padding: 16px 20px;
         gap: 12px;
       }
 
-      .asd-header-icon {
-        width: 44px;
-        height: 44px;
+      .sd-header-icon {
+        width: 40px;
+        height: 40px;
 
         mat-icon {
-          font-size: 22px;
-          width: 22px;
-          height: 22px;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
         }
       }
 
-      .asd-header-text h2 {
-        font-size: 18px;
+      .sd-header-text h2 {
+        font-size: 16px;
       }
 
-      .asd-close-btn {
+      .sd-close-btn {
         top: 12px;
         right: 12px;
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
       }
 
-      .asd-body {
+      .sd-body {
         padding: 20px;
         gap: 16px;
       }
 
       .qty-btn {
-        width: 44px;
-        height: 44px;
+        width: 40px;
+        height: 40px;
       }
 
-      .qty-input-wrap {
-        height: 44px;
-
+      .qty-input-wrapper {
+        height: 40px;
+        
         input {
-          font-size: 16px;
+          font-size: 15px;
         }
       }
 
@@ -707,70 +711,71 @@ interface Product {
       }
 
       .preset-btn {
-        min-width: calc(33.33% - 6px);
-        flex: 0 0 auto;
+        min-width: calc(33.33% - 4px);
+        flex: 1 0 auto;
+        padding: 6px;
       }
 
-      .asd-footer {
+      .sd-footer {
         padding: 16px 20px;
         flex-direction: column-reverse;
+        gap: 10px;
       }
 
-      .asd-btn {
+      .sd-btn {
         width: 100%;
-        justify-content: center;
-        padding: 14px 24px;
+        padding: 13px 24px;
       }
     }
 
     @media (max-width: 380px) {
-      .asd-header {
-        padding: 16px;
+      .sd-header {
+        padding: 12px 16px;
       }
 
-      .asd-header-icon {
-        width: 40px;
-        height: 40px;
+      .sd-header-icon {
+        width: 36px;
+        height: 36px;
 
         mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
         }
       }
 
-      .asd-header-text {
-        h2 { font-size: 16px; }
-        p { font-size: 12px; }
+      .sd-header-text {
+        h2 { font-size: 15px; }
+        p { font-size: 11px; }
       }
 
-      .asd-body {
+      .sd-body {
         padding: 16px;
       }
 
-      .asd-quantity {
+      .asd-quantity-control {
         gap: 8px;
       }
 
       .qty-btn {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
 
         mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
         }
       }
 
-      .qty-input-wrap {
-        height: 40px;
-        padding: 0 12px;
+      .qty-input-wrapper {
+        height: 36px;
+        padding: 0 10px;
       }
 
       .preset-btn {
-        padding: 6px 8px;
-        font-size: 12px;
+        font-size: 11px;
+        padding: 5px;
       }
     }
   `]
@@ -783,6 +788,7 @@ export class AddStockDialogComponent {
   loading = false;
   qtyFocused = false;
   notesFocused = false;
+  productFocused = false;
 
   constructor(
     public dialogRef: MatDialogRef<AddStockDialogComponent>,
