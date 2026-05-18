@@ -343,23 +343,43 @@ export class DashboardComponent implements OnInit, OnDestroy {
             };
           }
 
-          // Build revenue chart from revenueByMonth
-          if (data.revenueByMonth && data.revenueByMonth.length > 0) {
+          // Build revenue chart from revenueByMonth - Padded with last 6 calendar months for a premium flowing line
+          if (data.revenueByMonth) {
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const last6Months: { label: string; yearMonth: string; revenue: number }[] = [];
+            const d = new Date();
+            
+            for (let i = 5; i >= 0; i--) {
+              const date = new Date(d.getFullYear(), d.getMonth() - i, 1);
+              const mIndex = date.getMonth();
+              const year = date.getFullYear();
+              const monthStr = String(mIndex + 1).padStart(2, '0');
+              
+              last6Months.push({
+                label: months[mIndex],
+                yearMonth: `${year}-${monthStr}`,
+                revenue: 0
+              });
+            }
+
+            data.revenueByMonth.forEach(item => {
+              const found = last6Months.find(m => m.yearMonth === item._id);
+              if (found) {
+                found.revenue = item.revenue;
+              }
+            });
+
             this.revenueChartData = {
-              labels: data.revenueByMonth.map(r => {
-                const [, month] = r._id.split('-');
-                return months[parseInt(month, 10) - 1] || r._id;
-              }),
+              labels: last6Months.map(m => m.label),
               datasets: [{
-                data: data.revenueByMonth.map(r => r.revenue),
+                data: last6Months.map(m => m.revenue),
                 label: 'Revenue',
                 borderColor: '#6C3CE1',
-                backgroundColor: 'rgba(108, 60, 225, 0.06)',
+                backgroundColor: 'rgba(108, 60, 225, 0.08)',
                 fill: true,
                 tension: 0.4,
-                borderWidth: 2,
-                pointRadius: 5,
+                borderWidth: 2.5,
+                pointRadius: 4,
                 pointBackgroundColor: '#6C3CE1',
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2,
