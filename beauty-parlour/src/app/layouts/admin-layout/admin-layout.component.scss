@@ -631,7 +631,19 @@
     z-index: var(--z-fixed, 200);
     height: 100vh;
     height: 100dvh; /* Modern dynamic viewport height for mobile browser toolbars */
-    &.collapsed { width: 0; border: none; }
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch; /* Momentum scrolling */
+    
+    &.collapsed { 
+      width: 0; 
+      border: none; 
+      overflow: hidden !important; 
+    }
+  }
+
+  .sidebar-body {
+    overflow-y: visible !important;
+    flex: none !important;
   }
   .sidebar-overlay.visible { display: block; }
   .main-area { margin-left: 0; width: 100%; }
