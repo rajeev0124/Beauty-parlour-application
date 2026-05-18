@@ -1,10 +1,10 @@
 // Settings Page Styles
 // Theme: Teal/Cyan - Professional & Trustworthy
 
-$primary: #0891b2;
-$primary-dark: #0e7490;
-$primary-light: #22d3ee;
-$gradient: linear-gradient(135deg, $primary 0%, #06b6d4 100%);
+$primary: #7C3AED;      // Royal Purple
+$primary-dark: #5B21B6; // Deep Purple Indigo
+$primary-light: #A855F7;// Vibrant Orchid
+$gradient: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%);
 
 .settings-page {
   padding: 24px;
@@ -910,4 +910,245 @@ $gradient: linear-gradient(135deg, $primary 0%, #06b6d4 100%);
   --mdc-switch-selected-focus-handle-color: #{$primary};
   --mdc-switch-selected-pressed-track-color: #{$primary};
   --mdc-switch-selected-pressed-handle-color: #{$primary};
+}
+
+// =============================================================
+// DARK THEME OVERRIDES FOR PREMIUM GLASSMORPHISM
+// =============================================================
+[data-theme="dark"] .settings-page,
+.dark-theme .settings-page {
+  background: var(--bg-secondary, #0f0a2e) !important;
+  
+  .page-header .header-text h1 {
+    color: #ffffff !important;
+  }
+  
+  .page-header .header-text p {
+    color: #94a3b8 !important;
+  }
+
+  .nav-menu {
+    background: #16123f !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .nav-item {
+    .nav-label {
+      color: #e2e8f0 !important;
+    }
+    
+    .nav-desc {
+      color: #64748b !important;
+    }
+
+    .nav-icon {
+      background: rgba(255, 255, 255, 0.04) !important;
+      mat-icon {
+        color: #94a3b8 !important;
+      }
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    &.active {
+      background: rgba(124, 60, 237, 0.12) !important;
+      border: 1px solid rgba(124, 60, 237, 0.25) !important;
+
+      .nav-icon {
+        background: $gradient !important;
+        mat-icon {
+          color: white !important;
+        }
+      }
+
+      .nav-label {
+        color: #c084fc !important;
+      }
+    }
+  }
+
+  .settings-card {
+    background: #16123f !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, #1f1a4e 0%, #16123f 100%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+    h2 {
+      color: #ffffff !important;
+    }
+
+    p {
+      color: #94a3b8 !important;
+    }
+  }
+
+  .form-label {
+    color: #cbd5e1 !important;
+  }
+
+  .input-wrapper {
+    input, textarea {
+      background: #0f0a2e !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
+      color: #f1f5f9 !important;
+
+      &::placeholder {
+        color: #475569 !important;
+      }
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.15) !important;
+      }
+
+      &:focus {
+        border-color: #a78bfa !important;
+        background: #0f0a2e !important;
+        box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15) !important;
+      }
+    }
+  }
+
+  .form-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .section-title {
+    color: #e2e8f0 !important;
+  }
+
+  .time-card {
+    background: #0f0a2e !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    &:focus-within {
+      border-color: #a78bfa !important;
+      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15) !important;
+    }
+  }
+
+  .time-label {
+    color: #64748b !important;
+  }
+
+  .time-input {
+    color: #ffffff !important;
+  }
+
+  .form-actions {
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #cbd5e1 !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .notification-item, .security-item {
+    background: #0f0a2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.03) !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.02) !important;
+      border-color: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    h4 {
+      color: #f1f5f9 !important;
+    }
+
+    p {
+      color: #94a3b8 !important;
+    }
+  }
+
+  .security-icon {
+    background: rgba(255, 255, 255, 0.05) !important;
+    mat-icon {
+      color: #cbd5e1 !important;
+    }
+  }
+
+  .status-badge {
+    &.disabled {
+      background: rgba(239, 68, 68, 0.15) !important;
+      color: #fca5a5 !important;
+    }
+
+    &.active {
+      background: rgba(16, 185, 129, 0.15) !important;
+      color: #6ee7b7 !important;
+    }
+  }
+
+  .btn-outline {
+    background: transparent !important;
+    border-color: #a78bfa !important;
+    color: #a78bfa !important;
+
+    &:hover {
+      background: rgba(167, 139, 250, 0.08) !important;
+    }
+  }
+
+  .modal-card {
+    background: #16123f !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5) !important;
+
+    .modal-header {
+      background: #1f1a4e !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      
+      h3 {
+        color: #ffffff !important;
+      }
+    }
+
+    label {
+      color: #cbd5e1 !important;
+    }
+
+    input {
+      background: #0f0a2e !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
+      color: #f1f5f9 !important;
+
+      &:focus {
+        border-color: #a78bfa !important;
+      }
+    }
+  }
+
+  .session-record {
+    background: #0f0a2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+    .device-name {
+      color: #f1f5f9 !important;
+    }
+    
+    .device-meta {
+      color: #64748b !important;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+  }
 }
