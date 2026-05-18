@@ -18,6 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
 import { LoyaltyService, LoyaltyAccount, LoyaltyTransaction, LeaderboardEntry } from '../../core/services/loyalty.service';
+import { BonusDialogComponent } from './bonus-dialog.component';
 
 @Component({
   selector: 'app-loyalty',
@@ -267,17 +268,23 @@ export class LoyaltyComponent implements OnInit, OnDestroy {
   }
 
   addBonus(member: LoyaltyAccount): void {
-    const points = prompt('Enter bonus points to add:');
-    if (points && !isNaN(+points)) {
-      const reason = prompt('Enter reason for bonus:') || 'Manual bonus';
-      this.loyaltyService.addBonus(member.user._id, +points, reason).pipe(takeUntil(this.destroy$)).subscribe({
-        next: () => {
-          this.showSuccessToast(`Added ${points} bonus points to ${member.user.name}!`);
-          this.loadData();
-        },
-        error: () => this.snackBar.open('Failed to add bonus', 'Close', { duration: 3000 })
-      });
-    }
+    const dialogRef = this.dialog.open(BonusDialogComponent, {
+      width: '95%',
+      maxWidth: '480px',
+      data: member
+    });
+
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+      if (result && result.points) {
+        this.loyaltyService.addBonus(member.user._id, +result.points, result.reason).pipe(takeUntil(this.destroy$)).subscribe({
+          next: () => {
+            this.showSuccessToast(`Added ${result.points} bonus points to ${member.user.name}!`);
+            this.loadData();
+          },
+          error: () => this.snackBar.open('Failed to add bonus points', 'Close', { duration: 3000 })
+        });
+      }
+    });
   }
 
   viewHistory(member: LoyaltyAccount): void {
