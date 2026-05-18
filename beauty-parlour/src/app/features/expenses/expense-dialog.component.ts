@@ -191,22 +191,29 @@ interface PaymentMethod {
           </div>
         </div>
 
-        <!-- Sleek Receipt Preview Card -->
-        <div class="receipt-preview" [style.--theme-color]="getSelectedCategory()?.color || '#10b981'">
-          <div class="receipt-icon">
-            <mat-icon>{{ getSelectedCategory()?.icon || 'receipt' }}</mat-icon>
-          </div>
-          <div class="receipt-details">
-            <div class="receipt-title">{{ expense.title || 'Expense Summary' }}</div>
-            <div class="receipt-badges">
-              <span class="badge category-badge">{{ getSelectedCategory()?.name || 'Uncategorized' }}</span>
-              <span class="badge method-badge"><mat-icon>{{ getPaymentIcon() }}</mat-icon> {{ getPaymentName() }}</span>
-              <span class="badge date-badge">{{ expense.date | date:'MMM d, y' }}</span>
+        <!-- Beautiful Transaction Summary Card -->
+        <div class="transaction-card" [style.--theme-color]="getSelectedCategory()?.color || '#10b981'">
+          <div class="tc-header">
+            <div class="tc-icon">
+              <mat-icon>{{ getSelectedCategory()?.icon || 'receipt_long' }}</mat-icon>
+            </div>
+            <div class="tc-info">
+              <h4>{{ expense.title || 'New Expense Entry' }}</h4>
+              <p>{{ getSelectedCategory()?.name || 'Uncategorized' }} • {{ expense.date | date:'mediumDate' }}</p>
+            </div>
+            <div class="tc-amount">
+              ₹{{ (expense.amount || 0) | number:'1.0-0' }}
             </div>
           </div>
-          <div class="receipt-total">
-            <span class="total-label">TOTAL</span>
-            <span class="total-amount">₹{{ (expense.amount || 0) | number:'1.0-0' }}</span>
+          <div class="tc-footer">
+            <div class="tc-payment">
+              <mat-icon>{{ getPaymentIcon() }}</mat-icon>
+              <span>{{ getPaymentName() }}</span>
+            </div>
+            <div class="tc-status">
+              <div class="pulse-dot"></div>
+              <span>Ready to Save</span>
+            </div>
           </div>
         </div>
 
@@ -568,123 +575,127 @@ interface PaymentMethod {
       }
     }
 
-    // ========== RECEIPT PREVIEW ==========
-    .receipt-preview {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-top: 8px;
-      padding: 16px 20px;
-      background: #ffffff;
-      border: 1px dashed #cbd5e1;
-      border-radius: 16px;
-      position: relative;
+    // ========== TRANSACTION CARD ==========
+    .transaction-card {
+      margin-top: 12px;
+      background: linear-gradient(145deg, #ffffff, #f8fafc);
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-      flex-wrap: nowrap;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
 
-
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 6px;
-        background: var(--theme-color);
-      }
-
-      .receipt-icon {
-        width: 44px;
-        height: 44px;
-        background: color-mix(in srgb, var(--theme-color) 15%, white);
-        border-radius: 12px;
+      .tc-header {
         display: flex;
         align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
+        gap: 16px;
+        padding: 20px;
+        background: white;
 
-        mat-icon {
-          font-size: 24px;
-          width: 24px;
-          height: 24px;
-          color: var(--theme-color);
+        .tc-icon {
+          width: 48px;
+          height: 48px;
+          background: color-mix(in srgb, var(--theme-color) 12%, white);
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            color: var(--theme-color);
+          }
+        }
+
+        .tc-info {
+          flex: 1;
+          min-width: 0;
+
+          h4 {
+            margin: 0 0 4px 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          p {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+          }
+        }
+
+        .tc-amount {
+          font-size: 20px;
+          font-weight: 800;
+          color: #0f172a;
+          flex-shrink: 0;
         }
       }
 
-      .receipt-details {
-        flex: 1;
-        min-width: 0;
+      .tc-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        background: #f1f5f9;
+        border-top: 1px dashed #cbd5e1;
 
-        .receipt-title {
-          font-size: 15px;
-          font-weight: 700;
-          color: #1e293b;
-          margin-bottom: 6px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .receipt-badges {
+        .tc-payment {
           display: flex;
           align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
+          gap: 6px;
+          color: #475569;
 
-          .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
-            border-radius: 6px;
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+
+          span {
+            font-size: 12px;
+            font-weight: 600;
+          }
+        }
+
+        .tc-status {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          
+          .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            animation: pulse 2s infinite;
+          }
+
+          span {
             font-size: 11px;
             font-weight: 600;
-            
-            &.category-badge {
-              background: color-mix(in srgb, var(--theme-color) 10%, white);
-              color: var(--theme-color);
-            }
-
-            &.method-badge {
-              background: #f1f5f9;
-              color: #475569;
-
-              mat-icon {
-                font-size: 12px;
-                width: 12px;
-                height: 12px;
-              }
-            }
-
-            &.date-badge {
-              color: #64748b;
-              font-weight: 500;
-            }
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
           }
         }
       }
+    }
 
-      .receipt-total {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        flex-shrink: 0;
-
-        .total-label {
-          font-size: 10px;
-          font-weight: 700;
-          color: #94a3b8;
-          letter-spacing: 0.05em;
-        }
-
-        .total-amount {
-          font-size: 22px;
-          font-weight: 800;
-          color: #0f172a;
-          font-variant-numeric: tabular-nums;
-        }
-      }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
     // ========== ACTIONS ==========
@@ -785,26 +796,33 @@ interface PaymentMethod {
         grid-template-columns: repeat(2, 1fr);
       }
 
-      .receipt-preview {
-        padding: 12px 14px;
-        gap: 12px;
+      .transaction-card {
+        .tc-header {
+          padding: 16px;
+          gap: 12px;
+          flex-wrap: wrap;
 
-        .receipt-icon {
-          width: 36px;
-          height: 36px;
-          border-radius: 10px;
+          .tc-icon {
+            width: 40px;
+            height: 40px;
+            
+            mat-icon {
+              font-size: 20px;
+              width: 20px;
+              height: 20px;
+            }
+          }
 
-          mat-icon {
-            font-size: 20px;
-            width: 20px;
-            height: 20px;
+          .tc-amount {
+            width: 100%;
+            text-align: left;
+            padding-left: 52px;
+            margin-top: -8px;
           }
         }
-
-        .receipt-badges {
-          .date-badge {
-            display: none; // Hide on very small screens to save space
-          }
+        
+        .tc-footer {
+          padding: 12px 16px;
         }
       }
 
