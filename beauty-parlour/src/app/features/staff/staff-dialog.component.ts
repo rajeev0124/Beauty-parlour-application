@@ -171,8 +171,16 @@ import { StaffService } from '../../core/services/staff.service';
     }
 
     .mat-mdc-dialog-container:has(.staff-dialog) {
-      --mdc-dialog-container-shape: 20px;
       padding: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .mat-mdc-dialog-container:has(.staff-dialog) .mdc-dialog__surface {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 20px !important;
+      overflow: visible !important;
     }
 
     .staff-dialog {

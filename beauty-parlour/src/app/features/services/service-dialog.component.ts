@@ -185,8 +185,16 @@ import { ServiceService } from '../../core/services/service.service';
     }
 
     .mat-mdc-dialog-container:has(.service-dialog) {
-      --mdc-dialog-container-shape: 20px;
       padding: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .mat-mdc-dialog-container:has(.service-dialog) .mdc-dialog__surface {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 20px !important;
+      overflow: visible !important;
     }
 
     .service-dialog {
