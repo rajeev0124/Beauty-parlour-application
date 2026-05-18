@@ -343,8 +343,8 @@ interface CouponFormData {
     }
 
     .coupon-dialog {
-      width: 580px;
-      max-width: 100%;
+      width: 100%;
+      max-width: 580px;
       background: #fff;
       border-radius: 20px;
       overflow: hidden;

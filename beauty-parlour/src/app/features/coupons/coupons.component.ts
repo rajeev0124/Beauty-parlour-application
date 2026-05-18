@@ -213,7 +213,8 @@ export class CouponsComponent implements OnInit, OnDestroy {
 
   openDialog(coupon?: Coupon) {
     const dialogRef = this.dialog.open(CouponDialogComponent, {
-      width: '500px',
+      width: '95%',
+      maxWidth: '550px',
       data: coupon
     });
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
@@ -238,7 +239,8 @@ export class CouponsComponent implements OnInit, OnDestroy {
 
   delete(coupon: Coupon) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
+      width: '90%',
+      maxWidth: '400px',
       data: {
         title: 'Delete Coupon',
         message: `Are you sure you want to delete coupon "${coupon.code}"? This action cannot be undone.`,

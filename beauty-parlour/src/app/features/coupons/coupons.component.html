@@ -278,7 +278,7 @@
             </div>
 
             <div class="card-body">
-              <div class="card-row">
+              <div class="card-row" style="display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 6px 0; border-bottom: 1px dashed #f9fafb;">
                 <span class="row-label">Discount</span>
                 <span class="discount-badge" [class]="getDiscountClass(coupon)">
                   @if (coupon.discountType === 'percentage') {
@@ -289,14 +289,14 @@
                 </span>
               </div>
 
-              <div class="card-row">
+              <div class="card-row" style="display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 6px 0; border-bottom: 1px dashed #f9fafb;">
                 <span class="row-label">Valid Until</span>
                 <span class="row-value">{{ coupon.endDate | date:'MMM d, y' }}</span>
               </div>
 
-              <div class="card-row">
+              <div class="card-row" style="display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 6px 0; border-bottom: 1px dashed #f9fafb;">
                 <span class="row-label">Usage</span>
-                <div class="usage-cell">
+                <div class="usage-cell" style="display: flex !important; align-items: center !important; gap: 4px !important;">
                   <div class="usage-bar">
                     <div class="usage-fill" [style.width.%]="getUsagePercent(coupon)"></div>
                   </div>
@@ -305,13 +305,13 @@
               </div>
             </div>
 
-            <div class="card-actions">
+            <div class="card-actions" style="display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 8px 10px; background: #f9fafb; border-top: 1px solid #f3f4f6;">
               <mat-slide-toggle
                 [checked]="coupon.isActive"
                 (change)="toggleActive(coupon)"
                 [disabled]="isExpired(coupon)">
               </mat-slide-toggle>
-              <div class="action-group">
+              <div class="action-group" style="display: flex !important; gap: 4px !important;">
                 <button mat-icon-button class="action-btn edit" (click)="openDialog(coupon)">
                   <mat-icon>edit</mat-icon>
                 </button>
