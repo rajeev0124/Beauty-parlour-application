@@ -25,9 +25,7 @@ describe('Beauty Parlour E2E Tests', () => {
 
   beforeAll(async () => {
     // Start in-memory MongoDB
-    mongoServer = await MongoMemoryServer.create({
-      instance: { startupTimeout: 60000 },
-    });
+    mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();
     process.env.MONGODB_URI = mongoUri;
 

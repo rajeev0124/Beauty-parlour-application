@@ -16,9 +16,7 @@ describe('AppointmentsController (e2e)', () => {
   let authToken: string;
 
   beforeAll(async () => {
-    mongo = await MongoMemoryServer.create({
-      instance: { startupTimeout: 60000 },
-    });
+    mongo = await MongoMemoryServer.create();
     const uri = mongo.getUri();
     process.env.MONGODB_URI = uri;
 
