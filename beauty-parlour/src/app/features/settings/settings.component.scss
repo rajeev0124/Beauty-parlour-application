@@ -245,6 +245,17 @@ $gradient: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%);
   padding: 28px;
 }
 
+.w-full {
+  width: 100% !important;
+}
+
+.time-field {
+  margin-top: 4px;
+  ::ng-deep .mdc-text-field--outlined {
+    min-height: 48px !important;
+  }
+}
+
 .form-group {
   margin-bottom: 20px;
 

@@ -69,47 +69,39 @@
           <form [formGroup]="businessForm" (ngSubmit)="saveBusinessSettings()" class="settings-form">
             <!-- Business Name -->
             <div class="form-group full">
-              <label class="form-label">
-                <mat-icon>badge</mat-icon>
-                Business Name
-              </label>
-              <div class="input-wrapper">
-                <input type="text" formControlName="businessName" placeholder="Enter business name">
-              </div>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Business Name</mat-label>
+                <mat-icon matPrefix>badge</mat-icon>
+                <input matInput formControlName="businessName" placeholder="Enter business name">
+              </mat-form-field>
             </div>
 
             <!-- Contact Row -->
             <div class="form-row">
               <div class="form-group">
-                <label class="form-label">
-                  <mat-icon>email</mat-icon>
-                  Email Address
-                </label>
-                <div class="input-wrapper">
-                  <input type="email" formControlName="email" placeholder="business@email.com">
-                </div>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Email Address</mat-label>
+                  <mat-icon matPrefix>email</mat-icon>
+                  <input matInput type="email" formControlName="email" placeholder="business@email.com">
+                </mat-form-field>
               </div>
 
               <div class="form-group">
-                <label class="form-label">
-                  <mat-icon>phone</mat-icon>
-                  Phone Number
-                </label>
-                <div class="input-wrapper">
-                  <input type="tel" formControlName="phone" placeholder="+91 98765 43210">
-                </div>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Phone Number</mat-label>
+                  <mat-icon matPrefix>phone</mat-icon>
+                  <input matInput type="tel" formControlName="phone" placeholder="+91 98765 43210">
+                </mat-form-field>
               </div>
             </div>
 
             <!-- Address -->
             <div class="form-group full">
-              <label class="form-label">
-                <mat-icon>location_on</mat-icon>
-                Address
-              </label>
-              <div class="input-wrapper textarea">
-                <textarea formControlName="address" rows="3" placeholder="Enter full address"></textarea>
-              </div>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Address</mat-label>
+                <mat-icon matPrefix>location_on</mat-icon>
+                <textarea matInput formControlName="address" rows="3" placeholder="Enter full address"></textarea>
+              </mat-form-field>
             </div>
 
             <!-- Business Hours -->
@@ -124,8 +116,10 @@
                     <mat-icon>wb_sunny</mat-icon>
                   </div>
                   <div class="time-content">
-                    <span class="time-label">Opening Time</span>
-                    <input type="time" formControlName="openTime" class="time-input">
+                    <mat-form-field appearance="outline" class="w-full time-field">
+                      <mat-label>Opening Time</mat-label>
+                      <input matInput type="time" formControlName="openTime">
+                    </mat-form-field>
                   </div>
                 </div>
 
@@ -138,8 +132,10 @@
                     <mat-icon>nights_stay</mat-icon>
                   </div>
                   <div class="time-content">
-                    <span class="time-label">Closing Time</span>
-                    <input type="time" formControlName="closeTime" class="time-input">
+                    <mat-form-field appearance="outline" class="w-full time-field">
+                      <mat-label>Closing Time</mat-label>
+                      <input matInput type="time" formControlName="closeTime">
+                    </mat-form-field>
                   </div>
                 </div>
               </div>
@@ -147,11 +143,11 @@
 
             <!-- Save Button -->
             <div class="form-actions">
-              <button type="button" class="btn-secondary" (click)="businessForm.reset()">
+              <button mat-button class="btn-secondary" type="button" (click)="businessForm.reset()">
                 <mat-icon>refresh</mat-icon>
                 Reset
               </button>
-              <button type="submit" class="btn-primary" [disabled]="savingBusiness || businessForm.invalid">
+              <button mat-raised-button color="primary" class="btn-primary" type="submit" [disabled]="savingBusiness || businessForm.invalid">
                 @if (savingBusiness) {
                   <span class="spinner"></span>
                   Saving...
@@ -333,20 +329,29 @@
         </div>
         <form [formGroup]="passwordForm" (ngSubmit)="submitPasswordChange()" class="modal-form">
           <div class="form-group">
-            <label>Current Password</label>
-            <input type="password" formControlName="oldPassword" placeholder="Enter current password">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Current Password</mat-label>
+              <mat-icon matPrefix>lock</mat-icon>
+              <input matInput type="password" formControlName="oldPassword" placeholder="Enter current password">
+            </mat-form-field>
           </div>
           <div class="form-group">
-            <label>New Password</label>
-            <input type="password" formControlName="newPassword" placeholder="Minimum 8 characters">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>New Password</mat-label>
+              <mat-icon matPrefix>vpn_key</mat-icon>
+              <input matInput type="password" formControlName="newPassword" placeholder="Minimum 8 characters">
+            </mat-form-field>
           </div>
           <div class="form-group">
-            <label>Confirm New Password</label>
-            <input type="password" formControlName="confirmPassword" placeholder="Repeat new password">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Confirm New Password</mat-label>
+              <mat-icon matPrefix>check_circle</mat-icon>
+              <input matInput type="password" formControlName="confirmPassword" placeholder="Repeat new password">
+            </mat-form-field>
           </div>
           <div class="modal-actions">
-            <button type="button" class="btn-secondary" (click)="closePasswordChange()">Cancel</button>
-            <button type="submit" class="btn-primary" [disabled]="passwordForm.invalid || savingPassword">
+            <button mat-button class="btn-secondary" type="button" (click)="closePasswordChange()">Cancel</button>
+            <button mat-raised-button color="primary" class="btn-primary" type="submit" [disabled]="passwordForm.invalid || savingPassword">
               @if (savingPassword) {
                 <span class="spinner"></span>
               } @else {
