@@ -1,9 +1,7 @@
 import { Component, Inject, ViewEncapsulation } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -14,37 +12,40 @@ import { ProductService } from '../../core/services/product.service';
   selector: 'app-product-dialog',
   standalone: true,
   imports: [
-    ReactiveFormsModule, MatFormFieldModule,
-    MatInputModule, MatSelectModule,
-    MatSlideToggleModule, MatIconModule, MatSnackBarModule
+    CommonModule,
+    ReactiveFormsModule,
+    MatSlideToggleModule,
+    MatIconModule,
+    MatSnackBarModule
   ],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="product-dialog">
+    <div class="product-dialog" [class.edit-mode]="data">
+      <!-- Decorative shimmer bar -->
+      <div class="dialog-accent-bar"></div>
+
       <!-- Header -->
-      <div class="pd-header">
-        <div class="pd-header-icon">
-          <mat-icon>{{ data ? 'edit' : 'add_shopping_cart' }}</mat-icon>
+      <div class="sd-header">
+        <div class="sd-header-icon" [class.edit]="data">
+          <mat-icon>{{ data ? 'edit_note' : 'add_shopping_cart' }}</mat-icon>
         </div>
-        <div class="pd-header-text">
+        <div class="sd-header-text">
           <h2>{{ data ? 'Edit Product' : 'Add New Product' }}</h2>
           <p>{{ data ? 'Update product details' : 'Fill in the product information' }}</p>
         </div>
-        <button class="pd-close-btn" (click)="dialogRef.close()">
+        <button type="button" class="sd-close-btn" (click)="dialogRef.close()" aria-label="Close">
           <mat-icon>close</mat-icon>
         </button>
       </div>
 
       <!-- Body -->
-      <div class="pd-body">
-        <form [formGroup]="form" class="pd-form">
+      <div class="sd-body">
+        <form [formGroup]="form" class="sd-form">
           <!-- Product Name -->
-          <div class="pd-field">
-            <label class="pd-label">
-              <mat-icon>inventory_2</mat-icon>
-              Product Name <span class="required">*</span>
-            </label>
-            <div class="pd-input-wrapper" [class.error]="form.get('name')?.invalid && form.get('name')?.touched" [class.focused]="nameFocused">
+          <div class="sd-field">
+            <label class="sd-label">Product Name <span class="required">*</span></label>
+            <div class="sd-input-wrapper" [class.error]="form.get('name')?.invalid && form.get('name')?.touched" [class.focused]="nameFocused">
+              <mat-icon class="input-icon">inventory_2</mat-icon>
               <input 
                 type="text" 
                 formControlName="name" 
@@ -53,7 +54,7 @@ import { ProductService } from '../../core/services/product.service';
                 (blur)="nameFocused = false">
             </div>
             @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
-              <span class="pd-error">
+              <span class="sd-error">
                 <mat-icon>error</mat-icon>
                 Product name is required
               </span>
@@ -61,57 +62,41 @@ import { ProductService } from '../../core/services/product.service';
           </div>
 
           <!-- Category -->
-          <div class="pd-field">
-            <label class="pd-label">
-              <mat-icon>category</mat-icon>
-              Category <span class="required">*</span>
-            </label>
-            <mat-form-field appearance="outline" class="pd-select">
-              <mat-select formControlName="category" placeholder="Select category">
-                <mat-option value="skin">
-                  <span class="cat-option">🧴 Skin Care</span>
-                </mat-option>
-                <mat-option value="hair">
-                  <span class="cat-option">💇 Hair Care</span>
-                </mat-option>
-                <mat-option value="nails">
-                  <span class="cat-option">💅 Nail Care</span>
-                </mat-option>
-                <mat-option value="makeup">
-                  <span class="cat-option">💄 Makeup</span>
-                </mat-option>
-                <mat-option value="body">
-                  <span class="cat-option">🧖 Body Care</span>
-                </mat-option>
-                <mat-option value="fragrance">
-                  <span class="cat-option">🌸 Fragrance</span>
-                </mat-option>
-                <mat-option value="tools">
-                  <span class="cat-option">✂️ Tools</span>
-                </mat-option>
-                <mat-option value="accessories">
-                  <span class="cat-option">💎 Accessories</span>
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+          <div class="sd-field">
+            <label class="sd-label">Category <span class="required">*</span></label>
+            <div class="sd-input-wrapper" [class.error]="form.get('category')?.invalid && form.get('category')?.touched" [class.focused]="categoryFocused">
+              <mat-icon class="input-icon">category</mat-icon>
+              <select 
+                formControlName="category"
+                (focus)="categoryFocused = true"
+                (blur)="categoryFocused = false">
+                <option value="" disabled>Select category</option>
+                <option value="skin">🧴 Skin Care</option>
+                <option value="hair">💇 Hair Care</option>
+                <option value="nails">💅 Nail Care</option>
+                <option value="makeup">💄 Makeup</option>
+                <option value="body">🧖 Body Care</option>
+                <option value="fragrance">🌸 Fragrance</option>
+                <option value="tools">✂️ Tools</option>
+                <option value="accessories">💎 Accessories</option>
+              </select>
+              <mat-icon class="select-arrow">expand_more</mat-icon>
+            </div>
             @if (form.get('category')?.hasError('required') && form.get('category')?.touched) {
-              <span class="pd-error">
+              <span class="sd-error">
                 <mat-icon>error</mat-icon>
                 Category is required
               </span>
             }
           </div>
 
-          <!-- Price & Stock Row -->
-          <div class="pd-row">
+          <!-- Price & Stock Grid -->
+          <div class="sd-row">
             <!-- Price -->
-            <div class="pd-field">
-              <label class="pd-label">
-                <mat-icon>currency_rupee</mat-icon>
-                Price <span class="required">*</span>
-              </label>
-              <div class="pd-input-wrapper price-input" [class.error]="form.get('price')?.invalid && form.get('price')?.touched" [class.focused]="priceFocused">
-                <span class="currency-symbol">₹</span>
+            <div class="sd-field">
+              <label class="sd-label">Price <span class="required">*</span></label>
+              <div class="sd-input-wrapper" [class.error]="form.get('price')?.invalid && form.get('price')?.touched" [class.focused]="priceFocused">
+                <mat-icon class="input-icon">currency_rupee</mat-icon>
                 <input 
                   type="number" 
                   formControlName="price" 
@@ -120,61 +105,55 @@ import { ProductService } from '../../core/services/product.service';
                   (blur)="priceFocused = false">
               </div>
               @if (form.get('price')?.invalid && form.get('price')?.touched) {
-                <span class="pd-error">
+                <span class="sd-error">
                   <mat-icon>error</mat-icon>
-                  Valid price required
+                  Valid price is required
                 </span>
               }
             </div>
 
             <!-- Stock -->
-            <div class="pd-field">
-              <label class="pd-label">
-                <mat-icon>inventory</mat-icon>
-                Stock Quantity <span class="required">*</span>
-              </label>
-              <div class="pd-input-wrapper stock-input" [class.error]="form.get('stock')?.invalid && form.get('stock')?.touched" [class.focused]="stockFocused">
+            <div class="sd-field">
+              <label class="sd-label">Stock Quantity <span class="required">*</span></label>
+              <div class="sd-input-wrapper" [class.error]="form.get('stock')?.invalid && form.get('stock')?.touched" [class.focused]="stockFocused">
+                <mat-icon class="input-icon">inventory</mat-icon>
                 <input 
                   type="number" 
                   formControlName="stock" 
                   placeholder="0"
                   (focus)="stockFocused = true"
                   (blur)="stockFocused = false">
-                <span class="unit-label">units</span>
+                <span class="input-suffix">units</span>
               </div>
               @if (form.get('stock')?.invalid && form.get('stock')?.touched) {
-                <span class="pd-error">
+                <span class="sd-error">
                   <mat-icon>error</mat-icon>
-                  Valid stock required
+                  Valid stock is required
                 </span>
               }
             </div>
           </div>
 
           <!-- Description -->
-          <div class="pd-field">
-            <label class="pd-label">
-              <mat-icon>description</mat-icon>
-              Description
-            </label>
-            <div class="pd-textarea-wrapper" [class.focused]="descFocused">
+          <div class="sd-field">
+            <label class="sd-label">Description <span class="optional">(Optional)</span></label>
+            <div class="sd-input-wrapper textarea" [class.focused]="descFocused">
+              <mat-icon class="input-icon">description</mat-icon>
               <textarea 
                 formControlName="description" 
-                placeholder="Enter product description (optional)"
-                rows="3"
+                rows="3" 
+                placeholder="Enter product description..."
                 (focus)="descFocused = true"
                 (blur)="descFocused = false"></textarea>
             </div>
-            <span class="pd-hint">Brief description of the product features and benefits</span>
+            <span class="sd-hint-text">Brief description of the product features and benefits</span>
           </div>
 
           <!-- Image URL -->
-          <div class="pd-field">
-            <label class="pd-label">
-              <mat-icon>image</mat-icon>
-              Product Image URL
-            </label>
-            <div class="pd-input-wrapper" [class.focused]="imageFocused">
+          <div class="sd-field">
+            <label class="sd-label">Product Image URL <span class="optional">(Optional)</span></label>
+            <div class="sd-input-wrapper" [class.focused]="imageFocused">
+              <mat-icon class="input-icon">image</mat-icon>
               <input 
                 type="url" 
                 formControlName="image" 
@@ -183,7 +162,7 @@ import { ProductService } from '../../core/services/product.service';
                 (blur)="imageFocused = false"
                 (input)="onImageUrlChange()">
             </div>
-            <span class="pd-hint">Enter the URL of the product image</span>
+            <span class="sd-hint-text">Provide a valid image web link for the product card</span>
             @if (imagePreview) {
               <div class="pd-image-preview">
                 <img [src]="imagePreview" alt="Product preview" (error)="imagePreview = ''">
@@ -192,14 +171,14 @@ import { ProductService } from '../../core/services/product.service';
           </div>
 
           <!-- Status Toggle -->
-          <div class="pd-toggle-field">
-            <div class="pd-toggle-info">
-              <div class="pd-toggle-icon" [class.active]="form.get('isActive')?.value">
-                <mat-icon>{{ form.get('isActive')?.value ? 'check_circle' : 'cancel' }}</mat-icon>
+          <div class="sd-toggle-field">
+            <div class="sd-toggle-info">
+              <div class="sd-toggle-icon" [class.available]="form.get('isActive')?.value">
+                <mat-icon>{{ form.get('isActive')?.value ? 'visibility' : 'visibility_off' }}</mat-icon>
               </div>
-              <div class="pd-toggle-text">
-                <span class="pd-toggle-label">Product Status</span>
-                <span class="pd-toggle-desc">{{ form.get('isActive')?.value ? 'Product is visible and available for sale' : 'Product is hidden from catalog' }}</span>
+              <div class="sd-toggle-text">
+                <span class="sd-toggle-label">Product Status</span>
+                <span class="sd-toggle-desc">{{ form.get('isActive')?.value ? 'Product is visible and available for sale' : 'Product is hidden from catalog' }}</span>
               </div>
             </div>
             <mat-slide-toggle formControlName="isActive" color="primary"></mat-slide-toggle>
@@ -208,14 +187,14 @@ import { ProductService } from '../../core/services/product.service';
       </div>
 
       <!-- Footer -->
-      <div class="pd-footer">
-        <button class="pd-btn cancel" (click)="dialogRef.close()">
+      <div class="sd-footer">
+        <button type="button" class="sd-btn cancel" (click)="dialogRef.close()">
           <mat-icon>close</mat-icon>
           Cancel
         </button>
-        <button class="pd-btn submit" (click)="save()" [disabled]="form.invalid">
-          <mat-icon>{{ data ? 'save' : 'add' }}</mat-icon>
-          {{ data ? 'Save Changes' : 'Add Product' }}
+        <button type="button" class="sd-btn submit" (click)="save()" [disabled]="form.invalid">
+          <mat-icon>{{ data ? 'save' : 'add_circle' }}</mat-icon>
+          <span>{{ data ? 'Save Changes' : 'Add Product' }}</span>
         </button>
       </div>
     </div>
@@ -228,70 +207,107 @@ import { ProductService } from '../../core/services/product.service';
     .mat-mdc-dialog-container:has(.product-dialog) {
       --mdc-dialog-container-shape: 20px;
       padding: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .mat-mdc-dialog-container:has(.product-dialog) .mdc-dialog__surface {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 20px !important;
+      overflow: visible !important;
     }
 
     .product-dialog {
-      width: 540px;
+      width: 520px;
       max-width: 100%;
       background: #fff;
       border-radius: 20px;
       overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialog-accent-bar {
+      height: 4px;
+      background: linear-gradient(90deg, #f59e0b, #eab308, #f59e0b);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+    }
+
+    .product-dialog.edit-mode .dialog-accent-bar {
+      background: linear-gradient(90deg, #d97706, #f59e0b, #d97706);
+      background-size: 200% 100%;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
 
     // ========== HEADER ==========
-    .pd-header {
+    .sd-header {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 24px;
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fffbeb 0%, #fff 100%);
+      border-bottom: 1px solid #fef3c7;
       position: relative;
     }
 
-    .pd-header-icon {
-      width: 52px;
-      height: 52px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 14px;
+    .sd-header-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
 
       mat-icon {
-        font-size: 26px;
-        width: 26px;
-        height: 26px;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
         color: #fff;
+      }
+
+      &.edit {
+        background: linear-gradient(135deg, #d97706, #b45309);
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
       }
     }
 
-    .pd-header-text {
+    .sd-header-text {
       flex: 1;
 
       h2 {
         margin: 0;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 700;
-        color: #fff;
+        color: #1f2937;
+        letter-spacing: -0.01em;
       }
 
       p {
-        margin: 4px 0 0;
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.85);
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: #6b7280;
       }
     }
 
-    .pd-close-btn {
+    .sd-close-btn {
       position: absolute;
       top: 16px;
       right: 16px;
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border: none;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -299,165 +315,164 @@ import { ProductService } from '../../core/services/product.service';
       transition: all 0.2s ease;
 
       mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        color: #fff;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #6b7280;
       }
 
       &:hover {
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
       }
     }
 
     // ========== BODY ==========
-    .pd-body {
+    .sd-body {
       padding: 24px;
       max-height: 60vh;
       overflow-y: auto;
     }
 
-    .pd-form {
+    .sd-form {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
-    .pd-row {
+    .sd-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
 
     // ========== FIELD ==========
-    .pd-field {
+    .sd-field {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
-    .pd-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .sd-label {
       font-size: 13px;
       font-weight: 600;
       color: #374151;
-
-      mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-        color: #f59e0b;
-      }
+      margin-bottom: 1px;
 
       .required {
         color: #ef4444;
       }
+
+      .optional {
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 500;
+      }
     }
 
-    .pd-input-wrapper {
+    .sd-input-wrapper {
       position: relative;
+      display: flex;
+      align-items: center;
       border: 2px solid #e5e7eb;
       border-radius: 12px;
       background: #f9fafb;
       transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
+      overflow: hidden;
 
       &.focused {
         border-color: #f59e0b;
         background: #fff;
         box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+        
+        .input-icon {
+          color: #f59e0b;
+        }
       }
 
       &.error {
         border-color: #ef4444;
         background: #fef2f2;
+        
+        .input-icon {
+          color: #ef4444;
+        }
       }
 
-      input {
+      .input-icon {
+        margin-left: 14px;
+        color: #9ca3af;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: color 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      input, select, textarea {
         flex: 1;
-        padding: 14px 16px;
+        width: 100%;
+        padding: 13px 16px 13px 10px;
         border: none;
         background: transparent;
         font-size: 14px;
         color: #1f2937;
         outline: none;
         box-sizing: border-box;
-        min-width: 0;
+        font-family: inherit;
 
         &::placeholder {
           color: #9ca3af;
         }
-
-        &[type="number"] {
-          -moz-appearance: textfield;
-          &::-webkit-outer-spin-button,
-          &::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-          }
-        }
-      }
-
-      &.price-input {
-        .currency-symbol {
-          padding-left: 16px;
-          font-size: 16px;
-          font-weight: 600;
-          color: #6b7280;
-        }
-        input {
-          padding-left: 8px;
-        }
-      }
-
-      &.stock-input {
-        .unit-label {
-          padding-right: 16px;
-          font-size: 13px;
-          color: #9ca3af;
-        }
-      }
-    }
-
-    .pd-textarea-wrapper {
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      background: #f9fafb;
-      transition: all 0.2s ease;
-
-      &.focused {
-        border-color: #f59e0b;
-        background: #fff;
-        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
       }
 
       textarea {
-        width: 100%;
-        padding: 14px 16px;
-        border: none;
-        background: transparent;
-        font-size: 14px;
-        color: #1f2937;
-        outline: none;
         resize: none;
-        font-family: inherit;
-        box-sizing: border-box;
+        line-height: 1.5;
+        padding-top: 13px;
+      }
 
-        &::placeholder {
-          color: #9ca3af;
+      select {
+        appearance: none;
+        cursor: pointer;
+        padding-right: 40px;
+      }
+
+      .select-arrow {
+        position: absolute;
+        right: 14px;
+        color: #9ca3af;
+        pointer-events: none;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .input-suffix {
+        margin-right: 16px;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 500;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      &.textarea {
+        align-items: flex-start;
+        
+        .input-icon {
+          margin-top: 13px;
         }
       }
     }
 
-    .pd-error {
+    .sd-error {
       display: flex;
       align-items: center;
       gap: 6px;
       font-size: 12px;
       color: #ef4444;
+      margin-top: 2px;
 
       mat-icon {
         font-size: 14px;
@@ -466,13 +481,14 @@ import { ProductService } from '../../core/services/product.service';
       }
     }
 
-    .pd-hint {
-      font-size: 12px;
+    .sd-hint-text {
+      font-size: 11px;
       color: #6b7280;
+      margin-top: 1px;
     }
 
     .pd-image-preview {
-      margin-top: 12px;
+      margin-top: 8px;
       border-radius: 12px;
       overflow: hidden;
       border: 2px solid #e5e7eb;
@@ -480,94 +496,50 @@ import { ProductService } from '../../core/services/product.service';
       
       img {
         width: 100%;
-        height: 150px;
+        height: 140px;
         object-fit: cover;
         display: block;
       }
     }
 
-    // ========== SELECT ==========
-    .pd-select {
-      width: 100%;
-
-      .mat-mdc-form-field-subscript-wrapper {
-        display: none;
-      }
-
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: #e5e7eb !important;
-        border-width: 2px !important;
-      }
-
-      .mdc-notched-outline__leading {
-        border-radius: 12px 0 0 12px !important;
-      }
-
-      .mdc-notched-outline__trailing {
-        border-radius: 0 12px 12px 0 !important;
-      }
-
-      &.mat-focused .mdc-notched-outline__leading,
-      &.mat-focused .mdc-notched-outline__notch,
-      &.mat-focused .mdc-notched-outline__trailing {
-        border-color: #f59e0b !important;
-      }
-
-      .mat-mdc-select-trigger {
-        padding: 4px 0;
-      }
-
-      .mat-mdc-form-field-infix {
-        padding: 12px 0 !important;
-        min-height: auto !important;
-      }
-    }
-
-    .cat-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-    }
-
     // ========== TOGGLE ==========
-    .pd-toggle-field {
+    .sd-toggle-field {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
+      padding: 14px 16px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
       border-radius: 12px;
       gap: 16px;
+      margin-top: 4px;
     }
 
-    .pd-toggle-info {
+    .sd-toggle-info {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .pd-toggle-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
+    .sd-toggle-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #fee2e2;
       transition: all 0.2s ease;
+      flex-shrink: 0;
 
       mat-icon {
-        font-size: 22px;
-        width: 22px;
-        height: 22px;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
         color: #dc2626;
       }
 
-      &.active {
+      &.available {
         background: #d1fae5;
 
         mat-icon {
@@ -576,44 +548,46 @@ import { ProductService } from '../../core/services/product.service';
       }
     }
 
-    .pd-toggle-text {
+    .sd-toggle-text {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .pd-toggle-label {
-      font-size: 14px;
+    .sd-toggle-label {
+      font-size: 13px;
       font-weight: 600;
       color: #1f2937;
     }
 
-    .pd-toggle-desc {
-      font-size: 12px;
+    .sd-toggle-desc {
+      font-size: 11px;
       color: #6b7280;
     }
 
     // ========== FOOTER ==========
-    .pd-footer {
+    .sd-footer {
       display: flex;
       justify-content: flex-end;
       gap: 12px;
-      padding: 20px 24px;
+      padding: 16px 24px;
       background: #f9fafb;
       border-top: 1px solid #f3f4f6;
     }
 
-    .pd-btn {
+    .sd-btn {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      padding: 12px 24px;
+      padding: 11px 22px;
       border: none;
       border-radius: 10px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      font-family: inherit;
 
       mat-icon {
         font-size: 18px;
@@ -646,6 +620,7 @@ import { ProductService } from '../../core/services/product.service';
           opacity: 0.5;
           cursor: not-allowed;
           transform: none;
+          box-shadow: none;
         }
       }
     }
@@ -657,71 +632,12 @@ import { ProductService } from '../../core/services/product.service';
         border-radius: 16px;
       }
 
-      .pd-header {
-        padding: 20px;
-        gap: 12px;
-      }
-
-      .pd-header-icon {
-        width: 44px;
-        height: 44px;
-
-        mat-icon {
-          font-size: 22px;
-          width: 22px;
-          height: 22px;
-        }
-      }
-
-      .pd-header-text h2 {
-        font-size: 18px;
-      }
-
-      .pd-close-btn {
-        top: 12px;
-        right: 12px;
-        width: 32px;
-        height: 32px;
-      }
-
-      .pd-body {
-        padding: 20px;
-        max-height: 55vh;
-      }
-
-      .pd-row {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-
-      .pd-input-wrapper input {
-        padding: 12px 14px;
-      }
-
-      .pd-toggle-field {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-
-      .pd-footer {
+      .sd-header {
         padding: 16px 20px;
-        flex-direction: column-reverse;
+        gap: 12px;
       }
 
-      .pd-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 14px 24px;
-      }
-    }
-
-    @media (max-width: 400px) {
-      .pd-header {
-        padding: 16px;
-      }
-
-      .pd-header-icon {
+      .sd-header-icon {
         width: 40px;
         height: 40px;
 
@@ -732,20 +648,55 @@ import { ProductService } from '../../core/services/product.service';
         }
       }
 
-      .pd-header-text {
-        h2 { font-size: 16px; }
-        p { font-size: 12px; }
+      .sd-header-text h2 {
+        font-size: 16px;
       }
 
-      .pd-body {
-        padding: 16px;
+      .sd-close-btn {
+        top: 12px;
+        right: 12px;
+        width: 28px;
+        height: 28px;
       }
 
-      .pd-form {
+      .sd-body {
+        padding: 20px;
+        max-height: 55vh;
+      }
+
+      .sd-row {
+        grid-template-columns: 1fr;
         gap: 16px;
       }
 
-      .pd-toggle-icon {
+      .sd-input-wrapper input, 
+      .sd-input-wrapper select,
+      .sd-input-wrapper textarea {
+        padding: 11px 14px 11px 10px;
+      }
+
+      .sd-toggle-field {
+        padding: 12px;
+      }
+
+      .sd-footer {
+        padding: 16px 20px;
+        flex-direction: column-reverse;
+        gap: 10px;
+      }
+
+      .sd-btn {
+        width: 100%;
+        padding: 13px 24px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .sd-header {
+        padding: 12px 16px;
+      }
+
+      .sd-header-icon {
         width: 36px;
         height: 36px;
 
@@ -756,8 +707,32 @@ import { ProductService } from '../../core/services/product.service';
         }
       }
 
-      .pd-toggle-label { font-size: 13px; }
-      .pd-toggle-desc { font-size: 11px; }
+      .sd-header-text {
+        h2 { font-size: 15px; }
+        p { font-size: 11px; }
+      }
+
+      .sd-body {
+        padding: 16px;
+      }
+
+      .sd-form {
+        gap: 12px;
+      }
+
+      .sd-toggle-icon {
+        width: 32px;
+        height: 32px;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      .sd-toggle-label { font-size: 12px; }
+      .sd-toggle-desc { font-size: 10px; }
     }
   `]
 })
@@ -768,6 +743,7 @@ export class ProductDialogComponent {
   stockFocused = false;
   descFocused = false;
   imageFocused = false;
+  categoryFocused = false;
   imagePreview: string = '';
 
   constructor(
