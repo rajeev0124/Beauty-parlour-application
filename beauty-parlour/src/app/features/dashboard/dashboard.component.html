@@ -63,86 +63,92 @@
     </div>
   }
 
-  <!-- Stats Grid -->
-  @if (loading) {
-    <div class="stat-grid">
-      @for (i of [1,2,3,4]; track i) {
-        <div class="stat-card skeleton-card">
-          <div class="skeleton skeleton-icon"></div>
-          <div class="skeleton skeleton-label"></div>
-          <div class="skeleton skeleton-value"></div>
-          <div class="skeleton skeleton-trend"></div>
-        </div>
-      }
-    </div>
-  } @else {
-    <div class="stat-grid">
-      @for (stat of stats; track stat.title; let i = $index) {
-        <a class="stat-card" [class]="'stat-' + stat.accent" [routerLink]="stat.link">
-          <div class="stat-glow"></div>
-          <div class="stat-icon-wrap">
-            <mat-icon>{{ stat.icon }}</mat-icon>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">{{ stat.title }}</span>
-            <div class="stat-value">{{ stat.value }}</div>
-            <div class="stat-trend" [class.up]="stat.trend.startsWith('+')" [class.down]="stat.trend.startsWith('-')">
-              <mat-icon>{{ stat.trend.startsWith('+') ? 'trending_up' : 'trending_down' }}</mat-icon>
-              <span>{{ stat.trend }} vs last period</span>
+  <!-- Two Column Layout: Stats and Quick Actions side-by-side -->
+  <div class="dashboard-row">
+    <!-- Left Box: Stats -->
+    <div class="dashboard-col stats-col">
+      <h3 class="dashboard-col-title">Performance Overview</h3>
+      @if (loading) {
+        <div class="stat-grid">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="stat-card skeleton-card">
+              <div class="skeleton skeleton-icon"></div>
+              <div class="skeleton skeleton-label"></div>
+              <div class="skeleton skeleton-value"></div>
+              <div class="skeleton skeleton-trend"></div>
             </div>
-          </div>
-          <div class="stat-arrow">
-            <mat-icon>arrow_forward</mat-icon>
-          </div>
-        </a>
+          }
+        </div>
+      } @else {
+        <div class="stat-grid">
+          @for (stat of stats; track stat.title; let i = $index) {
+            <a class="stat-card" [class]="'stat-' + stat.accent" [routerLink]="stat.link">
+              <div class="stat-glow"></div>
+              <div class="stat-icon-wrap">
+                <mat-icon>{{ stat.icon }}</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">{{ stat.title }}</span>
+                <div class="stat-value">{{ stat.value }}</div>
+                <div class="stat-trend" [class.up]="stat.trend.startsWith('+')" [class.down]="stat.trend.startsWith('-')">
+                  <mat-icon>{{ stat.trend.startsWith('+') ? 'trending_up' : 'trending_down' }}</mat-icon>
+                  <span>{{ stat.trend }} vs last period</span>
+                </div>
+              </div>
+              <div class="stat-arrow">
+                <mat-icon>arrow_forward</mat-icon>
+              </div>
+            </a>
+          }
+        </div>
       }
     </div>
-  }
 
-  <!-- Quick Actions -->
-  <div class="quick-section">
-    <h3 class="quick-title">Quick Actions</h3>
-    <div class="quick-actions">
-      <a class="quick-card" routerLink="/admin/appointments">
-        <div class="quick-icon purple">
-          <mat-icon>event_note</mat-icon>
-        </div>
-        <div class="quick-info">
-          <span class="quick-name">Appointments</span>
-          <span class="quick-desc">Manage bookings</span>
-        </div>
-        <mat-icon class="quick-arrow">chevron_right</mat-icon>
-      </a>
-      <a class="quick-card" routerLink="/admin/customers">
-        <div class="quick-icon blue">
-          <mat-icon>people</mat-icon>
-        </div>
-        <div class="quick-info">
-          <span class="quick-name">Customers</span>
-          <span class="quick-desc">View clients</span>
-        </div>
-        <mat-icon class="quick-arrow">chevron_right</mat-icon>
-      </a>
-      <a class="quick-card" routerLink="/admin/services">
-        <div class="quick-icon amber">
-          <mat-icon>auto_awesome</mat-icon>
-        </div>
-        <div class="quick-info">
-          <span class="quick-name">Services</span>
-          <span class="quick-desc">Edit offerings</span>
-        </div>
-        <mat-icon class="quick-arrow">chevron_right</mat-icon>
-      </a>
-      <a class="quick-card" routerLink="/admin/staff">
-        <div class="quick-icon green">
-          <mat-icon>badge</mat-icon>
-        </div>
-        <div class="quick-info">
-          <span class="quick-name">Staff</span>
-          <span class="quick-desc">Manage team</span>
-        </div>
-        <mat-icon class="quick-arrow">chevron_right</mat-icon>
-      </a>
+    <!-- Right Box: Quick Actions -->
+    <div class="dashboard-col quick-col">
+      <h3 class="dashboard-col-title">Quick Actions</h3>
+      <div class="quick-actions">
+        <a class="quick-card" routerLink="/admin/appointments">
+          <div class="quick-icon purple">
+            <mat-icon>event_note</mat-icon>
+          </div>
+          <div class="quick-info">
+            <span class="quick-name">Appointments</span>
+            <span class="quick-desc">Manage bookings</span>
+          </div>
+          <mat-icon class="quick-arrow">chevron_right</mat-icon>
+        </a>
+        <a class="quick-card" routerLink="/admin/customers">
+          <div class="quick-icon blue">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="quick-info">
+            <span class="quick-name">Customers</span>
+            <span class="quick-desc">View clients</span>
+          </div>
+          <mat-icon class="quick-arrow">chevron_right</mat-icon>
+        </a>
+        <a class="quick-card" routerLink="/admin/services">
+          <div class="quick-icon amber">
+            <mat-icon>auto_awesome</mat-icon>
+          </div>
+          <div class="quick-info">
+            <span class="quick-name">Services</span>
+            <span class="quick-desc">Edit offerings</span>
+          </div>
+          <mat-icon class="quick-arrow">chevron_right</mat-icon>
+        </a>
+        <a class="quick-card" routerLink="/admin/staff">
+          <div class="quick-icon green">
+            <mat-icon>badge</mat-icon>
+          </div>
+          <div class="quick-info">
+            <span class="quick-name">Staff</span>
+            <span class="quick-desc">Manage team</span>
+          </div>
+          <mat-icon class="quick-arrow">chevron_right</mat-icon>
+        </a>
+      </div>
     </div>
   </div>
 
