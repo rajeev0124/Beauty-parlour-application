@@ -566,10 +566,11 @@ $radius-xl: 24px;
 
 .field-error {
   font-size: 12px;
-  color: var(--error);
+  color: var(--error, #ef4444);
   display: flex;
   align-items: center;
   gap: 4px;
+  margin-top: 4px;
 }
 
 // Form Actions

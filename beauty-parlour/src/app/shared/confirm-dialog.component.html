@@ -12,11 +12,11 @@
   </div>
   
   <div class="dialog-actions">
-    <button class="dialog-btn dialog-btn-secondary" (click)="dialogRef.close(false)">
+    <button class="dialog-btn dialog-btn-secondary" [disabled]="isClosing" (click)="closeDialog(false)">
       <mat-icon>close</mat-icon>
       {{ data.cancelText || 'Cancel' }}
     </button>
-    <button class="dialog-btn dialog-btn-primary" [ngClass]="data.type || 'danger'" (click)="dialogRef.close(true)">
+    <button class="dialog-btn dialog-btn-primary" [ngClass]="data.type || 'danger'" [disabled]="isClosing" (click)="closeDialog(true)">
       <mat-icon>check</mat-icon>
       {{ data.confirmText || 'Confirm' }}
     </button>

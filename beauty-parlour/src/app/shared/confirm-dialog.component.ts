@@ -24,9 +24,17 @@ export class ConfirmDialogComponent {
     warn: 'error_outline',
     info: 'info'
   };
+  
+  isClosing = false;
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData
   ) {}
+
+  closeDialog(result: boolean): void {
+    if (this.isClosing) return;
+    this.isClosing = true;
+    this.dialogRef.close(result);
+  }
 }
