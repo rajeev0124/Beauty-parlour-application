@@ -4,16 +4,16 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host ""
-Write-Host "🚀 Beauty Parlour Production Deployment" -ForegroundColor Cyan
+Write-Host "[START] Beauty Parlour Production Deployment" -ForegroundColor Cyan
 Write-Host "========================================"  -ForegroundColor Cyan
 Write-Host ""
 
 # Helper functions
-function Write-Success { param([string]$message); Write-Host "✅ $message" -ForegroundColor Green }
-function Write-Error { param([string]$message); Write-Host "❌ $message" -ForegroundColor Red; exit 1 }
-function Write-Warning { param([string]$message); Write-Host "⚠️  $message" -ForegroundColor Yellow }
-function Write-Info { param([string]$message); Write-Host "ℹ️  $message" -ForegroundColor Cyan }
-function Write-Step { param([string]$message); Write-Host "`n$message" -ForegroundColor Blue; Write-Host "════════════════════════════════════════" -ForegroundColor Blue }
+function Write-Success { param([string]$message); Write-Host "[SUCCESS] $message" -ForegroundColor Green }
+function Write-Error { param([string]$message); Write-Host "[ERROR] $message" -ForegroundColor Red; exit 1 }
+function Write-Warning { param([string]$message); Write-Host "[WARNING] $message" -ForegroundColor Yellow }
+function Write-Info { param([string]$message); Write-Host "[INFO] $message" -ForegroundColor Cyan }
+function Write-Step { param([string]$message); Write-Host "`n$message" -ForegroundColor Blue; Write-Host "========================================" -ForegroundColor Blue }
 
 # Step 1: Check Git Status
 Write-Step "Step 1: Checking Git Status"
@@ -96,7 +96,7 @@ try {
 # Final Summary
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
-Write-Host "🎉 Deployment Complete!" -ForegroundColor Green
+Write-Host "[SUCCESS] Deployment Complete!" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "Your Beauty Parlour application is now live:" -ForegroundColor Green
