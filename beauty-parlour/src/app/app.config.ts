@@ -1,4 +1,9 @@
-import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners, ErrorHandler } from '@angular/core';
+import {
+  ApplicationConfig,
+  APP_INITIALIZER,
+  provideBrowserGlobalErrorListeners,
+  ErrorHandler,
+} from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
@@ -9,6 +14,7 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { FirebaseService } from './core/services/firebase.service';
 import { GlobalErrorHandler } from './core/services/error-handler.service';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 // Factory that eagerly initializes Firebase on app startup
 function initializeFirebase(firebaseService: FirebaseService) {
@@ -27,7 +33,8 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeFirebase,
       deps: [FirebaseService],
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+    provideClientHydration(withEventReplay()),
+  ],
 };
