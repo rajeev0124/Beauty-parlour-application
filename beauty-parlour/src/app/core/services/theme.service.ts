@@ -23,7 +23,9 @@ export class ThemeService {
     effect(() => {
       const theme = this.currentTheme();
       this.applyTheme(theme);
-      localStorage.setItem(this.STORAGE_KEY, theme);
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(this.STORAGE_KEY, theme);
+      }
     });
   }
 
@@ -47,9 +49,11 @@ export class ThemeService {
    * Get stored theme from localStorage
    */
   private getStoredTheme(): Theme {
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored === 'light' || stored === 'dark' || stored === 'system') {
-      return stored;
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored === 'light' || stored === 'dark' || stored === 'system') {
+        return stored;
+      }
     }
     return 'system';
   }
@@ -62,15 +66,19 @@ export class ThemeService {
     if (theme === 'dark') return true;
     if (theme === 'light') return false;
     // System preference
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
   }
 
   /**
    * Apply theme to document
    */
   private applyTheme(theme: Theme): void {
+    if (typeof document === 'undefined') return;
     const isDark = theme === 'dark' || 
-      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      (theme === 'system' && typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
     
     // Apply both class names for backward compatibility
     document.documentElement.classList.toggle('dark-theme', isDark);
@@ -88,6 +96,7 @@ export class ThemeService {
    * Watch for system preference changes
    */
   private watchSystemPreference(): void {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     mediaQuery.addEventListener('change', (e) => {

@@ -112,19 +112,21 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
   loadStoredUser(): void {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        this.user = JSON.parse(storedUser);
-        this.profileForm.patchValue({
-          name: this.user.name || '',
-          email: this.user.email || '',
-          phone: this.user.phone || '',
-          address: this.user.address || ''
-        });
-        this.cdr.detectChanges();
-      } catch (e) {
-        console.error('Failed to parse stored user');
+    if (typeof localStorage !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          this.user = JSON.parse(storedUser);
+          this.profileForm.patchValue({
+            name: this.user.name || '',
+            email: this.user.email || '',
+            phone: this.user.phone || '',
+            address: this.user.address || ''
+          });
+          this.cdr.detectChanges();
+        } catch (e) {
+          console.error('Failed to parse stored user');
+        }
       }
     }
   }
@@ -165,7 +167,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       next: (response: any) => {
         this.user = response;
         // Update localStorage with fresh data
-        localStorage.setItem('user', JSON.stringify(response));
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(response));
+        }
         this.profileForm.patchValue({
           name: this.user.name || '',
           email: this.user.email || '',

@@ -78,9 +78,11 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    const stored = localStorage.getItem('user');
-    if (stored) {
-      this.currentUserSubject.next(JSON.parse(stored));
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        this.currentUserSubject.next(JSON.parse(stored));
+      }
     }
   }
 
