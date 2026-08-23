@@ -241,10 +241,38 @@ export class HomeComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: () => {
-        // Keep fallback data, just mark loading complete
         this.loadingDynamic = false;
         this.cdr.markForCheck();
       }
     });
+  }
+
+  // Liquid Carve Button Pointer Tracking
+  liquidBlobX = 0;
+  liquidBlobY = 0;
+  liquidScale = 0;
+
+  onLiquidPointerEnter(event: PointerEvent): void {
+    const target = event.currentTarget as HTMLElement;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    this.liquidBlobX = event.clientX - (rect.left + rect.width / 2);
+    this.liquidBlobY = event.clientY - (rect.top + rect.height / 2);
+    this.liquidScale = 1;
+    this.cdr.markForCheck();
+  }
+
+  onLiquidPointerMove(event: PointerEvent): void {
+    const target = event.currentTarget as HTMLElement;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    this.liquidBlobX = event.clientX - (rect.left + rect.width / 2);
+    this.liquidBlobY = event.clientY - (rect.top + rect.height / 2);
+    this.cdr.markForCheck();
+  }
+
+  onLiquidPointerLeave(): void {
+    this.liquidScale = 0;
+    this.cdr.markForCheck();
   }
 }
