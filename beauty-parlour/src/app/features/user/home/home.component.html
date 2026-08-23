@@ -225,9 +225,47 @@
               </span>
             </a>
 
-            <button type="button" class="tinore-btn-outline" (click)="skinQuiz.open()">
-              <mat-icon>auto_awesome</mat-icon>
-              <span>60-Sec Skin Quiz</span>
+            <!-- 👁️ Vengence UI Creepy Button for 60-Sec Skin Quiz -->
+            <button 
+              #creepyBtn
+              type="button" 
+              class="creepy-skin-quiz-btn"
+              [class.is-hovered]="isCreepyHovered"
+              (mousemove)="updateCreepyEyes($event, creepyBtn)"
+              (touchmove)="updateCreepyEyes($event, creepyBtn)"
+              (mouseleave)="resetCreepyEyes()"
+              (click)="skinQuiz.open()"
+              aria-label="Take 60-Second Skin Quiz">
+
+              <!-- Animated Blinking Eyes Container (Underneath) -->
+              <span class="creepy-eyes-container" aria-hidden="true">
+                <!-- Left Eye -->
+                <span class="creepy-eye left-eye">
+                  <span 
+                    class="creepy-pupil"
+                    [style.transform]="'translate(calc(-50% + ' + (creepyEyeX * 50) + '%), calc(-50% + ' + (creepyEyeY * 50) + '%))'">
+                  </span>
+                </span>
+                <!-- Right Eye -->
+                <span class="creepy-eye right-eye">
+                  <span 
+                    class="creepy-pupil"
+                    [style.transform]="'translate(calc(-50% + ' + (creepyEyeX * 50) + '%), calc(-50% + ' + (creepyEyeY * 50) + '%))'">
+                  </span>
+                </span>
+              </span>
+
+              <!-- Spring-Rotated Button Cover (Upper Surface) -->
+              <span class="creepy-btn-cover">
+                <mat-icon>auto_awesome</mat-icon>
+                <span>60-Sec Skin Quiz</span>
+              </span>
+
+              <!-- Invisible Layout Spacer for Width/Height -->
+              <span class="creepy-btn-spacer">
+                <mat-icon>auto_awesome</mat-icon>
+                <span>60-Sec Skin Quiz</span>
+              </span>
             </button>
           </div>
         </div>

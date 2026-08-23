@@ -275,4 +275,40 @@ export class HomeComponent implements OnInit {
     this.liquidScale = 0;
     this.cdr.markForCheck();
   }
+
+  // =============================================================
+  // 👁️ CREEPY BUTTON EYE-TRACKING (Vengence UI Port)
+  // =============================================================
+  creepyEyeX = 0;
+  creepyEyeY = 0;
+  isCreepyHovered = false;
+
+  updateCreepyEyes(e: MouseEvent | TouchEvent, btnElem: HTMLElement): void {
+    const userEvent = 'touches' in e ? (e as TouchEvent).touches[0] : (e as MouseEvent);
+    if (!userEvent || !btnElem) return;
+
+    const rect = btnElem.getBoundingClientRect();
+    const eyesCenterX = rect.right - 28;
+    const eyesCenterY = rect.bottom - 16;
+
+    const dx = userEvent.clientX - eyesCenterX;
+    const dy = userEvent.clientY - eyesCenterY;
+    const angle = Math.atan2(-dy, dx) + Math.PI / 2;
+
+    const visionRangeX = 180;
+    const visionRangeY = 75;
+    const distance = Math.hypot(dx, dy);
+
+    this.creepyEyeX = (Math.sin(angle) * Math.min(distance, visionRangeX)) / visionRangeX;
+    this.creepyEyeY = (Math.cos(angle) * Math.min(distance, visionRangeY)) / visionRangeY;
+    this.isCreepyHovered = true;
+    this.cdr.markForCheck();
+  }
+
+  resetCreepyEyes(): void {
+    this.creepyEyeX = 0;
+    this.creepyEyeY = 0;
+    this.isCreepyHovered = false;
+    this.cdr.markForCheck();
+  }
 }

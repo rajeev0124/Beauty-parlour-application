@@ -53,10 +53,12 @@
 
     <!-- Right Utility Actions (Profile, Bag) -->
     <div class="nav-actions tinore-nav-actions">
-      <!-- User Profile Account Trigger -->
+      <!-- User Profile Account Trigger (Option 1 Luxury Capsule Pill) -->
       @if (isLoggedIn) {
-        <button class="tinore-icon-btn user-logged-btn" [matMenuTriggerFor]="userMenu" aria-label="Account">
-          <mat-icon>person</mat-icon>
+        <button class="user-logged-pill-btn" [matMenuTriggerFor]="userMenu" aria-label="Account">
+          <span class="user-avatar-initial">{{ userInitial }}</span>
+          <span class="user-nav-name hide-mobile">{{ userFirstName }}</span>
+          <mat-icon class="dropdown-chevron">expand_more</mat-icon>
         </button>
         <mat-menu #userMenu="matMenu" [class]="'profile-menu'" xPosition="before">
           <div class="nav-menu-header" (click)="$event.stopPropagation()">

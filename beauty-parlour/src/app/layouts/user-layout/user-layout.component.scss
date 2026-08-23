@@ -276,38 +276,103 @@
   align-items: center;
   gap: 16px;
 
+  // Luxury Sign In Pill Button (Option 1)
   .tinore-signin-pill-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     padding: 8px 18px;
-    border-radius: 9999px;
-    background: #1C1C1C;
-    color: #FFFFFF;
+    border-radius: 25px;
+    border: 1.5px solid rgba(185, 56, 110, 0.3);
+    background: rgba(255, 255, 255, 0.98);
+    color: #000000;
     text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
     font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    border: 1.5px solid #1C1C1C;
+    font-weight: 700;
+    letter-spacing: 0.03em;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 2px 8px rgba(28, 28, 28, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 
     mat-icon {
       font-size: 18px;
       width: 18px;
       height: 18px;
+      color: #B9386E;
+      transition: transform 0.2s ease;
     }
 
     &:hover {
-      background: #B9386E;
+      background: linear-gradient(135deg, rgba(185, 56, 110, 0.08) 0%, rgba(201, 116, 138, 0.15) 100%);
       border-color: #B9386E;
-      color: #FFFFFF;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(185, 56, 110, 0.3);
+      color: #B9386E;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(185, 56, 110, 0.2);
+
+      mat-icon {
+        transform: scale(1.1);
+      }
     }
 
     &:active {
       transform: translateY(0);
+    }
+  }
+
+  // Logged In User Capsule Button
+  .user-logged-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px 5px 6px;
+    border-radius: 25px;
+    border: 1.5px solid rgba(185, 56, 110, 0.3);
+    background: rgba(255, 255, 255, 0.98);
+    color: #000000;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+    .user-avatar-initial {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #B9386E 0%, #C9748A 100%);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(185, 56, 110, 0.3);
+    }
+
+    .user-nav-name {
+      color: #000000;
+      letter-spacing: 0.02em;
+    }
+
+    .dropdown-chevron {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #8A7B80;
+      transition: color 0.2s ease;
+    }
+
+    &:hover {
+      border-color: #B9386E;
+      background: rgba(185, 56, 110, 0.06);
+      color: #B9386E;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(185, 56, 110, 0.15);
+
+      .dropdown-chevron {
+        color: #B9386E;
+      }
     }
   }
 
