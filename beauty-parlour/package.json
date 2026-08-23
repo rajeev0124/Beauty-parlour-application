@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "ng-serve": "ng serve --port 4200",
-    "build": "ng build",
+    "build": "ng build --prerender=false",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:beauty-parlour": "node dist/beauty-parlour/server/server.mjs"

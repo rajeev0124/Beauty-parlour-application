@@ -3,9 +3,8 @@
   <div class="brand-panel">
     <div class="brand-content">
       <div class="brand-logo">
-        <mat-icon>spa</mat-icon>
+        <img src="sindhura-logo.jpg" alt="Sindhura Makeovers" class="auth-logo-img">
       </div>
-      <h1 class="brand-title">Beauty Parlour</h1>
       <p class="brand-subtitle">Salon Management System</p>
       <div class="brand-features">
         <div class="feature-item">
@@ -26,7 +25,7 @@
         </div>
       </div>
     </div>
-    <p class="brand-footer-text">&copy; 2026 Beauty Parlour. All rights reserved.</p>
+    <p class="brand-footer-text">&copy; 2026 Sindhura Makeovers. All rights reserved.</p>
   </div>
 
   <!-- Right: Form -->
@@ -83,8 +82,23 @@
           }
         </div>
 
-        <button type="submit" class="signin-btn" [disabled]="loginForm.invalid || loading">
-          @if (loading) {
+        <!-- Server cold-start notice -->
+        @if (serverWaking) {
+          <div class="server-waking-notice">
+            <div class="notice-top">
+              <span class="notice-dot"></span>
+              <strong>Server is starting up ({{ serverElapsed }}s)…</strong>
+            </div>
+            <p>The backend is waking from sleep. Login will work automatically once ready — no action needed.</p>
+            <mat-progress-bar mode="indeterminate" color="accent" style="border-radius:4px;"></mat-progress-bar>
+          </div>
+        }
+
+        <button type="submit" class="signin-btn" [disabled]="loginForm.invalid || loading || serverWaking">
+          @if (serverWaking) {
+            <mat-spinner diameter="18"></mat-spinner>
+            <span>Starting server… ({{ serverElapsed }}s)</span>
+          } @else if (loading) {
             <mat-spinner diameter="18"></mat-spinner>
             <span>Signing in...</span>
           } @else {

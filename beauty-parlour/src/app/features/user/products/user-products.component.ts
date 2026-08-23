@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,17 +6,20 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProductService } from '../../../core/services/product.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
+import { CartService } from '../../../core/services/cart.service';
 import { Product } from '../../../core/models/product.model';
+import { SkinQuizComponent } from '../../../shared/components/skin-quiz/skin-quiz.component';
 
 @Component({
   selector: 'app-user-products',
   standalone: true,
-  imports: [DecimalPipe, MatIconModule, MatButtonModule, MatSnackBarModule],
+  imports: [DecimalPipe, MatIconModule, MatButtonModule, MatSnackBarModule, SkinQuizComponent],
   templateUrl: './user-products.component.html',
   styleUrl: './user-products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserProductsComponent implements OnInit {
+  @ViewChild('skinQuiz') skinQuiz!: SkinQuizComponent;
   activeCategory = 'all';
   loading = true;
   errorMessage = '';
@@ -103,6 +106,7 @@ export class UserProductsComponent implements OnInit {
     private snackBar: MatSnackBar,
     private productService: ProductService,
     private wishlistService: WishlistService,
+    public cartService: CartService,
     private cdr: ChangeDetectorRef,
     private router: Router
   ) {}
@@ -221,10 +225,7 @@ export class UserProductsComponent implements OnInit {
         panelClass: ['info-snackbar']
       });
     } else {
-      this.snackBar.open(`🛒 ${product.name} added to cart!`, 'View Cart', { 
-        duration: 3000,
-        panelClass: ['cart-snackbar']
-      });
+      this.cartService.addItem(product, 1);
     }
   }
 
@@ -276,9 +277,51 @@ export class UserProductsComponent implements OnInit {
     }
   }
 
+  quickViewProduct: any = null;
+  quickViewQty = 1;
+  selectedGalleryImage = '';
+  productGallery: string[] = [];
+
+  openQuickView(product: Product): void {
+    const mainImg = (product as any).displayImage || this.getProductImage(product.category, 0);
+    const catImages = this.productImages[product.category?.toLowerCase()] || this.productImages['default'];
+    
+    // Create a 3-image gallery starting with the main image
+    this.productGallery = [
+      mainImg,
+      ...catImages.filter(img => img !== mainImg).slice(0, 2)
+    ];
+    
+    this.selectedGalleryImage = mainImg;
+    this.quickViewProduct = product;
+    this.quickViewQty = 1;
+    this.cdr.markForCheck();
+  }
+
+  closeQuickView(): void {
+    this.quickViewProduct = null;
+    this.cdr.markForCheck();
+  }
+
+  setQuickViewImage(img: string): void {
+    this.selectedGalleryImage = img;
+  }
+
+  updateQuickViewQty(delta: number): void {
+    const next = this.quickViewQty + delta;
+    if (next >= 1 && next <= (this.quickViewProduct?.stock || 99)) {
+      this.quickViewQty = next;
+    }
+  }
+
+  addQuickViewToCart(): void {
+    if (!this.quickViewProduct) return;
+    this.cartService.addItem(this.quickViewProduct, this.quickViewQty);
+    this.closeQuickView();
+  }
+
   viewProduct(product: Product): void {
-    // TODO: Navigate to product detail page or open modal
-    this.snackBar.open(`Viewing ${product.name}`, 'Close', { duration: 2000 });
+    this.openQuickView(product);
   }
 
   getStars(rating: number): number[] {

@@ -5,6 +5,7 @@
   "scripts": {
     "prestart": "npx kill-port 3000 4200",
     "start": "concurrently -k -n BACKEND,FRONTEND -c blue,green \"npm:backend\" \"npm:frontend\"",
+    "dev": "npm start",
     "backend": "cd backend && npx nest start --watch",
     "frontend": "cd beauty-parlour && npx ng serve --port 4200",
     "build": "concurrently \"npm run build:backend\" \"npm run build:frontend\"",

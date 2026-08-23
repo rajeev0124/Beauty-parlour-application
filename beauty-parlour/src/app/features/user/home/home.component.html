@@ -1,302 +1,483 @@
-<!-- Stunning Hero Banner with Full Content -->
-<section class="hero-banner">
-  <div class="hero-banner-overlay"></div>
-  <div class="hero-banner-container">
-    <div class="hero-banner-left">
-      <span class="hero-banner-badge">
-        <mat-icon>auto_awesome</mat-icon>
-        Trusted by 10,000+ clients
-      </span>
-      <h1 class="hero-banner-title">Your Beauty, <br /><span>Our Passion</span></h1>
-      <p class="hero-banner-desc">Experience premium salon services with expert stylists. From everyday grooming to bridal transformations — we make you shine.</p>
-      <div class="hero-banner-actions">
-        <a routerLink="/book" class="hero-banner-btn primary">
-          <mat-icon>calendar_today</mat-icon>
-          Book Appointment
-        </a>
-        <a routerLink="/services" class="hero-banner-btn secondary">
-          Explore Services
-          <mat-icon>arrow_forward</mat-icon>
-        </a>
-      </div>
-      <div class="hero-banner-stats">
-        <div class="hero-stat-item">
-          <span class="stat-value">10K+</span>
-          <span class="stat-label">Happy Clients</span>
-        </div>
-        <div class="hero-stat-item">
-          <span class="stat-value">50+</span>
-          <span class="stat-label">Expert Stylists</span>
-        </div>
-        <div class="hero-stat-item">
-          <span class="stat-value">120+</span>
-          <span class="stat-label">Services</span>
-        </div>
-        <div class="hero-stat-item">
-          <span class="stat-value">11+</span>
-          <span class="stat-label">Years Experience</span>
-        </div>
-      </div>
-    </div>
-    <div class="hero-banner-right">
-      <div class="hero-service-cards">
-        <div class="hero-service-card card-1">
-          <div class="card-icon">
-            <mat-icon>content_cut</mat-icon>
+<!-- =============================================================
+     TINORE SIGNATURE HERO SECTION (EXACT REFERENCE DESIGN)
+============================================================= -->
+<section class="tinore-hero-section-wrapper">
+  <div class="tinore-hero-outer-frame">
+    <div class="tinore-hero-card hero-card-with-bg">
+      
+      <!-- Background Lady Visual -->
+      <div class="hero-full-bg-image" aria-hidden="true"></div>
+      <div class="hero-bg-gradient-overlay" aria-hidden="true"></div>
+
+      <div class="tinore-hero-content-wrap">
+        <!-- Editorial Headline, CTAs, Social Proof -->
+        <div class="tinore-hero-left">
+          <h1 class="tinore-hero-main-title">
+            <span class="curtain-word cw-1">Reveal Your</span>
+            <br />
+            <span class="script-italic curtain-word cw-2">Natural Beauty</span>
+          </h1>
+
+          <p class="tinore-hero-subtext">
+            Expert stylists, luxurious treatments and personalised care — all under one roof. Visit us and discover a space designed entirely for you.
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="tinore-hero-btn-row">
+            <a routerLink="/book" class="tinore-btn-cube-wrap" aria-label="Book Appointment">
+              <span class="cube-inner">
+                <!-- Face 1 (Front) -->
+                <span class="cube-face cube-face-front">
+                  <mat-icon>calendar_month</mat-icon>
+                  <span>Book Appointment</span>
+                </span>
+                <!-- Face 2 (Flipped on Hover) -->
+                <span class="cube-face cube-face-back">
+                  <span>Reserve Your Slot</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                </span>
+              </span>
+            </a>
+            <a routerLink="/services" class="tinore-btn-slide-wrap" aria-label="Explore Collection">
+              <span class="btn-slide-label-stack">
+                <!-- Invisible natural spacer -->
+                <span class="slide-spacer">Explore Collection</span>
+                <!-- Top resting label (slides up on hover) -->
+                <span class="slide-label slide-label-rest">Explore Collection</span>
+                <!-- Bottom incoming duplicate (slides in on hover) -->
+                <span class="slide-label slide-label-hover">Explore Collection</span>
+              </span>
+              <!-- Animated Badge Icon that swaps on angle -->
+              <span class="btn-slide-badge">
+                <span class="badge-icon-rest">
+                  <mat-icon>arrow_outward</mat-icon>
+                </span>
+                <span class="badge-icon-hover">
+                  <mat-icon>arrow_outward</mat-icon>
+                </span>
+              </span>
+            </a>
           </div>
-          <span>Hair Styling</span>
-        </div>
-        <div class="hero-service-card card-2">
-          <div class="card-icon">
-            <mat-icon>face_retouching_natural</mat-icon>
+
+          <!-- Bottom Left Customer Avatars Social Proof -->
+          <div class="tinore-customer-proof">
+            <div class="customer-avatar-group">
+              <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=faces&q=80" alt="Customer 1" class="c-avatar c-1" />
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=faces&q=80" alt="Customer 2" class="c-avatar c-2" />
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&h=80&fit=crop&crop=faces&q=80" alt="Customer 3" class="c-avatar c-3" />
+            </div>
+            <div class="customer-proof-text">
+              <strong class="proof-headline">Loved by 10,000+ Customers</strong>
+              <span class="proof-sub">Healthy, glowing skin starts here.</span>
+            </div>
           </div>
-          <span>Skin Care</span>
-        </div>
-        <div class="hero-service-card card-3">
-          <div class="card-icon">
-            <mat-icon>spa</mat-icon>
-          </div>
-          <span>Wellness</span>
         </div>
       </div>
-      <div class="hero-glow-effect"></div>
+
     </div>
   </div>
 </section>
 
-<!-- Services Section -->
-<section class="section services-section">
-  <div class="services-bg-pattern"></div>
-  <div class="services-bg-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-  </div>
-  <div class="section-container">
-    <div class="section-header">
-      <div class="section-badge">
-        <span class="badge-line"></span>
-        <span class="badge-text">
-          <mat-icon>auto_awesome</mat-icon>
-          Our Services
-        </span>
-        <span class="badge-line"></span>
-      </div>
-      <h2 class="section-title-premium">Exceptional Beauty <span class="title-highlight">Experiences</span></h2>
-      <p class="section-desc-premium">Discover our curated collection of premium treatments designed to enhance your natural beauty</p>
+<!-- =============================================================
+     MARQUEE TRUST TICKER STRIP
+============================================================= -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <div class="marquee-content">
+      <span class="marquee-item"><mat-icon>star</mat-icon> Award Winning Salon</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>verified</mat-icon> Certified Expert Stylists</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>favorite</mat-icon> 10,000+ Happy Clients</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>schedule</mat-icon> Open 7 Days a Week</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>workspace_premium</mat-icon> Premium Salon Products</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>spa</mat-icon> Personalised Beauty Care</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>local_offer</mat-icon> First Visit 20% Off</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>calendar_month</mat-icon> Book Online Instantly</span>
+      <span class="marquee-dot">·</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="marquee-item"><mat-icon>star</mat-icon> Award Winning Salon</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>verified</mat-icon> Certified Expert Stylists</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>favorite</mat-icon> 10,000+ Happy Clients</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>schedule</mat-icon> Open 7 Days a Week</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>workspace_premium</mat-icon> Premium Salon Products</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>spa</mat-icon> Personalised Beauty Care</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>local_offer</mat-icon> First Visit 20% Off</span>
+      <span class="marquee-dot">·</span>
+      <span class="marquee-item"><mat-icon>calendar_month</mat-icon> Book Online Instantly</span>
+      <span class="marquee-dot">·</span>
     </div>
-    
-    <div class="services-grid-premium">
+  </div>
+</div>
+
+<!-- =============================================================
+     TINORE 3-STEP DAILY RADIANCE ROUTINE
+============================================================= -->
+<section class="tinore-section routine-section">
+  <div class="tinore-container">
+    <div class="tinore-section-header text-center">
+      <div class="tinore-pill-badge">
+        <mat-icon>auto_fix_high</mat-icon>
+        <span>Our Signature Rituals</span>
+      </div>
+      <h2 class="tinore-editorial-heading">Our 3-Step <span class="script-italic">Glow</span> System</h2>
+      <p class="tinore-section-sub">
+        Three carefully crafted salon rituals — cleanse, restore, and radiate. Your complete beauty transformation, one step at a time.
+      </p>
+    </div>
+
+    <!-- Step Navigation Pills -->
+    <div class="routine-step-nav">
+      @for (step of skincareSteps; track step.step; let i = $index) {
+        <button 
+          class="routine-nav-btn" 
+          [class.active]="activeRoutineStep === i"
+          (click)="setRoutineStep(i)">
+          <span class="step-num">{{ step.step }}</span>
+          <span class="step-label">{{ step.subtitle }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- Active Step Showcase -->
+    <div class="routine-showcase-card">
+      <div class="routine-card-grid">
+        <div class="routine-card-img-wrap">
+          <img [src]="skincareSteps[activeRoutineStep].image" [alt]="skincareSteps[activeRoutineStep].title" class="routine-card-img" />
+          <span class="routine-time-tag">
+            <mat-icon>schedule</mat-icon>
+            {{ skincareSteps[activeRoutineStep].time }}
+          </span>
+        </div>
+        <div class="routine-card-content">
+          <span class="routine-step-indicator">STEP {{ skincareSteps[activeRoutineStep].step }}</span>
+          <h3 class="routine-card-title">{{ skincareSteps[activeRoutineStep].title }}</h3>
+          <p class="routine-card-desc">{{ skincareSteps[activeRoutineStep].desc }}</p>
+
+          <div class="routine-highlights">
+            <div class="highlight-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Performed by certified beauty experts</span>
+            </div>
+            <div class="highlight-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Premium salon-grade products only</span>
+            </div>
+            <div class="highlight-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Personalised to your skin type</span>
+            </div>
+          </div>
+
+          <div class="routine-actions">
+            <a routerLink="/products" class="tinore-btn-primary">
+              <mat-icon>shopping_bag</mat-icon>
+              <span>Book This Ritual</span>
+            </a>
+            <button type="button" class="tinore-btn-outline" (click)="skinQuiz.open()">
+              <mat-icon>auto_awesome</mat-icon>
+              <span>60-Sec Skin Quiz</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================
+     CURATED SERVICES & TREATMENTS SHOWCASE
+============================================================= -->
+<section class="tinore-section services-showcase-section">
+  <div class="tinore-container">
+    <div class="tinore-section-header">
+      <div class="header-left">
+        <div class="tinore-pill-badge">
+          <mat-icon>spa</mat-icon>
+          <span>What We Offer</span>
+        </div>
+        <h2 class="tinore-editorial-heading">Curated Beauty <span class="script-italic">Experiences</span></h2>
+      </div>
+      <div class="header-right">
+        <a routerLink="/services" class="tinore-link-arrow">
+          <span>View All Services</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+    </div>
+
+    <!-- Category Switcher Tabs -->
+    <div class="category-tabs-scroll">
+      <div class="category-tabs">
+        @for (cat of categories; track cat) {
+          <button 
+            class="cat-tab-btn" 
+            [class.active]="selectedCategory === cat" 
+            (click)="setCategory(cat)">
+            {{ cat }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="tinore-services-grid">
       @for (service of services; track service.name; let i = $index) {
-        <div class="service-card-premium" [style.--delay]="(i * 100) + 'ms'" [class.is-featured]="service.featured">
-          <div class="card-glow" [style.--glow-color]="service.color"></div>
-          <div class="card-image-container">
-            <img [src]="service.image" [alt]="service.name" class="card-image" loading="lazy">
-            <div class="card-image-gradient"></div>
+        <div class="tinore-service-card" [class.featured-card]="service.featured">
+          <div class="service-card-image-box">
+            <img [src]="service.image" [alt]="service.name" loading="lazy" />
+            <div class="service-price-pill">
+              <span>From ₹{{ service.price }}</span>
+            </div>
             @if (service.featured) {
-              <div class="featured-ribbon">
-                <mat-icon>trending_up</mat-icon>
-                <span>Most Popular</span>
+              <div class="service-popular-pill">
+                <mat-icon>star</mat-icon>
+                <span>Bestseller</span>
               </div>
             }
           </div>
-          <div class="card-icon-wrapper">
-            <div class="card-icon" [style.background]="'linear-gradient(135deg, ' + service.color + ' 0%, ' + service.color + '99 100%)'">
-              <mat-icon>{{ service.icon }}</mat-icon>
+          <div class="service-card-info">
+            <div class="service-meta">
+              <span class="service-icon-bubble" [style.background]="service.color + '15'" [style.color]="service.color">
+                <mat-icon>{{ service.icon }}</mat-icon>
+              </span>
+              <h3 class="service-title">{{ service.name }}</h3>
             </div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">{{ service.name }}</h3>
-            <p class="card-description">{{ service.desc }}</p>
-            <div class="card-divider"></div>
-            <div class="card-footer">
-              <div class="card-pricing">
-                <span class="price-from">From</span>
-                <span class="price-amount">₹{{ service.price }}</span>
-              </div>
-              <a routerLink="/services" class="card-action-btn">
-                <span>Book</span>
-                <mat-icon>arrow_forward</mat-icon>
+            <p class="service-desc">{{ service.desc }}</p>
+            <div class="service-footer-action">
+              <a routerLink="/book" class="service-book-btn">
+                <span>Book Ritual</span>
+                <mat-icon>calendar_today</mat-icon>
               </a>
             </div>
           </div>
         </div>
       }
     </div>
-    
-    <div class="section-footer">
-      <a routerLink="/services" class="explore-all-btn">
-        <span class="btn-content">
-          <mat-icon>grid_view</mat-icon>
-          View All Services
-        </span>
-        <span class="btn-arrow">
-          <mat-icon>arrow_forward</mat-icon>
-        </span>
-      </a>
+  </div>
+</section>
+
+<!-- =============================================================
+     ✨ INTERACTIVE BEFORE & AFTER TRANSFORMATION SHOWCASE
+============================================================= -->
+<section class="tinore-section transformation-section">
+  <div class="tinore-container">
+    <div class="tinore-section-header text-center">
+      <div class="tinore-pill-badge">
+        <mat-icon>compare</mat-icon>
+        <span>Before & After • Real Clients</span>
+      </div>
+      <h2 class="tinore-editorial-heading">See the <span class="script-italic">Transformation</span></h2>
+      <p class="tinore-section-sub">
+        Drag the interactive slider to reveal authentic salon transformations and clinical skincare results.
+      </p>
+    </div>
+
+    <!-- Transformation Tab Switcher -->
+    <div class="transformation-tab-bar">
+      @for (item of transformations; track item.id; let idx = $index) {
+        <button 
+          class="trans-tab-btn" 
+          [class.active]="activeTransformationIndex === idx" 
+          (click)="setTransformation(idx)">
+          <mat-icon>{{ idx === 0 ? 'favorite' : idx === 1 ? 'face' : 'content_cut' }}</mat-icon>
+          <span>{{ item.category }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- Split Image Comparison Box -->
+    <div class="transformation-stage">
+      <div class="comparison-container">
+        <!-- After Image (Base) -->
+        <img [src]="currentTransformation.afterImg" alt="After Transformation" class="comp-img after-image" />
+        <span class="comp-badge after-badge">AFTER</span>
+
+        <!-- Before Image (Clipped) -->
+        <div class="before-image-wrap" [style.width.%]="sliderPosition">
+          <img [src]="currentTransformation.beforeImg" alt="Before Transformation" class="comp-img before-image" />
+          <span class="comp-badge before-badge">BEFORE</span>
+        </div>
+
+        <!-- Divider Line & Handle -->
+        <div class="slider-divider-line" [style.left.%]="sliderPosition">
+          <div class="slider-drag-handle">
+            <mat-icon>unfold_more</mat-icon>
+          </div>
+        </div>
+
+        <!-- Range Slider Input Overlay -->
+        <input 
+          type="range" 
+          min="0" 
+          max="100" 
+          [value]="sliderPosition" 
+          (input)="onSliderInput($event)" 
+          class="slider-range-input" 
+          aria-label="Drag before and after slider" 
+        />
+      </div>
+
+      <!-- Transformation Card Details -->
+      <div class="transformation-info-card">
+        <span class="trans-category-tag">{{ currentTransformation.category }}</span>
+        <h3 class="trans-title">{{ currentTransformation.title }}</h3>
+        <p class="trans-desc">{{ currentTransformation.description }}</p>
+
+        <div class="trans-meta-row">
+          <div class="meta-pill">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ currentTransformation.duration }}</span>
+          </div>
+          <div class="meta-pill">
+            <mat-icon>verified_user</mat-icon>
+            <span>{{ currentTransformation.artist }}</span>
+          </div>
+        </div>
+
+        <div class="trans-actions">
+          <a routerLink="/book" class="tinore-btn-primary">
+            <span>Book This Ritual</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+          <a routerLink="/gallery" class="tinore-btn-outline">
+            <span>Explore Gallery</span>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Why Choose Us -->
-<section class="section why-section">
-  <div class="why-bg-decoration">
-    <div class="decoration-circle circle-1"></div>
-    <div class="decoration-circle circle-2"></div>
-  </div>
-  <div class="section-container">
-    <div class="section-header">
-      <div class="section-badge">
-        <span class="badge-line"></span>
-        <span class="badge-text">
-          <mat-icon>workspace_premium</mat-icon>
-          Why Choose Us
-        </span>
-        <span class="badge-line"></span>
+<!-- =============================================================
+     WHY CHOOSE Sindhura Makeovers — USPs
+============================================================= -->
+<section class="tinore-section ingredients-section">
+  <div class="tinore-container">
+    <div class="tinore-section-header text-center">
+      <div class="tinore-pill-badge">
+        <mat-icon>local_florist</mat-icon>
+        <span>Why Choose Us</span>
       </div>
-      <h2 class="section-title-premium">The <span class="title-highlight">Beauty Parlour</span> Difference</h2>
-      <p class="section-desc-premium">What sets us apart from the rest</p>
+      <h2 class="tinore-editorial-heading">Why Clients <span class="script-italic">Love Us</span></h2>
+      <p class="tinore-section-sub">
+        A Sindhura Makeovers built around you — from your first appointment to your last finishing touch.
+      </p>
     </div>
-    <div class="why-grid-premium">
-      @for (card of whyCards; track card.title; let i = $index) {
-        <div class="why-card-premium" [style.--delay]="(i * 80) + 'ms'">
-          <div class="why-card-inner">
-            <div class="why-icon-premium" [class]="card.accent">
-              <mat-icon>{{ card.icon }}</mat-icon>
-              <div class="icon-ring"></div>
+
+    <div class="ingredients-grid">
+      @for (ing of ingredients; track ing.name) {
+        <div class="ingredient-card">
+          <div class="ingredient-header">
+            <div class="ingredient-icon-wrap">
+              <mat-icon>{{ ing.icon }}</mat-icon>
             </div>
-            <h3 class="why-card-title">{{ card.title }}</h3>
-            <p class="why-card-desc">{{ card.desc }}</p>
-            <div class="why-card-number">{{ (i + 1) | number:'2.0-0' }}</div>
+            <span class="ingredient-tag">{{ ing.tag }}</span>
           </div>
+          <h3 class="ingredient-name">{{ ing.name }}</h3>
+          <p class="ingredient-desc">{{ ing.desc }}</p>
         </div>
       }
     </div>
   </div>
 </section>
 
-<!-- Reviews Section -->
-<section class="section testimonials-section">
-  <div class="testimonials-bg-shapes">
-    <div class="testimonial-shape shape-1"></div>
-    <div class="testimonial-shape shape-2"></div>
-  </div>
-  <div class="section-container">
-    <div class="section-header">
-      <div class="section-badge">
-        <span class="badge-line"></span>
-        <span class="badge-text">
-          <mat-icon>rate_review</mat-icon>
-          Customer Reviews
-        </span>
-        <span class="badge-line"></span>
+<!-- =============================================================
+     CUSTOMER REVIEWS & SOCIAL PROOF
+============================================================= -->
+<section class="tinore-section testimonials-section">
+  <div class="tinore-container">
+    <div class="tinore-section-header text-center">
+      <div class="tinore-pill-badge">
+        <mat-icon>favorite</mat-icon>
+        <span>Client Love</span>
       </div>
-      <h2 class="section-title-premium">What Our <span class="title-highlight">Clients</span> Say</h2>
-      <div class="review-summary-premium">
-        <div class="rating-showcase">
-          <span class="rating-number">{{ reviewStats.avgRating | number:'1.1-1' }}</span>
-          <div class="rating-details">
-            <div class="rating-stars-premium">
-              @for (star of [1,2,3,4,5]; track star) {
-                <mat-icon [class.filled]="star <= reviewStats.avgRating">star</mat-icon>
-              }
-            </div>
-            <span class="rating-text">Based on {{ reviewStats.totalReviews }}+ reviews</span>
-          </div>
+      <h2 class="tinore-editorial-heading">Loved by <span class="script-italic">Our Clients</span></h2>
+      
+      <!-- Rating Summary Pill -->
+      <div class="tinore-rating-pill">
+        <div class="stars-row">
+          @for (s of [1,2,3,4,5]; track s) {
+            <mat-icon class="gold-star">star</mat-icon>
+          }
         </div>
+        <span class="rating-badge-text">{{ reviewStats.avgRating | number:'1.1-1' }} / 5.0 • Based on {{ reviewStats.totalReviews }}+ reviews</span>
       </div>
     </div>
-    <div class="testimonials-grid-premium">
-      @for (review of reviews; track review._id || review.userName; let i = $index) {
-        <div class="testimonial-card-premium" [style.--delay]="(i * 100) + 'ms'">
-          <div class="testimonial-header">
-            <div class="testimonial-avatar-premium">{{ review.userName?.charAt(0) || 'U' }}</div>
-            <div class="testimonial-author-info">
-              <span class="testimonial-name-premium">{{ review.userName }}</span>
-              <span class="testimonial-role-premium">Verified Customer</span>
+
+    <div class="tinore-reviews-grid">
+      @for (review of reviews; track review._id || review.userName) {
+        <div class="tinore-review-card">
+          <div class="review-card-top">
+            <div class="review-avatar">
+              {{ review.userName?.charAt(0) || 'U' }}
             </div>
-            <div class="testimonial-stars-premium">
-              @for (star of [1,2,3,4,5]; track star) {
-                <mat-icon [class.filled]="star <= review.rating">star</mat-icon>
-              }
-            </div>
-          </div>
-          <div class="testimonial-body">
-            <mat-icon class="quote-icon">format_quote</mat-icon>
-            <p class="testimonial-text-premium">{{ review.comment }}</p>
-          </div>
-          @if (review.serviceName) {
-            <div class="testimonial-footer">
-              <span class="testimonial-service-tag">
-                <mat-icon>spa</mat-icon>
-                {{ review.serviceName }}
+            <div class="review-user-info">
+              <span class="review-user-name">{{ review.userName }}</span>
+              <span class="review-badge-verified">
+                <mat-icon>verified</mat-icon> Verified Client
               </span>
             </div>
-          }
-          @if (review.adminReply) {
-            <div class="testimonial-reply-premium">
-              <div class="reply-header">
-                <mat-icon>reply</mat-icon>
-                <span>Response from Beauty Parlour</span>
-              </div>
-              <p>{{ review.adminReply }}</p>
+            <div class="review-stars-single">
+              @for (s of [1,2,3,4,5]; track s) {
+                <mat-icon [class.active-star]="s <= review.rating">star</mat-icon>
+              }
             </div>
-          }
+          </div>
+          <p class="review-quote-text">“{{ review.comment }}”</p>
         </div>
       }
-    </div>
-    <div class="section-footer">
-      <a routerLink="/reviews" class="explore-all-btn secondary-style">
-        <span class="btn-content">
-          <mat-icon>reviews</mat-icon>
-          Read All Reviews
-        </span>
-        <span class="btn-arrow">
-          <mat-icon>arrow_forward</mat-icon>
-        </span>
-      </a>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section-premium">
-  <div class="cta-bg-premium">
-    <div class="cta-shape cta-shape-1"></div>
-    <div class="cta-shape cta-shape-2"></div>
-    <div class="cta-particles">
-      @for (i of [1,2,3,4,5,6]; track i) {
-        <div class="particle" [style.--i]="i"></div>
-      }
-    </div>
-  </div>
-  <div class="section-container">
-    <div class="cta-content-premium">
-      <div class="cta-icon-wrapper">
-        <mat-icon>spa</mat-icon>
+<!-- =============================================================
+     TINORE CTA SECTION
+============================================================= -->
+<section class="tinore-cta-banner">
+  <div class="cta-glow-effect"></div>
+  <div class="tinore-container">
+    <div class="tinore-cta-card">
+      <div class="cta-badge-pill">
+        <mat-icon>auto_awesome</mat-icon>
+        <span>Your Beauty Journey Starts Here</span>
       </div>
-      <h2 class="cta-title">Ready to <span>Glow</span>?</h2>
-      <p class="cta-desc">Book your appointment today and let our experts transform your look</p>
-      <div class="cta-buttons">
-        <a routerLink="/book" class="cta-btn-primary">
-          <mat-icon>calendar_today</mat-icon>
-          Book Appointment
-          <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+      <h2 class="cta-editorial-heading">Experience the <span class="script-italic">Luxe Transformation</span></h2>
+      <p class="cta-body-text">
+        Book your first appointment today and let our expert stylists craft a look that's perfectly you — guaranteed to leave you glowing.
+      </p>
+      <div class="cta-action-row">
+        <a routerLink="/book" class="tinore-btn-cube-wrap" aria-label="Book My Appointment">
+          <span class="cube-inner">
+            <span class="cube-face cube-face-front">
+              <mat-icon>calendar_month</mat-icon>
+              <span>Book My Appointment</span>
+            </span>
+            <span class="cube-face cube-face-back">
+              <span>Reserve Ritual</span>
+              <mat-icon>spa</mat-icon>
+            </span>
+          </span>
         </a>
-        <a href="tel:+919876543210" class="cta-btn-secondary">
-          <mat-icon>phone</mat-icon>
-          Call Now
+        <a routerLink="/products" class="tinore-btn-outline cta-outline">
+          <mat-icon>shopping_bag</mat-icon>
+          <span>Browse Products</span>
         </a>
-      </div>
-      <div class="cta-trust">
-        <div class="trust-avatars">
-          <span class="avatar">P</span>
-          <span class="avatar">M</span>
-          <span class="avatar">A</span>
-          <span class="avatar-more">+</span>
-        </div>
-        <span class="trust-text">Join 10,000+ happy customers</span>
       </div>
     </div>
   </div>
 </section>
+
+<!-- Skin Diagnostic Quiz Modal -->
+<app-skin-quiz #skinQuiz></app-skin-quiz>

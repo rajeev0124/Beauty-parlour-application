@@ -1,0 +1,302 @@
+<div class="cart-page tinore-cart-page">
+  <!-- Hero Section -->
+  <section class="tinore-cart-hero">
+    <div class="tinore-hero-content">
+      <div class="tinore-pill-badge">
+        <mat-icon>shopping_bag</mat-icon>
+        <span>Secure Luxury Checkout</span>
+      </div>
+      <h1 class="tinore-cart-title">Your <span class="tinore-hero-highlight">Beauty Bag & Checkout</span></h1>
+      <p class="tinore-cart-subtitle">Review your curated botanical formulations and complete your bespoke order.</p>
+    </div>
+  </section>
+
+  <div class="tinore-cart-container">
+    @if (orderPlaced && confirmedOrder) {
+      <!-- Order Confirmation View -->
+      <div class="tinore-order-confirmed-view">
+        <div class="confirmed-icon-circle">
+          <mat-icon>verified</mat-icon>
+        </div>
+        <h2 class="confirmed-title">Thank You For Your Order</h2>
+        <p class="confirmed-desc">
+          Your ritual order <strong>#{{ confirmedOrder.orderId }}</strong> has been placed and is being prepared with clinical care. Confirmation sent to <strong>{{ confirmedOrder.shippingDetails.email }}</strong>.
+        </p>
+
+        <div class="confirmed-receipt-card">
+          <div class="receipt-header">
+            <mat-icon>receipt_long</mat-icon>
+            <span>Order Itinerary • {{ confirmedOrder.orderDate | date:'mediumDate' }}</span>
+          </div>
+
+          <div class="receipt-items">
+            @for (item of confirmedOrder.items; track item.product._id) {
+              <div class="receipt-item-row">
+                <div class="r-item-thumb">
+                  <img [src]="$any(item.product).displayImage || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=100&q=80'" [alt]="item.product.name" />
+                </div>
+                <div class="r-item-info">
+                  <span class="r-item-name">{{ item.product.name }}</span>
+                  <span class="r-item-qty">Qty: {{ item.quantity }} × ₹{{ item.product.price | number }}</span>
+                </div>
+                <strong class="r-item-total">₹{{ (item.product.price * item.quantity) | number }}</strong>
+              </div>
+            }
+          </div>
+
+          <div class="receipt-totals-breakdown">
+            <div class="breakdown-row">
+              <span>Subtotal</span>
+              <span>₹{{ confirmedOrder.calculation.subtotal | number }}</span>
+            </div>
+            @if (confirmedOrder.calculation.discount > 0) {
+              <div class="breakdown-row discount-row">
+                <span>Savings / Promo</span>
+                <span>-₹{{ confirmedOrder.calculation.discount | number }}</span>
+              </div>
+            }
+            <div class="breakdown-row">
+              <span>Delivery ({{ confirmedOrder.shippingDetails.city }})</span>
+              <span>{{ confirmedOrder.calculation.shipping === 0 ? 'Complimentary (FREE)' : '₹' + confirmedOrder.calculation.shipping }}</span>
+            </div>
+            <div class="breakdown-row final-total-row">
+              <span>Total Paid</span>
+              <strong>₹{{ confirmedOrder.calculation.total | number }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="confirmed-actions">
+          <a routerLink="/products" class="tinore-btn-primary">
+            <mat-icon>shopping_bag</mat-icon>
+            <span>Explore More Essentials</span>
+          </a>
+          <a routerLink="/profile" class="tinore-btn-outline">
+            <mat-icon>person</mat-icon>
+            <span>View in Profile</span>
+          </a>
+        </div>
+      </div>
+    } @else {
+      @if ((cartService.items$ | async)?.length === 0) {
+        <!-- Empty Bag State -->
+        <div class="tinore-empty-bag-card">
+          <div class="empty-bag-icon">
+            <mat-icon>shopping_bag</mat-icon>
+          </div>
+          <h2>Your Beauty Bag is Empty</h2>
+          <p>Discover our clean botanical formulations and professional salon care to begin your radiant transformation.</p>
+          <a routerLink="/products" class="tinore-btn-primary">
+            <mat-icon>arrow_forward</mat-icon>
+            <span>Explore Products</span>
+          </a>
+        </div>
+      } @else {
+        <!-- Active Checkout Grid -->
+        <div class="checkout-grid-layout" *ngIf="cartService.items$ | async as items">
+          <!-- Left Column: Items, Shipping, Payment -->
+          <div class="checkout-left-col">
+            <!-- 1. Bag Items Review -->
+            <div class="checkout-card">
+              <div class="checkout-card-header">
+                <span class="step-num-pill">1</span>
+                <h3>Items in Your Bag ({{ cartService.totalItems$ | async }})</h3>
+              </div>
+
+              <div class="cart-items-table">
+                @for (item of items; track item.product._id) {
+                  <div class="checkout-item-row">
+                    <div class="item-thumb-box">
+                      <img [src]="$any(item.product).displayImage || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=200&q=80'" [alt]="item.product.name" />
+                    </div>
+                    <div class="item-main-details">
+                      <span class="item-cat-label">{{ item.product.category }}</span>
+                      <h4 class="item-name-heading">{{ item.product.name }}</h4>
+                      <span class="item-price-unit">₹{{ item.product.price | number }}</span>
+                    </div>
+
+                    <!-- Quantity Stepper -->
+                    <div class="item-stepper-wrap">
+                      <div class="stepper-ctrl">
+                        <button (click)="cartService.updateQuantity(item.product._id, item.quantity - 1)">
+                          <mat-icon>remove</mat-icon>
+                        </button>
+                        <span>{{ item.quantity }}</span>
+                        <button (click)="cartService.updateQuantity(item.product._id, item.quantity + 1)">
+                          <mat-icon>add</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+
+                    <strong class="item-line-total">₹{{ (item.product.price * item.quantity) | number }}</strong>
+
+                    <button class="item-remove-btn" (click)="cartService.removeItem(item.product._id)" title="Remove item">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- 2. Shipping Address -->
+            <div class="checkout-card">
+              <div class="checkout-card-header">
+                <span class="step-num-pill">2</span>
+                <h3>Delivery Address</h3>
+              </div>
+
+              <form [formGroup]="checkoutForm" class="shipping-address-form">
+                <div class="form-row-grid">
+                  <div class="tinore-field-wrap">
+                    <label>Recipient Name *</label>
+                    <input type="text" formControlName="fullName" placeholder="e.g. Priya Sharma" class="tinore-input" />
+                  </div>
+                  <div class="tinore-field-wrap">
+                    <label>Phone Number *</label>
+                    <input type="text" formControlName="phone" placeholder="10-digit mobile" class="tinore-input" maxlength="10" />
+                  </div>
+                </div>
+
+                <div class="form-row-grid">
+                  <div class="tinore-field-wrap full-span">
+                    <label>Street Address *</label>
+                    <input type="text" formControlName="streetAddress" placeholder="House/Flat No, Apartment, Landmark" class="tinore-input" />
+                  </div>
+                </div>
+
+                <div class="form-row-grid tri-grid">
+                  <div class="tinore-field-wrap">
+                    <label>City *</label>
+                    <input type="text" formControlName="city" placeholder="City" class="tinore-input" />
+                  </div>
+                  <div class="tinore-field-wrap">
+                    <label>State *</label>
+                    <input type="text" formControlName="state" placeholder="State" class="tinore-input" />
+                  </div>
+                  <div class="tinore-field-wrap">
+                    <label>Pincode *</label>
+                    <input type="text" formControlName="pincode" placeholder="6-digit PIN" class="tinore-input" maxlength="6" />
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- 3. Payment Method -->
+            <div class="checkout-card">
+              <div class="checkout-card-header">
+                <span class="step-num-pill">3</span>
+                <h3>Select Payment Method</h3>
+              </div>
+
+              <div class="payment-options-grid">
+                <label class="pay-option-card" [class.selected]="paymentMethod === 'upi'">
+                  <input type="radio" name="payMethod" value="upi" [(ngModel)]="paymentMethod" />
+                  <div class="pay-info">
+                    <mat-icon>qr_code_2</mat-icon>
+                    <strong>UPI & Instant QR</strong>
+                    <span>Google Pay, PhonePe, Paytm, BHIM</span>
+                  </div>
+                </label>
+
+                <label class="pay-option-card" [class.selected]="paymentMethod === 'card'">
+                  <input type="radio" name="payMethod" value="card" [(ngModel)]="paymentMethod" />
+                  <div class="pay-info">
+                    <mat-icon>credit_card</mat-icon>
+                    <strong>Credit / Debit Card</strong>
+                    <span>Visa, MasterCard, RuPay, Amex</span>
+                  </div>
+                </label>
+
+                <label class="pay-option-card" [class.selected]="paymentMethod === 'cod'">
+                  <input type="radio" name="payMethod" value="cod" [(ngModel)]="paymentMethod" />
+                  <div class="pay-info">
+                    <mat-icon>storefront</mat-icon>
+                    <strong>Pay at Salon on Pickup</strong>
+                    <span>Collect your package in person</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Sticky Summary & Coupons -->
+          <div class="checkout-right-col" *ngIf="cartService.subtotal$ | async as subtotal">
+            <div class="summary-sticky-box" *ngIf="getCalculatedTotal(subtotal) as calc">
+              <h3 class="summary-box-title">Order Summary</h3>
+
+              <!-- Promo Code Box -->
+              <div class="promo-box">
+                <div class="promo-input-row" *ngIf="!appliedCoupon">
+                  <input type="text" placeholder="Promo code (e.g. GLOW15)" [(ngModel)]="couponCode" class="promo-input" />
+                  <button class="promo-apply-btn" (click)="applyCoupon()">Apply</button>
+                </div>
+                @if (appliedCoupon) {
+                  <div class="applied-coupon-pill">
+                    <div class="coupon-tag-info">
+                      <mat-icon>local_offer</mat-icon>
+                      <span>Code <strong>{{ appliedCoupon.code }}</strong> applied!</span>
+                    </div>
+                    <button class="remove-coupon-btn" (click)="removeCoupon()">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+
+              <!-- Loyalty Points Redemption -->
+              <div class="loyalty-redeem-card">
+                <div class="loyalty-text">
+                  <mat-icon>stars</mat-icon>
+                  <div>
+                    <strong>Redeem Loyalty Points</strong>
+                    <span>You have {{ userPoints }} VIP Points</span>
+                  </div>
+                </div>
+                <button class="redeem-toggle-btn" [class.active]="redeemPoints" (click)="togglePointsRedemption()">
+                  {{ redeemPoints ? 'Redeemed -₹130' : 'Redeem' }}
+                </button>
+              </div>
+
+              <!-- Breakdown -->
+              <div class="summary-totals-list">
+                <div class="totals-line">
+                  <span>Bag Subtotal</span>
+                  <span>₹{{ calc.subtotal | number }}</span>
+                </div>
+                @if (calc.discount > 0) {
+                  <div class="totals-line discount">
+                    <span>Discounts & Savings</span>
+                    <span>-₹{{ calc.discount | number }}</span>
+                  </div>
+                }
+                <div class="totals-line">
+                  <span>Estimated Shipping</span>
+                  <span>{{ calc.shipping === 0 ? 'FREE' : '₹' + calc.shipping }}</span>
+                </div>
+                <div class="totals-line grand-total-line">
+                  <span>Total Amount</span>
+                  <strong>₹{{ calc.total | number }}</strong>
+                </div>
+              </div>
+
+              <button class="tinore-btn-primary place-order-btn" [disabled]="isProcessing" (click)="processOrder(items, subtotal)">
+                @if (isProcessing) {
+                  <mat-spinner diameter="20" color="accent"></mat-spinner>
+                  <span>Processing Secure Payment...</span>
+                } @else {
+                  <mat-icon>lock</mat-icon>
+                  <span>Place Order • ₹{{ calc.total | number }}</span>
+                }
+              </button>
+
+              <div class="trust-guarantee-note">
+                <mat-icon>verified_user</mat-icon>
+                <span>256-Bit Encrypted Secure Checkout • 100% Genuine Guarantee</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

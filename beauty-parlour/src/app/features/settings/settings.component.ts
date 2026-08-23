@@ -56,7 +56,7 @@ export class SettingsComponent implements OnInit {
     this.twoFactorEnabled = this.currentUser?.is2FAEnabled || false;
 
     this.businessForm = this.fb.group({
-      businessName: ['Beauty Parlour', Validators.required],
+      businessName: ['Sindhura Makeovers', Validators.required],
       email: [this.currentUser?.email || '', [Validators.required, Validators.email]],
       phone: [this.currentUser?.phone || '', Validators.required],
       address: [this.currentUser?.address || ''],
@@ -119,7 +119,7 @@ export class SettingsComponent implements OnInit {
 
   resetBusinessForm(): void {
     this.businessForm.reset({
-      businessName: this.currentUser?.businessName || 'Beauty Parlour',
+      businessName: this.currentUser?.businessName || 'Sindhura Makeovers',
       email: this.currentUser?.email || '',
       phone: this.currentUser?.phone || '',
       address: this.currentUser?.address || '',

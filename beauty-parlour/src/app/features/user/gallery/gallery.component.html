@@ -1,267 +1,129 @@
-<div class="gallery-page">
-  <!-- Hero Section with Image -->
-  <section class="hero-section">
-    <div class="hero-bg-image"></div>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <div class="hero-badge">
+<div class="gallery-page tinore-gallery-page">
+  <!-- Tinore Lookbook Hero -->
+  <section class="tinore-gallery-hero">
+    <div class="tinore-hero-content">
+      <div class="tinore-pill-badge">
         <mat-icon>auto_awesome</mat-icon>
-        <span>Our Portfolio</span>
+        <span>Couture Portfolios • Master Artistry</span>
       </div>
-      <h1 class="hero-title">Stunning Transformations</h1>
-      <p class="hero-subtitle">Discover the artistry and expertise of our talented team through our collection of beautiful makeovers</p>
+      <h1 class="tinore-gallery-title">The Radiance <span class="tinore-hero-highlight">Lookbook</span></h1>
+      <p class="tinore-gallery-subtitle">
+        Explore our curated portfolio of bridal transformations, editorial hair balayage, and clinical skincare results.
+      </p>
+
+      <!-- Stats Bar -->
+      <div class="tinore-stats-row">
+        @for (s of stats; track s.label) {
+          <div class="stat-pill">
+            <span class="s-val">{{ s.value }}</span>
+            <span class="s-lbl">{{ s.label }}</span>
+          </div>
+        }
+      </div>
     </div>
   </section>
 
-  <!-- Stats Section -->
-  <section class="stats-section">
-    <div class="stats-container">
-      @for (stat of stats; track stat.label) {
-        <div class="stat-card">
-          <div class="stat-icon">
-            <mat-icon>{{ stat.icon }}</mat-icon>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ stat.value }}</span>
-            <span class="stat-label">{{ stat.label }}</span>
-          </div>
-        </div>
-      }
-    </div>
-  </section>
-
-  <!-- Gallery Section -->
-  <section class="gallery-section">
-    <div class="gallery-container">
-      <!-- Section Header -->
-      <div class="section-header">
-        <div class="header-content">
-          <span class="section-tag">
-            <mat-icon>photo_library</mat-icon>
-            Gallery
-          </span>
-          <h2 class="section-title">Our Best Work</h2>
-          <p class="section-desc">Browse through our portfolio of stunning transformations and find your inspiration</p>
-        </div>
-      </div>
-
-      <!-- Category Filter -->
-      <div class="category-tabs">
+  <div class="tinore-gallery-container">
+    <!-- Category Tabs -->
+    <div class="tinore-gallery-tabs">
+      <div class="tabs-scroll-wrap">
         @for (cat of categories; track cat.key) {
-          <button class="tab-btn" 
-                  [class.active]="selectedCategory === cat.key"
-                  (click)="filterItems(cat.key)">
-            <mat-icon>{{ cat.icon }}</mat-icon>
+          <button 
+            class="tinore-cat-tab" 
+            [class.active]="selectedCategory === cat.key"
+            (click)="filterItems(cat.key)">
+            <mat-icon class="cat-icon">{{ cat.icon }}</mat-icon>
             <span>{{ cat.label }}</span>
-            @if (selectedCategory === cat.key) {
-              <span class="tab-indicator"></span>
-            }
           </button>
         }
       </div>
+      <span class="lookbook-count">{{ filteredItems.length }} Portfolio Looks</span>
+    </div>
 
-      <!-- Results Count -->
-      <div class="results-info">
-        <span class="results-count">{{ filteredItems.length }} transformations</span>
-        @if (selectedCategory !== 'All') {
-          <span class="results-category">in {{ selectedCategory }}</span>
-        }
-      </div>
+    <!-- Masonry Lookbook Grid -->
+    <div class="tinore-lookbook-grid">
+      @for (item of filteredItems; track item.id; let idx = $index) {
+        <article class="lookbook-card" [class.featured-item]="item.featured" (click)="openLightbox(item, idx)">
+          <div class="lookbook-media-wrap">
+            <img [src]="item.image" [alt]="item.title" loading="lazy" class="lookbook-img" />
+            <div class="lookbook-overlay">
+              <div class="overlay-top">
+                <span class="look-cat-tag">{{ item.category }}</span>
+                @if (item.featured) {
+                  <span class="look-featured-tag">
+                    <mat-icon>star</mat-icon> Signature
+                  </span>
+                }
+              </div>
 
-      <!-- Gallery Grid -->
-      <div class="gallery-grid">
-        @for (item of filteredItems; track item.id; let i = $index) {
-          <article class="gallery-card" 
-                   [class.featured]="item.featured"
-                   [style.animation-delay]="(i * 60) + 'ms'"
-                   (click)="openLightbox(item, i)">
-            <!-- Image -->
-            <div class="card-image">
-              <img [src]="item.image" [alt]="item.title" loading="lazy">
-              <div class="image-overlay">
-                <div class="overlay-content">
-                  <button class="view-btn">
-                    <mat-icon>zoom_in</mat-icon>
-                    <span>View Details</span>
+              <div class="overlay-bottom">
+                <span class="look-artist">
+                  <mat-icon>verified</mat-icon> {{ item.stylist }}
+                </span>
+                <h3 class="look-title">{{ item.title }}</h3>
+                <p class="look-desc">{{ item.description }}</p>
+
+                <div class="look-actions" (click)="$event.stopPropagation()">
+                  <a routerLink="/book" [queryParams]="{service: item.service}" class="tinore-book-look-btn">
+                    <span>Book This Look</span>
+                    <mat-icon>arrow_forward</mat-icon>
+                  </a>
+                  <button class="expand-btn" (click)="openLightbox(item, idx)" title="View Fullscreen">
+                    <mat-icon>fullscreen</mat-icon>
                   </button>
                 </div>
               </div>
-              <!-- Badges -->
-              @if (item.featured) {
-                <span class="featured-badge">
-                  <mat-icon>star</mat-icon>
-                  Featured
-                </span>
-              }
-              <span class="category-badge">
-                <mat-icon>{{ getCategoryIcon(item.category) }}</mat-icon>
-                {{ item.category }}
-              </span>
-              <!-- Before/After indicator -->
-              <div class="before-after-indicator">
-                <mat-icon>compare</mat-icon>
-              </div>
             </div>
-            
-            <!-- Content -->
-            <div class="card-content">
-              <h3 class="card-title">{{ item.title }}</h3>
-              <p class="card-service">{{ item.service }}</p>
-              <div class="card-footer">
-                <div class="stylist-info">
-                  <div class="stylist-avatar">
-                    {{ item.stylist.charAt(0) }}
-                  </div>
-                  <span class="stylist-name">{{ item.stylist }}</span>
-                </div>
-                <button class="card-action">
-                  <mat-icon>arrow_forward</mat-icon>
-                </button>
-              </div>
-            </div>
-          </article>
-        }
-      </div>
-
-      @if (filteredItems.length === 0) {
-        <div class="empty-state">
-          <div class="empty-icon">
-            <mat-icon>photo_library</mat-icon>
           </div>
-          <h3>No items found</h3>
-          <p>Try selecting a different category to explore more transformations</p>
-          <button class="browse-btn" (click)="filterItems('All')">
-            <mat-icon>apps</mat-icon>
-            View All Work
-          </button>
-        </div>
+        </article>
       }
     </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="cta-section">
-    <div class="cta-bg"></div>
-    <div class="cta-container">
-      <div class="cta-content">
-        <span class="cta-tag">
-          <mat-icon>calendar_today</mat-icon>
-          Book Now
-        </span>
-        <h2>Ready for Your Transformation?</h2>
-        <p>Let our expert stylists create magic for you. Book your appointment today and start your beauty journey.</p>
-        <div class="cta-actions">
-          <a routerLink="/book" class="cta-btn primary">
-            <mat-icon>event</mat-icon>
-            <span>Book Appointment</span>
-          </a>
-          <a routerLink="/services" class="cta-btn secondary">
-            <span>View Services</span>
-            <mat-icon>arrow_forward</mat-icon>
-          </a>
-        </div>
-      </div>
-      <div class="cta-visual">
-        <div class="visual-card">
-          <mat-icon>spa</mat-icon>
-          <span>Premium Services</span>
-        </div>
-        <div class="visual-card">
-          <mat-icon>verified</mat-icon>
-          <span>Expert Stylists</span>
-        </div>
-        <div class="visual-card">
-          <mat-icon>favorite</mat-icon>
-          <span>100% Satisfaction</span>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- Lightbox Modal -->
-@if (selectedItem) {
-  <div class="lightbox" (click)="closeLightbox()">
-    <div class="lightbox-backdrop"></div>
-    
-    <!-- Navigation -->
-    <button class="lightbox-nav prev" (click)="navigateLightbox('prev'); $event.stopPropagation()" aria-label="Previous image">
-      <mat-icon>chevron_left</mat-icon>
-    </button>
-    <button class="lightbox-nav next" (click)="navigateLightbox('next'); $event.stopPropagation()" aria-label="Next image">
-      <mat-icon>chevron_right</mat-icon>
-    </button>
-    
-    <!-- Close Button -->
-    <button class="lightbox-close" (click)="closeLightbox()" aria-label="Close lightbox">
-      <mat-icon>close</mat-icon>
-    </button>
-    
-    <!-- Counter -->
-    <div class="lightbox-counter">
-      {{ lightboxIndex + 1 }} / {{ filteredItems.length }}
-    </div>
-    
-    <div class="lightbox-content" (click)="$event.stopPropagation()">
-      <!-- Before/After Images -->
-      <div class="lightbox-images">
-        <div class="image-compare">
-          <div class="compare-side before">
-            <img [src]="selectedItem.beforeImage" [alt]="'Before - ' + selectedItem.title">
-            <span class="compare-label">Before</span>
-          </div>
-          <div class="compare-divider">
-            <div class="divider-icon">
-              <mat-icon>compare_arrows</mat-icon>
-            </div>
-          </div>
-          <div class="compare-side after">
-            <img [src]="selectedItem.afterImage" [alt]="'After - ' + selectedItem.title">
-            <span class="compare-label">After</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Info Panel -->
-      <div class="lightbox-info">
-        <div class="info-header">
-          <span class="info-category">
-            <mat-icon>{{ getCategoryIcon(selectedItem.category) }}</mat-icon>
-            {{ selectedItem.category }}
-          </span>
-          @if (selectedItem.featured) {
-            <span class="info-featured">
-              <mat-icon>star</mat-icon>
-              Featured
-            </span>
-          }
-        </div>
-        
-        <h2 class="info-title">{{ selectedItem.title }}</h2>
-        <p class="info-desc">{{ selectedItem.description }}</p>
-        
-        <div class="info-details">
-          <div class="detail-item">
-            <mat-icon>spa</mat-icon>
-            <div class="detail-content">
-              <span class="detail-label">Service</span>
-              <span class="detail-value">{{ selectedItem.service }}</span>
-            </div>
-          </div>
-          <div class="detail-item">
-            <mat-icon>person</mat-icon>
-            <div class="detail-content">
-              <span class="detail-label">Stylist</span>
-              <span class="detail-value">{{ selectedItem.stylist }}</span>
-            </div>
-          </div>
-        </div>
-        
-        <a routerLink="/book" class="info-cta" (click)="closeLightbox()">
-          <span>Book This Service</span>
-          <mat-icon>arrow_forward</mat-icon>
-        </a>
-      </div>
-    </div>
   </div>
-}
+
+  <!-- Fullscreen Lookbook Lightbox Modal -->
+  @if (selectedItem) {
+    <div class="tinore-lightbox-backdrop" (click)="closeLightbox()"></div>
+    <div class="tinore-lightbox-modal">
+      <button class="lightbox-close-btn" (click)="closeLightbox()" aria-label="Close lightbox">
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <div class="lightbox-content-card" (click)="$event.stopPropagation()">
+        <!-- Image Area -->
+        <div class="lightbox-img-stage">
+          <img [src]="selectedItem.image" [alt]="selectedItem.title" class="lightbox-main-img" />
+          <span class="lightbox-cat-badge">{{ selectedItem.category }}</span>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="lightbox-info-sidebar">
+          <div class="lb-header">
+            <span class="lb-artist-badge">
+              <mat-icon>brush</mat-icon> Styled by {{ selectedItem.stylist }}
+            </span>
+            <h2 class="lb-title">{{ selectedItem.title }}</h2>
+            <p class="lb-desc">{{ selectedItem.description }}</p>
+          </div>
+
+          <div class="lb-service-pill">
+            <mat-icon>spa</mat-icon>
+            <div>
+              <span class="pill-label">Recommended Treatment</span>
+              <strong class="pill-service">{{ selectedItem.service }}</strong>
+            </div>
+          </div>
+
+          <div class="lb-actions">
+            <a routerLink="/book" [queryParams]="{service: selectedItem.service}" (click)="closeLightbox()" class="tinore-btn-primary">
+              <mat-icon>calendar_month</mat-icon>
+              <span>Book This Exact Look</span>
+            </a>
+            <button class="tinore-btn-outline" (click)="closeLightbox()">
+              <span>Close View</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

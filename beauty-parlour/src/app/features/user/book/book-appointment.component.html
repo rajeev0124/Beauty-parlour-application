@@ -1,76 +1,86 @@
-<div class="book-page">
-  <!-- Page Hero -->
-  <div class="page-hero">
-    <div class="page-hero-content">
-      <h1>Book an Appointment</h1>
-      <p>Choose your service, pick a time, and we'll take care of the rest</p>
+<div class="book-page tinore-book-page">
+  <!-- Tinore Page Hero -->
+  <section class="tinore-book-hero">
+    <div class="tinore-hero-content">
+      <div class="tinore-pill-badge">
+        <mat-icon>calendar_month</mat-icon>
+        <span>Easy Online Booking</span>
+      </div>
+      <h1 class="tinore-book-title">Book Your <span class="tinore-hero-highlight">Appointment</span></h1>
+      <p class="tinore-book-subtitle">Choose your service, pick your favourite stylist, and select a date and time that works for you.</p>
     </div>
-  </div>
+  </section>
 
-  <div class="booking-container">
+  <div class="tinore-booking-container">
     @if (!isLoggedIn) {
       <!-- Login Required State -->
-      <div class="login-required-card">
-        <div class="login-icon">
+      <div class="tinore-login-prompt-card">
+        <div class="prompt-icon-wrap">
           <mat-icon>account_circle</mat-icon>
         </div>
-        <h2>Sign In to Book</h2>
-        <p>Please sign in to your account to book an appointment. This helps us keep track of your bookings and send you confirmations.</p>
-        <div class="login-actions">
-          <a mat-flat-button color="primary" routerLink="/sign-in" class="login-btn">
-            <mat-icon>login</mat-icon> Sign In
+        <h2>Sign In to Book Your Appointment</h2>
+        <p>Please sign in to your account to confirm your appointment, track your beauty bookings, and access exclusive loyalty rewards.</p>
+        <div class="prompt-actions">
+          <a routerLink="/sign-in" class="tinore-btn-primary">
+            <mat-icon>login</mat-icon>
+            <span>Sign In to Continue</span>
           </a>
-          <span class="login-divider">or</span>
-          <a mat-stroked-button routerLink="/sign-up" class="register-btn">
-            Create Account
+          <span class="prompt-divider">or</span>
+          <a routerLink="/sign-up" class="tinore-btn-outline">
+            <span>Create New Account</span>
           </a>
         </div>
       </div>
     } @else if (!submitted) {
-      <!-- Progress Steps -->
-      <div class="steps-indicator">
-        <div class="step-item" [class.active]="step >= 1" [class.done]="step > 1">
-          <div class="step-circle">
+      <!-- Stepper Indicator -->
+      <div class="tinore-steps-indicator">
+        <div class="step-badge" [class.active]="step >= 1" [class.done]="step > 1">
+          <div class="step-number">
             @if (step > 1) { <mat-icon>check</mat-icon> } @else { 1 }
           </div>
-          <span>Service &amp; Time</span>
+          <span class="step-name">Service & Schedule</span>
         </div>
-        <div class="step-line" [class.active]="step > 1"></div>
-        <div class="step-item" [class.active]="step >= 2">
-          <div class="step-circle">2</div>
-          <span>Your Details</span>
+        <div class="step-connector" [class.active]="step > 1"></div>
+        <div class="step-badge" [class.active]="step >= 2">
+          <div class="step-number">2</div>
+          <span class="step-name">Guest Details</span>
         </div>
       </div>
 
-      <form [formGroup]="bookingForm" (ngSubmit)="submit()">
+      <form [formGroup]="bookingForm" (ngSubmit)="submit()" class="tinore-booking-form">
         <!-- Step 1: Service & Time -->
         @if (step === 1) {
-          <div class="step-content">
-            <h2>Select Service &amp; Schedule</h2>
+          <div class="booking-step-card">
+            <div class="step-card-header">
+              <span class="step-sub-tag">STEP 01</span>
+              <h2>Choose Your Service & Time</h2>
+            </div>
 
-            <div class="form-group">
-              <label class="field-label">
+            <div class="tinore-form-group">
+              <label class="tinore-label">
                 <mat-icon>spa</mat-icon>
-                <span>Service</span>
+                <span>Select Ritual Treatment *</span>
               </label>
               <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-                <mat-select formControlName="service" placeholder="Select a service">
+                <mat-select formControlName="service" placeholder="Choose a treatment...">
                   @for (s of services; track s._id) {
-                    <mat-option [value]="s.name">{{ s.name }} <span class="service-meta">• ₹{{ s.price }} • {{ s.duration }} min</span></mat-option>
+                    <mat-option [value]="s.name">
+                      {{ s.name }} <span class="service-meta">• ₹{{ s.price }} • {{ s.duration }} min</span>
+                    </mat-option>
                   }
                 </mat-select>
               </mat-form-field>
             </div>
 
-            <div class="form-group">
-              <label class="field-label">
+            <div class="tinore-form-group">
+              <label class="tinore-label">
                 <mat-icon>person</mat-icon>
-                <span>Stylist</span>
-                <span class="optional-tag">Optional</span>
+                <span>Preferred Stylist or Aesthetician</span>
+                <span class="optional-pill">Optional</span>
               </label>
               <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-                <mat-select formControlName="stylist" placeholder="Select your stylist">
-                  <mat-option value="">No Preference</mat-option>
+                <mat-select formControlName="stylist" placeholder="Select your preferred artist...">
+                  <mat-option value="">First Available Master Artist</mat-option>
                   @for (st of stylists; track st._id) {
                     <mat-option [value]="st.name">{{ st.name }} <span class="stylist-role">({{ st.specialization }})</span></mat-option>
                   }
@@ -78,26 +88,26 @@
               </mat-form-field>
             </div>
 
-            <div class="row-fields">
-              <div class="form-group">
-                <label class="field-label">
+            <div class="tinore-row-grid">
+              <div class="tinore-form-group">
+                <label class="tinore-label">
                   <mat-icon>calendar_today</mat-icon>
-                  <span>Date</span>
+                  <span>Preferred Date *</span>
                 </label>
-                <mat-form-field appearance="outline" floatLabel="always">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <input matInput [matDatepicker]="picker" formControlName="date" [min]="minDate" readonly placeholder="Pick a date">
                   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
               </div>
 
-              <div class="form-group">
-                <label class="field-label">
+              <div class="tinore-form-group">
+                <label class="tinore-label">
                   <mat-icon>schedule</mat-icon>
-                  <span>Time</span>
+                  <span>Time Slot *</span>
                 </label>
-                <mat-form-field appearance="outline" floatLabel="always">
-                  <mat-select formControlName="time" placeholder="Pick a time slot">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+                  <mat-select formControlName="time" placeholder="Pick appointment time">
                     @for (t of timeSlots; track t) {
                       <mat-option [value]="t">{{ t }}</mat-option>
                     }
@@ -107,159 +117,169 @@
             </div>
 
             @if (selectedService) {
-              <div class="service-summary">
-                <mat-icon>info</mat-icon>
-                <span><strong>{{ selectedService.name }}</strong> — ₹{{ selectedService.price }} | {{ selectedService.duration }} minutes</span>
+              <div class="selected-service-summary-pill">
+                <mat-icon>verified</mat-icon>
+                <span>Selected: <strong>{{ selectedService.name }}</strong> • ₹{{ selectedService.price }} ({{ selectedService.duration }} mins)</span>
+              </div>
+            }
+
+            <!-- =============================================================
+                 ✨ TINORE POST-TREATMENT SKINCARE RECOMMENDATIONS
+            ============================================================= -->
+            @if (recommendedProducts.length > 0) {
+              <div class="booking-cross-sell-section">
+                <div class="cross-sell-header">
+                  <div class="cross-sell-badge">
+                    <mat-icon>auto_awesome</mat-icon>
+                    <span>Recommended At-Home Care</span>
+                  </div>
+                  <h3 class="cross-sell-title">Maintain Your Salon Radiance</h3>
+                  <p class="cross-sell-sub">Pair your {{ bookingForm.get('service')?.value || 'treatment' }} with clinical-grade home care formulations.</p>
+                </div>
+
+                <div class="cross-sell-grid">
+                  @for (prod of recommendedProducts; track prod._id) {
+                    <div class="cross-sell-card">
+                      <div class="cross-sell-img-box">
+                        <img [src]="$any(prod).displayImage || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=200&q=80'" [alt]="prod.name" />
+                      </div>
+                      <div class="cross-sell-details">
+                        <span class="cross-sell-cat">{{ prod.category }}</span>
+                        <h4 class="cross-sell-name">{{ prod.name }}</h4>
+                        <div class="cross-sell-price-row">
+                          <span class="cross-sell-price">₹{{ prod.price | number }}</span>
+                          @if (prod.originalPrice && prod.originalPrice > prod.price) {
+                            <span class="cross-sell-orig">₹{{ prod.originalPrice | number }}</span>
+                          }
+                        </div>
+                      </div>
+                      <button type="button" class="cross-sell-add-btn" (click)="addCareProduct(prod)" title="Add to Bag">
+                        <mat-icon>shopping_bag</mat-icon>
+                        <span>Add</span>
+                      </button>
+                    </div>
+                  }
+                </div>
               </div>
             }
 
             <div class="step-actions">
-              <button mat-flat-button color="primary" type="button" (click)="nextStep()"
+              <button class="tinore-btn-primary" type="button" (click)="nextStep()"
                 [disabled]="!bookingForm.get('service')?.valid || !bookingForm.get('date')?.valid || !bookingForm.get('time')?.valid">
-                Continue <mat-icon>arrow_forward</mat-icon>
+                <span>Continue to Guest Details</span>
+                <mat-icon>arrow_forward</mat-icon>
               </button>
             </div>
           </div>
         }
 
-        <!-- Step 2: Details -->
+        <!-- Step 2: Guest Details & Summary -->
         @if (step === 2) {
-          <div class="step-content step-details">
-            <h2>Complete Your Booking</h2>
-            <p class="step-subtitle">Please provide your contact information to confirm your appointment</p>
+          <div class="booking-step-card">
+            <div class="step-card-header">
+              <span class="step-sub-tag">STEP 02</span>
+              <h2>Confirm Guest Details</h2>
+            </div>
 
-            <!-- Personal Information Card -->
-            <div class="info-card">
-              <div class="card-header">
-                <div class="card-icon">
-                  <mat-icon>person</mat-icon>
-                </div>
-                <div class="card-title">
-                  <h3>Personal Information</h3>
-                  <span>Your contact details for appointment confirmation</span>
-                </div>
-              </div>
-
-              <div class="card-body">
-                <div class="form-group">
-                  <label class="field-label">
+            <div class="step-split-layout">
+              <!-- Left: Form inputs -->
+              <div class="guest-inputs-col">
+                <div class="tinore-form-group">
+                  <label class="tinore-label">
                     <mat-icon>badge</mat-icon>
-                    <span>Full Name</span>
+                    <span>Full Name *</span>
                   </label>
                   <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                     <input matInput formControlName="name" placeholder="e.g. Priya Sharma">
                   </mat-form-field>
                 </div>
 
-                <div class="row-fields">
-                  <div class="form-group">
-                    <label class="field-label">
+                <div class="tinore-row-grid">
+                  <div class="tinore-form-group">
+                    <label class="tinore-label">
                       <mat-icon>phone</mat-icon>
-                      <span>Phone</span>
+                      <span>Phone Number *</span>
                     </label>
-                    <mat-form-field appearance="outline" floatLabel="always">
+                    <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                       <input matInput formControlName="phone" placeholder="e.g. 9876543210" maxlength="10">
                     </mat-form-field>
                   </div>
 
-                  <div class="form-group">
-                    <label class="field-label">
+                  <div class="tinore-form-group">
+                    <label class="tinore-label">
                       <mat-icon>email</mat-icon>
-                      <span>Email</span>
+                      <span>Email Address *</span>
                     </label>
-                    <mat-form-field appearance="outline" floatLabel="always">
+                    <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                       <input matInput formControlName="email" placeholder="e.g. priya@email.com">
                     </mat-form-field>
                   </div>
                 </div>
 
-                <div class="form-group notes-group">
-                  <label class="field-label">
+                <div class="tinore-form-group">
+                  <label class="tinore-label">
                     <mat-icon>notes</mat-icon>
-                    <span>Special Notes</span>
-                    <span class="optional-tag">Optional</span>
+                    <span>Special Notes or Skin Concerns</span>
+                    <span class="optional-pill">Optional</span>
                   </label>
                   <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-                    <textarea matInput formControlName="notes" rows="3" placeholder="e.g. Any allergies, preferences, or special requests..."></textarea>
+                    <textarea matInput formControlName="notes" rows="3" placeholder="Tell our specialists if you have allergies, sensitive skin, or specific requests..."></textarea>
                   </mat-form-field>
                 </div>
               </div>
-            </div>
 
-            <!-- Booking Summary Card -->
-            <div class="summary-card">
-              <div class="card-header">
-                <div class="card-icon summary-icon">
+              <!-- Right: Luxury Receipt Summary -->
+              <div class="receipt-summary-box">
+                <div class="receipt-header">
                   <mat-icon>receipt_long</mat-icon>
-                </div>
-                <div class="card-title">
-                  <h3>Booking Summary</h3>
-                  <span>Review your appointment details</span>
-                </div>
-              </div>
-
-              <div class="summary-body">
-                <div class="summary-item">
-                  <div class="summary-icon-wrapper">
-                    <mat-icon>spa</mat-icon>
-                  </div>
-                  <div class="summary-content">
-                    <span class="summary-label">Service</span>
-                    <strong class="summary-value">{{ bookingForm.get('service')?.value }}</strong>
-                  </div>
+                  <h3>Ritual Summary</h3>
                 </div>
 
-                @if (bookingForm.get('stylist')?.value) {
-                  <div class="summary-item">
-                    <div class="summary-icon-wrapper">
-                      <mat-icon>person</mat-icon>
+                <div class="receipt-items-list">
+                  <div class="receipt-row">
+                    <span class="receipt-label">Ritual Treatment</span>
+                    <strong class="receipt-val">{{ bookingForm.get('service')?.value }}</strong>
+                  </div>
+
+                  @if (bookingForm.get('stylist')?.value) {
+                    <div class="receipt-row">
+                      <span class="receipt-label">Lead Stylist</span>
+                      <strong class="receipt-val">{{ bookingForm.get('stylist')?.value }}</strong>
                     </div>
-                    <div class="summary-content">
-                      <span class="summary-label">Stylist</span>
-                      <strong class="summary-value">{{ bookingForm.get('stylist')?.value }}</strong>
+                  }
+
+                  <div class="receipt-row">
+                    <span class="receipt-label">Appointment Date</span>
+                    <strong class="receipt-val">{{ bookingForm.get('date')?.value | date:'EEEE, MMM d, y' }}</strong>
+                  </div>
+
+                  <div class="receipt-row">
+                    <span class="receipt-label">Scheduled Time</span>
+                    <strong class="receipt-val">{{ bookingForm.get('time')?.value }}</strong>
+                  </div>
+
+                  @if (selectedService) {
+                    <div class="receipt-total-row">
+                      <span>Total at Salon</span>
+                      <strong>₹{{ selectedService.price | number }}</strong>
                     </div>
-                  </div>
-                }
-
-                <div class="summary-item">
-                  <div class="summary-icon-wrapper">
-                    <mat-icon>calendar_today</mat-icon>
-                  </div>
-                  <div class="summary-content">
-                    <span class="summary-label">Date</span>
-                    <strong class="summary-value">{{ bookingForm.get('date')?.value | date:'EEEE, MMM d, y' }}</strong>
-                  </div>
+                  }
                 </div>
-
-                <div class="summary-item">
-                  <div class="summary-icon-wrapper">
-                    <mat-icon>schedule</mat-icon>
-                  </div>
-                  <div class="summary-content">
-                    <span class="summary-label">Time</span>
-                    <strong class="summary-value">{{ bookingForm.get('time')?.value }}</strong>
-                  </div>
-                </div>
-
-                @if (selectedService) {
-                  <div class="summary-total">
-                    <span>Total Amount</span>
-                    <strong>₹{{ selectedService.price }}</strong>
-                  </div>
-                }
               </div>
             </div>
 
-            <div class="step-actions two-buttons">
-              <button mat-stroked-button type="button" (click)="prevStep()" class="back-btn">
-                <mat-icon>arrow_back</mat-icon> Back
+            <div class="step-actions dual-actions">
+              <button class="tinore-btn-outline" type="button" (click)="prevStep()">
+                <mat-icon>arrow_back</mat-icon>
+                <span>Back</span>
               </button>
-              <button mat-flat-button color="primary" type="submit"
-                [disabled]="bookingForm.invalid || submitting" class="submit-btn">
+              <button class="tinore-btn-primary" type="submit" [disabled]="bookingForm.invalid || submitting">
                 @if (submitting) {
                   <mat-spinner diameter="20" color="accent"></mat-spinner>
+                  <span>Confirming...</span>
                 } @else {
-                  <ng-container>Confirm Booking <mat-icon>check</mat-icon></ng-container>
+                  <span>Confirm Ritual Booking</span>
+                  <mat-icon>check</mat-icon>
                 }
               </button>
             </div>
@@ -267,99 +287,50 @@
         }
       </form>
     } @else {
-      <!-- Success State -->
-      <div class="success-state">
-        <div class="success-animation">
-          <div class="success-checkmark">
-            <div class="check-icon">
-              <span class="icon-line line-tip"></span>
-              <span class="icon-line line-long"></span>
-              <div class="icon-circle"></div>
-              <div class="icon-fix"></div>
-            </div>
-          </div>
+      <!-- Success Confirmation State -->
+      <div class="tinore-confirmation-view">
+        <div class="confirmation-success-icon">
+          <mat-icon>verified</mat-icon>
         </div>
-        
-        <div class="success-content">
-          <h2>Booking Confirmed!</h2>
-          <p class="success-message">Your appointment has been successfully scheduled. We've sent a confirmation to <strong>{{ bookingForm.get('email')?.value }}</strong></p>
-          
-          <div class="confirmation-card">
-            <div class="confirmation-header">
-              <mat-icon>event_available</mat-icon>
-              <span>Appointment Details</span>
+
+        <h2 class="confirmation-heading">Ritual Successfully Scheduled</h2>
+        <p class="confirmation-sub">We look forward to welcoming you. A detailed itinerary has been sent to <strong>{{ bookingForm.get('email')?.value }}</strong>.</p>
+
+        <div class="confirmed-card">
+          <div class="confirmed-row">
+            <span class="conf-label">Experience</span>
+            <strong class="conf-value">{{ bookingForm.get('service')?.value }}</strong>
+          </div>
+          @if (bookingForm.get('stylist')?.value) {
+            <div class="confirmed-row">
+              <span class="conf-label">Stylist</span>
+              <strong class="conf-value">{{ bookingForm.get('stylist')?.value }}</strong>
             </div>
-            <div class="confirmation-body">
-              <div class="detail-row">
-                <div class="detail-icon">
-                  <mat-icon>spa</mat-icon>
-                </div>
-                <div class="detail-info">
-                  <span class="detail-label">Service</span>
-                  <strong class="detail-value">{{ bookingForm.get('service')?.value }}</strong>
-                </div>
-              </div>
-              
-              @if (bookingForm.get('stylist')?.value) {
-                <div class="detail-row">
-                  <div class="detail-icon">
-                    <mat-icon>person</mat-icon>
-                  </div>
-                  <div class="detail-info">
-                    <span class="detail-label">Stylist</span>
-                    <strong class="detail-value">{{ bookingForm.get('stylist')?.value }}</strong>
-                  </div>
-                </div>
-              }
-              
-              <div class="detail-row">
-                <div class="detail-icon">
-                  <mat-icon>calendar_today</mat-icon>
-                </div>
-                <div class="detail-info">
-                  <span class="detail-label">Date</span>
-                  <strong class="detail-value">{{ bookingForm.get('date')?.value | date:'EEEE, MMMM d, y' }}</strong>
-                </div>
-              </div>
-              
-              <div class="detail-row">
-                <div class="detail-icon">
-                  <mat-icon>schedule</mat-icon>
-                </div>
-                <div class="detail-info">
-                  <span class="detail-label">Time</span>
-                  <strong class="detail-value">{{ bookingForm.get('time')?.value }}</strong>
-                </div>
-              </div>
-              
-              @if (selectedService) {
-                <div class="detail-total">
-                  <span>Estimated Total</span>
-                  <strong>₹{{ selectedService.price }}</strong>
-                </div>
-              }
+          }
+          <div class="confirmed-row">
+            <span class="conf-label">Date & Time</span>
+            <strong class="conf-value">{{ bookingForm.get('date')?.value | date:'EEEE, MMMM d, y' }} at {{ bookingForm.get('time')?.value }}</strong>
+          </div>
+          @if (selectedService) {
+            <div class="confirmed-row total-row">
+              <span class="conf-label">Amount Due</span>
+              <strong class="conf-value">₹{{ selectedService.price | number }}</strong>
             </div>
-          </div>
-          
-          <div class="success-note">
-            <mat-icon>info</mat-icon>
-            <p>Please arrive 10 minutes before your scheduled time. If you need to reschedule, you can do so from your profile.</p>
-          </div>
-          
-          <div class="success-actions">
-            <button mat-flat-button color="primary" (click)="bookAnother()" class="book-another-btn">
-              <mat-icon>add</mat-icon>
-              Book Another Service
-            </button>
-            <a mat-stroked-button routerLink="/my-appointments" class="view-bookings-btn">
-              <mat-icon>calendar_month</mat-icon>
-              View My Bookings
-            </a>
-            <a mat-button routerLink="/" class="home-link">
-              <mat-icon>home</mat-icon>
-              Back to Home
-            </a>
-          </div>
+          }
+        </div>
+
+        <div class="confirmation-actions">
+          <button class="tinore-btn-primary" (click)="bookAnother()">
+            <mat-icon>add</mat-icon>
+            <span>Book Another Service</span>
+          </button>
+          <a routerLink="/my-appointments" class="tinore-btn-outline">
+            <mat-icon>calendar_month</mat-icon>
+            <span>View Appointments</span>
+          </a>
+          <a routerLink="/" class="tinore-home-link">
+            <span>Back to Home</span>
+          </a>
         </div>
       </div>
     }

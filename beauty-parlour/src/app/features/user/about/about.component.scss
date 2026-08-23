@@ -4,7 +4,7 @@
 // =============================================================
 
 // --- Variables ---
-$primary: #7C3AED;
+$primary: #C9748A;
 $primary-light: #A78BFA;
 $primary-dark: #5B21B6;
 $gold: #F59E0B;
@@ -22,7 +22,7 @@ $gray-900: #111827;
 // --- Page Container ---
 .about-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FAFAFA 0%, #F5F3FF 100%);
+  background: linear-gradient(180deg, #FAFAFA 0%, #FDFAF8 100%);
 }
 
 // =============================================================
@@ -587,7 +587,7 @@ $gray-900: #111827;
 // =============================================================
 .journey-section {
   padding: 50px 24px;
-  background: linear-gradient(135deg, $gray-50 0%, #F5F3FF 100%);
+  background: linear-gradient(135deg, $gray-50 0%, #FDFAF8 100%);
 }
 
 .journey-container {
@@ -805,7 +805,7 @@ $gray-900: #111827;
 // =============================================================
 .testimonials-section {
   padding: 50px 24px;
-  background: linear-gradient(135deg, $gray-50 0%, #F5F3FF 100%);
+  background: linear-gradient(135deg, $gray-50 0%, #FDFAF8 100%);
 }
 
 .testimonials-container {
@@ -908,7 +908,7 @@ $gray-900: #111827;
 // =============================================================
 .contact-section {
   padding: 50px 24px;
-  background: linear-gradient(135deg, #7C3AED 0%, #9333EA 50%, #C026D3 100%);
+  background: linear-gradient(135deg, #C9748A 0%, #9333EA 50%, #C026D3 100%);
   position: relative;
   overflow: hidden;
   

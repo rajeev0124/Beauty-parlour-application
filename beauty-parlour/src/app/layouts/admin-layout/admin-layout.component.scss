@@ -64,6 +64,16 @@
   min-width: 0;
 }
 
+.sidebar-logo-img {
+  height: 44px;
+  width: 44px;
+  object-fit: contain;
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: #fff;
+  padding: 3px;
+}
+
 .brand-icon {
   width: 42px;
   height: 42px;

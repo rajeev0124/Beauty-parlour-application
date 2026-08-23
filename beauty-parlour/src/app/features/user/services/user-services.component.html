@@ -1,165 +1,159 @@
-<div class="services-page">
-  <!-- Page Hero with Image -->
-  <div class="page-hero">
-    <div class="page-hero-bg"></div>
-    <div class="page-hero-overlay"></div>
-    <div class="page-hero-content">
-      <span class="hero-badge">
-        <mat-icon>verified</mat-icon>
-        Trusted by 10,000+ Customers
-      </span>
-      <h1>Our Services</h1>
-      <p>Choose from our wide range of beauty and wellness services</p>
+<div class="services-page tinore-services-page">
+  <!-- Tinore Luxury Hero Banner -->
+  <section class="tinore-services-hero">
+    <div class="tinore-hero-content">
+      <div class="tinore-pill-badge">
+        <mat-icon>spa</mat-icon>
+        <span>Expert Stylists • Premium Salon Services</span>
+      </div>
+      <h1 class="tinore-services-title">Curated Salon & <span class="tinore-hero-highlight">Spa Rituals</span></h1>
+      <p class="tinore-services-subtitle">
+        From expert haircuts and vibrant colour to relaxing facials and bridal packages — we have every beauty service you need, all in one place.
+      </p>
+      <div class="tinore-trust-ribbon">
+        <div class="trust-ribbon-item">
+          <mat-icon>verified</mat-icon>
+          <span>Certified Master Stylists</span>
+        </div>
+        <div class="trust-divider"></div>
+        <div class="trust-ribbon-item">
+          <mat-icon>auto_awesome</mat-icon>
+          <span>Premium Salon Products</span>
+        </div>
+        <div class="trust-divider"></div>
+        <div class="trust-ribbon-item">
+          <mat-icon>schedule</mat-icon>
+          <span>Flexible Online Scheduling</span>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="services-container">
-    <!-- Category Filter -->
-    <div class="category-filter-wrapper">
-      <div class="category-filter">
+  <div class="tinore-services-container">
+    <!-- Category Filter Bar -->
+    <div class="tinore-category-bar">
+      <div class="category-scroll-wrapper">
         @for (cat of categories; track cat.key) {
-          <button class="category-chip" [class.active]="activeCategory === cat.key"
-                  (click)="activeCategory = cat.key">
-            <mat-icon>{{ cat.icon }}</mat-icon>
-            <span>{{ cat.label }}</span>
+          <button 
+            class="tinore-cat-tab" 
+            [class.active]="activeCategory === cat.key"
+            (click)="activeCategory = cat.key">
+            <mat-icon class="cat-icon">{{ cat.icon }}</mat-icon>
+            <span class="cat-label">{{ cat.label }}</span>
           </button>
         }
       </div>
-    </div>
-
-    <!-- Results Summary -->
-    <div class="results-header">
-      <h2 class="results-title">
-        @if (activeCategory === 'all') {
-          All Services
-        } @else {
-          {{ getCategoryLabel(activeCategory) }}
-        }
-      </h2>
-      <span class="results-count">{{ filteredServices.length }} services available</span>
+      <span class="services-count-badge">{{ filteredServices.length }} Services Available</span>
     </div>
 
     @if (loading) {
-      <div class="services-grid">
-        @for (i of [1,2,3,4,5,6,7,8]; track i) {
-          <div class="service-card skeleton-card">
-            <div class="card-image skeleton"></div>
-            <div class="card-body">
-              <div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 12px;"></div>
-              <div class="skeleton" style="height: 14px; width: 100%; margin-bottom: 6px;"></div>
-              <div class="skeleton" style="height: 14px; width: 60%; margin-bottom: 16px;"></div>
-              <div class="skeleton" style="height: 36px; width: 100%; border-radius: 8px;"></div>
+      <div class="tinore-services-grid">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="tinore-service-card skeleton-card">
+            <div class="skeleton-img"></div>
+            <div class="skeleton-body">
+              <div class="skeleton-tag"></div>
+              <div class="skeleton-title"></div>
+              <div class="skeleton-desc"></div>
+              <div class="skeleton-btn"></div>
             </div>
           </div>
         }
       </div>
     } @else if (errorMessage) {
-      <div class="empty-state">
-        <div class="empty-icon error">
-          <mat-icon>error_outline</mat-icon>
-        </div>
-        <h3>Something went wrong</h3>
+      <div class="tinore-error-card">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <h3>Unable to Load Services</h3>
         <p>{{ errorMessage }}</p>
-        <button mat-flat-button color="primary" (click)="loadServices()">
+        <button class="tinore-btn-primary" (click)="loadServices()">
           <mat-icon>refresh</mat-icon>
-          Try Again
+          <span>Try Again</span>
         </button>
       </div>
     } @else {
       <!-- Services Grid -->
-      <div class="services-grid">
+      <div class="tinore-services-grid">
         @for (service of filteredServices; track service._id; let i = $index) {
-          <div class="service-card" [style.animation-delay]="(i * 60) + 'ms'">
-            <!-- Card Image Section -->
-            <div class="card-image-wrapper" [attr.data-category]="service.category">
-              <!-- Image with fallback -->
+          <article class="tinore-service-card" [style.animation-delay]="(i * 50) + 'ms'">
+            <!-- Card Media Section -->
+            <div class="service-media-wrap">
               @if (!hasImageError(service._id)) {
                 <img 
                   [src]="getServiceImage(service.category, i)" 
                   [alt]="service.name"
-                  class="card-image"
+                  class="service-cover-img"
                   loading="lazy"
                   (error)="onImageError($event, service._id)"
                 />
               }
-              <!-- Fallback Icon Display -->
-              <div class="card-icon-fallback" [class.show]="hasImageError(service._id)" [style.background]="getCategoryColor(service.category)">
+              <div class="service-fallback" [class.show]="hasImageError(service._id)">
                 <mat-icon>{{ getServiceIcon(service.category) }}</mat-icon>
               </div>
-              <!-- Gradient Overlay -->
-              <div class="card-image-overlay"></div>
-              <!-- Popular Badge -->
-              @if (service.popular) {
-                <span class="popular-badge">
-                  <mat-icon>local_fire_department</mat-icon>
-                  Popular
-                </span>
-              }
-              <!-- Category Badge -->
-              <div class="card-category-badge">
-                <mat-icon>{{ getServiceIcon(service.category) }}</mat-icon>
-                {{ service.category || 'Beauty' }}
-              </div>
-              <!-- Floating Price Tag -->
-              <div class="floating-price">
-                <span class="price-from">From</span>
-                <span class="price-value">₹{{ service.price | number }}</span>
-              </div>
+
+              <!-- Badges -->
+              <span class="service-cat-badge">{{ service.category || 'Ritual' }}</span>
+              <span class="service-price-badge">From ₹{{ service.price | number }}</span>
             </div>
 
             <!-- Card Body -->
-            <div class="card-body">
-              <h3 class="card-title">{{ service.name }}</h3>
-              <p class="card-desc">{{ service.description || 'Premium beauty service with professional care' }}</p>
-              
-              <div class="card-meta">
-                <span class="meta-duration">
+            <div class="service-details-body">
+              <div class="service-meta-top">
+                <span class="duration-pill">
                   <mat-icon>schedule</mat-icon>
                   {{ service.duration }} min
                 </span>
-                <span class="meta-rating">
+                <div class="service-rating-row">
                   <mat-icon>star</mat-icon>
-                  4.8
-                </span>
+                  <span>4.9 (80+ Reviews)</span>
+                </div>
               </div>
 
-              <a routerLink="/book" [queryParams]="{service: service._id}" class="btn-book">
-                <span>Book Appointment</span>
-                <mat-icon>arrow_forward</mat-icon>
-              </a>
+              <h3 class="service-item-title">{{ service.name }}</h3>
+              <p class="service-item-desc">{{ service.description || 'Premium salon ritual curated with high-potency bio-botanicals and bespoke artisan styling.' }}</p>
+
+              <div class="service-card-action">
+                <a routerLink="/book" [queryParams]="{service: service._id}" class="tinore-book-btn">
+                  <span>Book Ritual</span>
+                  <mat-icon>calendar_today</mat-icon>
+                </a>
+              </div>
             </div>
-          </div>
+          </article>
         }
       </div>
 
       @if (filteredServices.length === 0) {
-        <div class="empty-state">
-          <div class="empty-icon">
-            <mat-icon>search_off</mat-icon>
-          </div>
-          <h3>No services found</h3>
-          <p>No services available in this category.</p>
-          <button mat-stroked-button color="primary" (click)="activeCategory = 'all'">
-            View All Services
+        <div class="tinore-empty-card">
+          <mat-icon class="empty-icon">search_off</mat-icon>
+          <h3>No rituals found</h3>
+          <p>No experiences currently available in this category.</p>
+          <button class="tinore-btn-primary" (click)="activeCategory = 'all'">
+            <span>View All Services Available</span>
           </button>
         </div>
       }
     }
 
-    <!-- CTA Section -->
-    @if (!loading && filteredServices.length > 0) {
-      <section class="cta-section">
-        <div class="cta-content">
-          <div class="cta-text">
-            <h2>Can't find what you're looking for?</h2>
-            <p>Contact us for custom services tailored to your needs</p>
-          </div>
-          <a routerLink="/contact" class="cta-btn">
+    <!-- Bottom Bespoke Rituals CTA Banner -->
+    <section class="tinore-services-cta">
+      <div class="cta-inner-card">
+        <div class="cta-badge">
+          <mat-icon>auto_awesome</mat-icon>
+          <span>Personalized Consultation</span>
+        </div>
+        <h2>Looking for a Bespoke Beauty Package?</h2>
+        <p>Our lead artists create custom bridal, hair restoration, and holistic skin rejuvenation packages tailored to your schedule.</p>
+        <div class="cta-btns">
+          <a routerLink="/book" class="tinore-btn-primary">
+            <mat-icon>calendar_month</mat-icon>
+            <span>Book a Consultation</span>
+          </a>
+          <a routerLink="/contact" class="tinore-btn-outline cta-outline">
             <mat-icon>chat</mat-icon>
-            Contact Us
+            <span>Contact Concierge</span>
           </a>
         </div>
-      </section>
-    }
+      </div>
+    </section>
   </div>
 </div>

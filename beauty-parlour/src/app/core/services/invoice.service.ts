@@ -105,7 +105,7 @@ export class InvoiceService {
       </head>
       <body>
         <div class="header">
-          <h1>Beauty Parlour</h1>
+          <h1>Sindhura Makeovers</h1>
           <p>Invoice</p>
         </div>
         <div class="info">

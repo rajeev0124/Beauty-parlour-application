@@ -68,7 +68,7 @@ export class PaymentGatewayService {
       key: this.razorpayKey,
       amount: options.amount * 100, // Razorpay expects amount in paise
       currency: 'INR',
-      name: 'Beauty Parlour',
+      name: 'Sindhura Makeovers',
       description: options.description || 'Payment for services',
       order_id: options.orderId,
       prefill: {
@@ -77,7 +77,7 @@ export class PaymentGatewayService {
         contact: options.customerPhone
       },
       theme: {
-        color: '#E91E63' // Pink theme for beauty parlour
+        color: '#E91E63' // Pink theme for Sindhura Makeovers
       },
       handler: (response: any) => {
         options.onSuccess(response);

@@ -2,10 +2,11 @@ import { Component, signal, OnInit, inject } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { filter, map, mergeMap } from 'rxjs';
+import { ServerWakeupBannerComponent } from './shared/components/server-wakeup-banner.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ServerWakeupBannerComponent],
   templateUrl: './app.html',
 })
 export class App implements OnInit {
@@ -29,7 +30,7 @@ export class App implements OnInit {
       filter((route) => route.outlet === 'primary'),
       mergeMap((route) => route.data)
     ).subscribe((event) => {
-      const defaultDesc = 'Beauty Parlour - Your premium destination for beauty and wellness.';
+      const defaultDesc = 'Sindhura Makeovers - Your premium destination for beauty and wellness.';
       const desc = event['description'] || defaultDesc;
       
       this.metaService.updateTag({ name: 'description', content: desc });

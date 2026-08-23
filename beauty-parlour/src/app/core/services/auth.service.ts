@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, tap, delay, catchError, throwError } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest, User } from '../models/user.model';
@@ -76,9 +77,14 @@ export class AuthService {
   private demoMode = false; // Auto-switches to demo if backend unavailable
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
+  private isBrowser: boolean;
 
-  constructor(private http: HttpClient) {
-    if (typeof localStorage !== 'undefined') {
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    if (this.isBrowser) {
       const stored = localStorage.getItem('user');
       if (stored) {
         this.currentUserSubject.next(JSON.parse(stored));
@@ -178,17 +184,21 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+    if (this.isBrowser) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+    }
     this.currentUserSubject.next(null);
   }
 
   getToken(): string | null {
+    if (!this.isBrowser) return null;
     return localStorage.getItem('accessToken');
   }
 
   getRefreshToken(): string | null {
+    if (!this.isBrowser) return null;
     return localStorage.getItem('refreshToken');
   }
 
@@ -246,15 +256,19 @@ export class AuthService {
     const currentUser = this.currentUserSubject.value;
     if (currentUser) {
       const updatedUser = { ...currentUser, ...userData };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      if (this.isBrowser) {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
       this.currentUserSubject.next(updatedUser);
     }
   }
 
   private handleAuth(res: AuthResponse): void {
-    localStorage.setItem('accessToken', res.accessToken);
-    localStorage.setItem('refreshToken', res.refreshToken);
-    localStorage.setItem('user', JSON.stringify(res.user));
+    if (this.isBrowser) {
+      localStorage.setItem('accessToken', res.accessToken);
+      localStorage.setItem('refreshToken', res.refreshToken);
+      localStorage.setItem('user', JSON.stringify(res.user));
+    }
     this.currentUserSubject.next(res.user);
   }
 
@@ -272,3 +286,4 @@ export class AuthService {
     return this.http.post<{ message: string }>(`${this.apiUrl}/reset-password`, { token, newPassword });
   }
 }
+

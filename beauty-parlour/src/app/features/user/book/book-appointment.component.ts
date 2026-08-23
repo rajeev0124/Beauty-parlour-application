@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,14 +15,17 @@ import { ServiceService } from '../../../core/services/service.service';
 import { StaffService } from '../../../core/services/staff.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ProductService } from '../../../core/services/product.service';
+import { CartService } from '../../../core/services/cart.service';
 import { Service } from '../../../core/models/service.model';
 import { Staff } from '../../../core/models/staff.model';
+import { Product } from '../../../core/models/product.model';
 
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
   imports: [
-    ReactiveFormsModule, RouterLink, DatePipe,
+    CommonModule, ReactiveFormsModule, RouterLink, DatePipe, DecimalPipe,
     MatIconModule, MatFormFieldModule, MatInputModule,
     MatSelectModule, MatDatepickerModule, MatNativeDateModule,
     MatButtonModule, MatSnackBarModule, MatProgressSpinnerModule
@@ -42,6 +45,8 @@ export class BookAppointmentComponent implements OnInit {
 
   services: Service[] = [];
   stylists: Staff[] = [];
+  allProducts: Product[] = [];
+  recommendedProducts: Product[] = [];
 
   timeSlots = [
     '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
@@ -61,6 +66,8 @@ export class BookAppointmentComponent implements OnInit {
     private staffService: StaffService,
     private appointmentService: AppointmentService,
     private authService: AuthService,
+    private productService: ProductService,
+    public cartService: CartService,
     private cdr: ChangeDetectorRef
   ) {
     // Initialize minDate to today at midnight
@@ -79,6 +86,11 @@ export class BookAppointmentComponent implements OnInit {
       email: [user?.email || '', [Validators.required, Validators.email]],
       notes: [''],
     });
+
+    // Listen to service changes to update product recommendations
+    this.bookingForm.get('service')?.valueChanges.subscribe(() => {
+      this.updateRecommendedProducts();
+    });
   }
 
   ngOnInit(): void {
@@ -93,9 +105,18 @@ export class BookAppointmentComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
+
     this.staffService.getAll().subscribe({
       next: (staff) => {
         this.stylists = staff;
+        this.cdr.markForCheck();
+      }
+    });
+
+    this.productService.getAll().subscribe({
+      next: (products) => {
+        this.allProducts = products;
+        this.updateRecommendedProducts();
         this.cdr.markForCheck();
       }
     });
@@ -103,6 +124,45 @@ export class BookAppointmentComponent implements OnInit {
 
   get selectedService(): Service | undefined {
     return this.services.find(s => s.name === this.bookingForm.get('service')?.value);
+  }
+
+  updateRecommendedProducts(): void {
+    const svc = this.selectedService;
+    if (!svc || !this.allProducts.length) {
+      this.recommendedProducts = this.allProducts.slice(0, 3);
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const svcCategory = (svc.category || '').toLowerCase();
+    const svcName = (svc.name || '').toLowerCase();
+
+    // Smart matching based on service keyword
+    let matches: Product[] = [];
+    if (svcCategory.includes('facial') || svcCategory.includes('skin') || svcName.includes('glow') || svcName.includes('facial')) {
+      matches = this.allProducts.filter(p => p.category === 'skincare' || p.category === 'serums' || p.category === 'cleansers');
+    } else if (svcCategory.includes('hair') || svcName.includes('hair') || svcName.includes('spa') || svcName.includes('keratin')) {
+      matches = this.allProducts.filter(p => p.category === 'haircare' || p.category === 'masks');
+    } else if (svcCategory.includes('makeup') || svcCategory.includes('bridal')) {
+      matches = this.allProducts.filter(p => p.category === 'skincare' || p.category === 'tools');
+    }
+
+    if (matches.length < 3) {
+      matches = [...matches, ...this.allProducts.filter(p => !matches.includes(p))];
+    }
+
+    this.recommendedProducts = matches.slice(0, 3);
+    this.cdr.markForCheck();
+  }
+
+  addCareProduct(product: Product): void {
+    this.cartService.addItem(product, 1);
+    this.snackBar.open(`🛍️ Added ${product.name} to your Beauty Bag!`, 'View Bag', {
+      duration: 3000,
+      panelClass: ['success-snackbar']
+    }).onAction().subscribe(() => {
+      this.cartService.openDrawer();
+    });
   }
 
   nextStep(): void {

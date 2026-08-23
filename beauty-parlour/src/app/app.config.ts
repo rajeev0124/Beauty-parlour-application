@@ -4,6 +4,7 @@ import {
   provideBrowserGlobalErrorListeners,
   ErrorHandler,
 } from '@angular/core';
+import { WakeupService } from './core/services/wakeup.service';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
@@ -21,6 +22,11 @@ function initializeFirebase(firebaseService: FirebaseService) {
   return () => firebaseService.getApp();
 }
 
+// Factory: ping backend on startup to detect Render cold starts
+function initializeWakeup(wakeupService: WakeupService) {
+  return () => wakeupService.init();
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
@@ -33,6 +39,12 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeFirebase,
       deps: [FirebaseService],
+      multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeWakeup,
+      deps: [WakeupService],
       multi: true,
     },
     provideClientHydration(withEventReplay()),

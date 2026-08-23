@@ -1,0 +1,140 @@
+@if (isOpen) {
+  <div class="quiz-backdrop" (click)="close()"></div>
+  <div class="quiz-modal-container">
+    <div class="tinore-quiz-card" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="quiz-header">
+        <div class="quiz-header-badge">
+          <mat-icon>auto_awesome</mat-icon>
+          <span>60-Second Skin Diagnostic</span>
+        </div>
+        <button class="quiz-close-btn" (click)="close()" aria-label="Close diagnostic">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Step Progress Bar -->
+      @if (currentStep <= 3) {
+        <div class="quiz-progress-track">
+          <div class="quiz-progress-fill" [style.width.%]="(currentStep / 3) * 100"></div>
+        </div>
+        <div class="quiz-step-indicator">
+          <span>Question {{ currentStep }} of 3</span>
+        </div>
+      }
+
+      <!-- Step 1: Skin Type -->
+      @if (currentStep === 1) {
+        <div class="quiz-step-view">
+          <h2 class="quiz-title">What is your primary <span class="tinore-hero-highlight">skin type</span>?</h2>
+          <p class="quiz-subtitle">Select how your skin feels naturally throughout the day.</p>
+
+          <div class="quiz-options-grid">
+            @for (opt of skinTypes; track opt.key) {
+              <button class="quiz-opt-btn" [class.selected]="selectedSkinType === opt.key" (click)="selectSkinType(opt.key)">
+                <div class="opt-icon-circle">
+                  <mat-icon>{{ opt.icon }}</mat-icon>
+                </div>
+                <div class="opt-text-wrap">
+                  <strong class="opt-title">{{ opt.title }}</strong>
+                  <span class="opt-sub">{{ opt.subtitle }}</span>
+                </div>
+                <mat-icon class="opt-arrow">arrow_forward</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Step 2: Skin Concern -->
+      @if (currentStep === 2) {
+        <div class="quiz-step-view">
+          <h2 class="quiz-title">What is your main <span class="tinore-hero-highlight">skin goal</span>?</h2>
+          <p class="quiz-subtitle">Choose the top improvement you want to achieve.</p>
+
+          <div class="quiz-options-grid">
+            @for (opt of concerns; track opt.key) {
+              <button class="quiz-opt-btn" [class.selected]="selectedConcern === opt.key" (click)="selectConcern(opt.key)">
+                <div class="opt-icon-circle">
+                  <mat-icon>{{ opt.icon }}</mat-icon>
+                </div>
+                <div class="opt-text-wrap">
+                  <strong class="opt-title">{{ opt.title }}</strong>
+                  <span class="opt-sub">{{ opt.subtitle }}</span>
+                </div>
+                <mat-icon class="opt-arrow">arrow_forward</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Step 3: Desired Finish -->
+      @if (currentStep === 3) {
+        <div class="quiz-step-view">
+          <h2 class="quiz-title">What is your preferred <span class="tinore-hero-highlight">skin finish</span>?</h2>
+          <p class="quiz-subtitle">How do you love your complexion to look and feel?</p>
+
+          <div class="quiz-options-grid">
+            @for (opt of finishes; track opt.key) {
+              <button class="quiz-opt-btn" [class.selected]="selectedFinish === opt.key" (click)="selectFinish(opt.key)">
+                <div class="opt-icon-circle">
+                  <mat-icon>{{ opt.icon }}</mat-icon>
+                </div>
+                <div class="opt-text-wrap">
+                  <strong class="opt-title">{{ opt.title }}</strong>
+                  <span class="opt-sub">{{ opt.subtitle }}</span>
+                </div>
+                <mat-icon class="opt-arrow">arrow_forward</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Step 4: Results & Custom Bundle -->
+      @if (currentStep === 4) {
+        <div class="quiz-results-view">
+          <div class="results-badge-wrap">
+            <span class="results-pill">
+              <mat-icon>verified</mat-icon> Personalized Diagnostic Formula
+            </span>
+          </div>
+
+          <h2 class="results-title">Your Bespoke <span class="tinore-hero-highlight">3-Step Radiance Protocol</span></h2>
+          <p class="results-sub">Tailored specifically for your skin profile with certified botanical actives.</p>
+
+          <!-- Routine Bundle Cards -->
+          <div class="bundle-products-grid">
+            @for (prod of routineProducts; track prod._id; let idx = $index) {
+              <div class="bundle-card">
+                <span class="bundle-step-tag">Step {{ idx + 1 }}</span>
+                <div class="bundle-img-box">
+                  <img [src]="$any(prod).displayImage || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=200&q=80'" [alt]="prod.name" />
+                </div>
+                <h4 class="bundle-prod-name">{{ prod.name }}</h4>
+                <span class="bundle-prod-price">₹{{ prod.price | number }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Bundle Pricing & Actions -->
+          <div class="bundle-cta-box">
+            <div class="bundle-pricing-summary">
+              <span class="bundle-offer-badge">Save 15% Complete Bundle</span>
+              <div class="bundle-price-row">
+                <span class="bundle-new-price">₹{{ bundleDiscountPrice | number }}</span>
+                <span class="bundle-old-price">₹{{ bundleOriginalPrice | number }}</span>
+              </div>
+            </div>
+
+            <button class="tinore-btn-primary bundle-btn" (click)="addBundleToCart()">
+              <mat-icon>shopping_bag</mat-icon>
+              <span>Add Complete Routine to Bag</span>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

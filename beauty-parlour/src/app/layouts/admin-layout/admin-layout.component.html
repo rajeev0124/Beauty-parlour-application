@@ -6,10 +6,8 @@
   <aside class="sidebar" [class.collapsed]="!sidenavOpened" role="navigation" aria-label="Main navigation">
     <div class="sidebar-header">
       <div class="brand">
-        <div class="brand-icon">
-          <mat-icon>spa</mat-icon>
-        </div>
-        @if (sidenavOpened) { <span class="brand-name">Beauty Parlour</span> }
+        <img src="sindhura-logo.jpg" alt="Sindhura Makeovers" class="sidebar-logo-img">
+        @if (sidenavOpened) { <span class="brand-name">Sindhura Makeovers</span> }
       </div>
       @if (sidenavOpened) {
         <button mat-icon-button class="collapse-btn" (click)="toggleSidenav()" aria-label="Collapse sidebar">

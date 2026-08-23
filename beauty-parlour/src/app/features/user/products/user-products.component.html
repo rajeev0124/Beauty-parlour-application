@@ -1,174 +1,165 @@
-<div class="products-page">
-  <!-- Elegant Hero Section with Image -->
-  <section class="hero-section">
-    <div class="hero-bg-image"></div>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <div class="hero-badge">
-        <mat-icon>verified</mat-icon>
-        <span>100% Authentic Products</span>
+<div class="products-page tinore-products-page">
+  <!-- Tinore Luxury Hero Section -->
+  <section class="tinore-hero-section">
+    <div class="tinore-hero-bg-overlay"></div>
+    <div class="tinore-hero-content">
+      <div class="tinore-pill-badge">
+        <mat-icon>auto_awesome</mat-icon>
+        <span>Salon-Grade • Professionally Curated</span>
       </div>
-      <h1 class="hero-title">Premium Beauty Collection</h1>
-      <p class="hero-subtitle">Discover handpicked beauty essentials curated by our experts for your radiant transformation</p>
-      <div class="hero-features">
-        <div class="feature">
+      <h1 class="tinore-hero-heading">Shop Our <span class="tinore-hero-highlight">Beauty Products</span></h1>
+      <p class="tinore-hero-desc">
+        Browse our curated collection of premium salon-grade beauty products — hand-picked by our expert stylists for the best results.
+      </p>
+      <div class="tinore-trust-ribbon">
+        <div class="trust-ribbon-item">
           <mat-icon>local_shipping</mat-icon>
-          <span>Free Shipping</span>
+          <span>Free Shipping over ₹999</span>
         </div>
-        <div class="feature">
-          <mat-icon>replay</mat-icon>
-          <span>Easy Returns</span>
+        <div class="trust-divider"></div>
+        <div class="trust-ribbon-item">
+          <mat-icon>verified</mat-icon>
+          <span>100% Authentic Guarantee</span>
         </div>
-        <div class="feature">
-          <mat-icon>security</mat-icon>
-          <span>Secure Payment</span>
+        <div class="trust-divider"></div>
+        <div class="trust-ribbon-item">
+          <mat-icon>spa</mat-icon>
+          <span>Salon-Grade Formulations</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Main Content -->
-  <div class="main-container">
-    <!-- Sidebar Filters -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <h3>
-          <mat-icon>filter_list</mat-icon>
-          Categories
-        </h3>
-      </div>
-      <div class="category-list">
-        @for (cat of categories; track cat.key) {
-          <button class="category-item" [class.active]="activeCategory === cat.key" (click)="setCategory(cat.key)">
-            <div class="category-icon" [style.background]="getCategoryColor(cat.key)">
-              <mat-icon>{{ cat.icon || 'category' }}</mat-icon>
-            </div>
-            <div class="category-info">
-              <span class="category-name">{{ cat.label }}</span>
-              <span class="category-count">{{ cat.count }} items</span>
-            </div>
-            <mat-icon class="category-arrow">chevron_right</mat-icon>
-          </button>
-        }
-      </div>
-    </aside>
-
-    <!-- Products Area -->
-    <main class="products-main">
-      <!-- Toolbar -->
-      <div class="products-toolbar">
-        <div class="toolbar-left">
-          <h2 class="section-title">
-            @if (activeCategory === 'all') {
-              All Products
-            } @else {
-              {{ getCategoryLabel(activeCategory) }}
-            }
-          </h2>
-          <span class="product-count">{{ filteredProducts.length }} products</span>
+  <!-- Main Content Container -->
+  <div class="tinore-products-container">
+    <!-- Skin Diagnostic Banner Card -->
+    <div class="tinore-quiz-promo-card">
+      <div class="quiz-promo-content">
+        <div class="quiz-promo-badge">
+          <mat-icon>auto_fix_high</mat-icon>
+          <span>Find Your Perfect Match</span>
         </div>
-        <div class="toolbar-right">
-          <div class="view-toggle">
-            <button class="view-btn" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'" title="Grid View">
-              <mat-icon>grid_view</mat-icon>
-            </button>
-            <button class="view-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'" title="List View">
-              <mat-icon>view_list</mat-icon>
-            </button>
-          </div>
-        </div>
+        <h3 class="quiz-promo-title">Not Sure What Your Skin Needs?</h3>
+        <p class="quiz-promo-sub">Take our 60-second clinical diagnostic to discover your custom 3-step botanical routine and enjoy 15% off your bundle.</p>
       </div>
+      <button class="tinore-btn-primary" (click)="skinQuiz.open()">
+        <mat-icon>auto_awesome</mat-icon>
+        <span>Start Skin Diagnostic</span>
+      </button>
+    </div>
 
-      <!-- Mobile Category Filter -->
-      <div class="mobile-categories">
+    <!-- Category Tabs Navigation -->
+    <div class="tinore-category-bar">
+      <div class="category-scroll-wrapper">
         @for (cat of categories; track cat.key) {
-          <button class="mobile-cat-chip" [class.active]="activeCategory === cat.key" (click)="setCategory(cat.key)">
-            <mat-icon>{{ cat.icon }}</mat-icon>
-            {{ cat.label }}
+          <button 
+            class="tinore-cat-tab" 
+            [class.active]="activeCategory === cat.key" 
+            (click)="setCategory(cat.key)">
+            <mat-icon class="cat-icon">{{ cat.icon || 'category' }}</mat-icon>
+            <span class="cat-label">{{ cat.label }}</span>
+            <span class="cat-count-pill">{{ cat.count }}</span>
           </button>
         }
       </div>
 
+      <div class="tinore-toolbar-actions">
+        <span class="products-count-label">{{ filteredProducts.length }} Essentials</span>
+        <div class="view-mode-toggle">
+          <button class="view-btn" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'" title="Grid View" aria-label="Grid View">
+            <mat-icon>grid_view</mat-icon>
+          </button>
+          <button class="view-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'" title="List View" aria-label="List View">
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Showcase Area -->
+    <main class="tinore-catalog-main">
       @if (loading) {
-        <div class="products-grid">
+        <div class="tinore-grid">
           @for (i of [1,2,3,4,5,6,7,8]; track i) {
-            <div class="product-card skeleton-card">
-              <div class="skeleton-image"></div>
-              <div class="skeleton-content">
-                <div class="skeleton-line w-40"></div>
-                <div class="skeleton-line w-80"></div>
-                <div class="skeleton-line w-60"></div>
-                <div class="skeleton-line w-50"></div>
-                <div class="skeleton-btn"></div>
+            <div class="tinore-card skeleton-card">
+              <div class="skeleton skeleton-img"></div>
+              <div class="skeleton-body">
+                <div class="skeleton skeleton-tag"></div>
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-price"></div>
+                <div class="skeleton skeleton-btn"></div>
               </div>
             </div>
           }
         </div>
       } @else if (errorMessage) {
-        <div class="error-state">
-          <div class="error-icon">
-            <mat-icon>error_outline</mat-icon>
-          </div>
-          <h3>Oops! Something went wrong</h3>
+        <div class="tinore-error-card">
+          <mat-icon class="error-icon">error_outline</mat-icon>
+          <h3>Unable to Load Products</h3>
           <p>{{ errorMessage }}</p>
-          <button class="retry-btn" (click)="loadProducts()">
+          <button class="tinore-btn-primary" (click)="loadProducts()">
             <mat-icon>refresh</mat-icon>
-            Try Again
+            <span>Try Again</span>
           </button>
         </div>
       } @else if (filteredProducts.length === 0) {
-        <div class="empty-state">
-          <div class="empty-illustration">
-            <mat-icon>inventory_2</mat-icon>
+        <div class="tinore-empty-card">
+          <div class="empty-icon-wrap">
+            <mat-icon>spa</mat-icon>
           </div>
-          <h3>No products found</h3>
-          <p>We couldn't find any products in this category.</p>
-          <button class="browse-btn" (click)="setCategory('all')">
-            <mat-icon>apps</mat-icon>
-            Browse All Products
+          <h3>No products in this category</h3>
+          <p>Explore our complete beauty collection for radiant results.</p>
+          <button class="tinore-btn-primary" (click)="setCategory('all')">
+            <span>Browse All Essentials</span>
           </button>
         </div>
       } @else {
         <!-- Products Grid -->
-        <div class="products-grid" [class.list-view]="viewMode === 'list'">
+        <div class="tinore-grid" [class.list-layout]="viewMode === 'list'">
           @for (product of filteredProducts; track product._id; let i = $index) {
-            <article class="product-card" [style.animation-delay]="(i * 50) + 'ms'">
-              <!-- Image Section -->
-              <div class="card-image-section">
-                <!-- Badges -->
+            <article class="tinore-product-card" [style.animation-delay]="(i * 40) + 'ms'">
+              <!-- Image Container with Hover Micro-Interactions -->
+              <div class="product-media-box">
+                <!-- Floating Badges -->
                 @if (product.bestseller) {
-                  <span class="badge-bestseller">
-                    <mat-icon>local_fire_department</mat-icon>
+                  <span class="badge-pill badge-bestseller">
+                    <mat-icon>auto_awesome</mat-icon>
                     Bestseller
                   </span>
                 }
                 @if (product.originalPrice && product.originalPrice > product.price) {
-                  <span class="badge-discount">
+                  <span class="badge-pill badge-discount">
                     -{{ ((1 - product.price / product.originalPrice) * 100) | number:'1.0-0' }}%
                   </span>
                 }
 
-                <!-- Wishlist -->
-                <button class="wishlist-btn" 
-                        [class.active]="$any(product).inWishlist"
-                        (click)="toggleWishlist(product); $event.stopPropagation()">
+                <!-- Wishlist Toggle -->
+                <button 
+                  class="product-wishlist-btn" 
+                  [class.active]="$any(product).inWishlist"
+                  (click)="toggleWishlist(product); $event.stopPropagation()"
+                  aria-label="Add to Wishlist">
                   <mat-icon>{{ $any(product).inWishlist ? 'favorite' : 'favorite_border' }}</mat-icon>
                 </button>
 
-                <!-- Image -->
-                <div class="image-wrapper" [attr.data-category]="product.category" (click)="viewProduct(product)">
+                <!-- Product Image -->
+                <div class="img-zoom-wrapper" (click)="viewProduct(product)">
                   @if (!hasImageError(product._id)) {
-                    <img [src]="$any(product).displayImage || getProductImage(product.category, i)" 
-                         [alt]="product.name"
-                         class="product-image"
-                         loading="lazy"
-                         (error)="onImageError($event, product._id)" />
+                    <img 
+                      [src]="$any(product).displayImage || getProductImage(product.category, i)" 
+                      [alt]="product.name"
+                      class="tinore-prod-img"
+                      loading="lazy"
+                      (error)="onImageError($event, product._id)" 
+                    />
                   }
-                  <div class="image-fallback" [class.visible]="hasImageError(product._id)">
+                  <div class="fallback-box" [class.visible]="hasImageError(product._id)">
                     <mat-icon>{{ getProductIcon(product.category) }}</mat-icon>
                   </div>
-                  <div class="image-hover-overlay">
-                    <button class="quick-view-btn">
+                  
+                  <!-- Hover Quick View Action -->
+                  <div class="hover-action-overlay">
+                    <button class="quick-look-btn" (click)="viewProduct(product); $event.stopPropagation()">
                       <mat-icon>visibility</mat-icon>
                       <span>Quick View</span>
                     </button>
@@ -176,54 +167,50 @@
                 </div>
               </div>
 
-              <!-- Content Section -->
-              <div class="card-content">
-                <span class="product-category-tag">{{ product.category }}</span>
-                <h3 class="product-title">{{ product.name }}</h3>
-                
-                <!-- Rating -->
-                <div class="product-rating">
-                  <div class="stars">
+              <!-- Product Info Body -->
+              <div class="product-details-body">
+                <div class="cat-rating-row">
+                  <span class="product-cat-pill">{{ product.category }}</span>
+                  <div class="tinore-stars-row">
                     @for (star of [1,2,3,4,5]; track star) {
-                      <mat-icon [class.filled]="star <= (product.rating || 4)">star</mat-icon>
+                      <mat-icon [class.active]="star <= (product.rating || 4)">star</mat-icon>
+                    }
+                    <span class="stars-val">({{ product.rating || 4.8 }})</span>
+                  </div>
+                </div>
+
+                <h3 class="tinore-product-title" (click)="viewProduct(product)">{{ product.name }}</h3>
+
+                <!-- Price & Stock Status -->
+                <div class="price-stock-row">
+                  <div class="pricing-wrap">
+                    <span class="current-price">₹{{ product.price | number }}</span>
+                    @if (product.originalPrice && product.originalPrice > product.price) {
+                      <span class="original-price">₹{{ product.originalPrice | number }}</span>
                     }
                   </div>
-                  <span class="rating-count">({{ $any(product).reviewCount || 128 }})</span>
+
+                  <div class="stock-status-pill" [class.low-stock]="product.stock > 0 && product.stock <= 5" [class.out-stock]="product.stock === 0">
+                    @if (product.stock === 0) {
+                      <span>Out of Stock</span>
+                    } @else if (product.stock <= 5) {
+                      <span>Only {{ product.stock }} Left</span>
+                    } @else {
+                      <span>In Stock</span>
+                    }
+                  </div>
                 </div>
 
-                <!-- Price -->
-                <div class="product-pricing">
-                  <span class="current-price">₹{{ product.price | number }}</span>
-                  @if (product.originalPrice && product.originalPrice > product.price) {
-                    <span class="original-price">₹{{ product.originalPrice | number }}</span>
-                  }
+                <!-- Add to Bag Button -->
+                <div class="card-action-row">
+                  <button 
+                    class="tinore-add-bag-btn" 
+                    [disabled]="product.stock === 0"
+                    (click)="addToCart(product)">
+                    <mat-icon>{{ product.stock === 0 ? 'notifications_active' : 'shopping_bag' }}</mat-icon>
+                    <span>{{ product.stock === 0 ? 'Notify When Available' : 'Add to Bag' }}</span>
+                  </button>
                 </div>
-
-                <!-- Stock -->
-                <div class="stock-indicator" 
-                     [class.in-stock]="product.stock > 5"
-                     [class.low-stock]="product.stock > 0 && product.stock <= 5"
-                     [class.out-of-stock]="product.stock === 0">
-                  @if (product.stock === 0) {
-                    <mat-icon>block</mat-icon>
-                    <span>Out of Stock</span>
-                  } @else if (product.stock <= 5) {
-                    <mat-icon>warning_amber</mat-icon>
-                    <span>Only {{ product.stock }} left</span>
-                  } @else {
-                    <mat-icon>check_circle</mat-icon>
-                    <span>In Stock</span>
-                  }
-                </div>
-
-                <!-- Add to Cart -->
-                <button class="add-cart-btn" 
-                        [disabled]="product.stock === 0"
-                        [class.notify-mode]="product.stock === 0"
-                        (click)="addToCart(product)">
-                  <mat-icon>{{ product.stock === 0 ? 'notifications_active' : 'shopping_bag' }}</mat-icon>
-                  <span>{{ product.stock === 0 ? 'Notify Me' : 'Add to Cart' }}</span>
-                </button>
               </div>
             </article>
           }
@@ -231,4 +218,149 @@
       }
     </main>
   </div>
+
+  <!-- =============================================================
+       TINORE PRODUCT QUICK-VIEW MODAL DIALOG
+  ============================================================= -->
+  @if (quickViewProduct) {
+    <div class="quickview-backdrop" (click)="closeQuickView()"></div>
+    <div class="quickview-modal-container">
+      <div class="tinore-quickview-card" (click)="$event.stopPropagation()">
+        <!-- Close Button -->
+        <button class="quickview-close-btn" (click)="closeQuickView()" aria-label="Close modal">
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <div class="quickview-grid">
+          <!-- Left: Image Gallery -->
+          <div class="quickview-gallery">
+            <div class="main-image-frame">
+              <img [src]="selectedGalleryImage" [alt]="quickViewProduct.name" class="main-view-img" />
+              @if (quickViewProduct.bestseller) {
+                <span class="badge-pill badge-bestseller">
+                  <mat-icon>auto_awesome</mat-icon> Bestseller
+                </span>
+              }
+              @if (quickViewProduct.originalPrice && quickViewProduct.originalPrice > quickViewProduct.price) {
+                <span class="badge-pill badge-discount">
+                  -{{ ((1 - quickViewProduct.price / quickViewProduct.originalPrice) * 100) | number:'1.0-0' }}%
+                </span>
+              }
+            </div>
+
+            <!-- Thumbnail Selector -->
+            @if (productGallery.length > 1) {
+              <div class="thumbnails-row">
+                @for (thumb of productGallery; track thumb) {
+                  <button 
+                    class="thumb-btn" 
+                    [class.active]="selectedGalleryImage === thumb"
+                    (click)="setQuickViewImage(thumb)">
+                    <img [src]="thumb" [alt]="quickViewProduct.name" />
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Right: Details & Purchase Actions -->
+          <div class="quickview-details">
+            <div class="quickview-meta">
+              <span class="product-cat-pill">{{ quickViewProduct.category }}</span>
+              <div class="tinore-stars-row">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <mat-icon [class.active]="star <= (quickViewProduct.rating || 4)">star</mat-icon>
+                }
+                <span class="stars-val">{{ quickViewProduct.rating || 4.8 }} • (128+ verified reviews)</span>
+              </div>
+            </div>
+
+            <h2 class="quickview-title">{{ quickViewProduct.name }}</h2>
+
+            <!-- Price -->
+            <div class="quickview-price-row">
+              <span class="quickview-price">₹{{ quickViewProduct.price | number }}</span>
+              @if (quickViewProduct.originalPrice && quickViewProduct.originalPrice > quickViewProduct.price) {
+                <span class="quickview-orig-price">₹{{ quickViewProduct.originalPrice | number }}</span>
+                <span class="quickview-save-tag">
+                  Save ₹{{ (quickViewProduct.originalPrice - quickViewProduct.price) | number }}
+                </span>
+              }
+            </div>
+
+            <!-- Description & Benefits -->
+            <p class="quickview-description">
+              Expertly formulated for salon-grade efficacy. Enriched with botanical bio-actives to provide long-lasting hydration, barrier nourishment, and a luminous radiant complexion.
+            </p>
+
+            <div class="quickview-features">
+              <div class="qv-feature-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Dermatologist tested & hypoallergenic</span>
+              </div>
+              <div class="qv-feature-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>100% Cruelty-Free & sustainably sourced</span>
+              </div>
+              <div class="qv-feature-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Suitable for sensitive and all skin types</span>
+              </div>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="qv-stock-status" [class.low]="quickViewProduct.stock > 0 && quickViewProduct.stock <= 5" [class.out]="quickViewProduct.stock === 0">
+              @if (quickViewProduct.stock === 0) {
+                <mat-icon>block</mat-icon>
+                <span>Currently Out of Stock</span>
+              } @else if (quickViewProduct.stock <= 5) {
+                <mat-icon>warning_amber</mat-icon>
+                <span>Low Stock — Only {{ quickViewProduct.stock }} items available</span>
+              } @else {
+                <mat-icon>check_circle</mat-icon>
+                <span>In Stock & Ready to Ship</span>
+              }
+            </div>
+
+            <!-- Quantity & Actions -->
+            <div class="quickview-actions-wrap">
+              <div class="qv-qty-picker">
+                <button (click)="updateQuickViewQty(-1)" [disabled]="quickViewQty <= 1" aria-label="Decrease quantity">
+                  <mat-icon>remove</mat-icon>
+                </button>
+                <span class="qv-qty-num">{{ quickViewQty }}</span>
+                <button (click)="updateQuickViewQty(1)" [disabled]="quickViewQty >= (quickViewProduct.stock || 99)" aria-label="Increase quantity">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+
+              <button 
+                class="qv-add-cart-btn" 
+                [disabled]="quickViewProduct.stock === 0"
+                (click)="addQuickViewToCart()">
+                <mat-icon>shopping_bag</mat-icon>
+                <span>Add to Bag • ₹{{ (quickViewProduct.price * quickViewQty) | number }}</span>
+              </button>
+
+              <button 
+                class="qv-wishlist-toggle"
+                [class.active]="$any(quickViewProduct).inWishlist"
+                (click)="toggleWishlist(quickViewProduct)"
+                title="Wishlist">
+                <mat-icon>{{ $any(quickViewProduct).inWishlist ? 'favorite' : 'favorite_border' }}</mat-icon>
+              </button>
+            </div>
+
+            <div class="qv-footer-note">
+              <mat-icon>local_shipping</mat-icon>
+              <span>Complimentary shipping on all orders over ₹999</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Diagnostic Quiz Modal -->
+  <app-skin-quiz #skinQuiz></app-skin-quiz>
 </div>

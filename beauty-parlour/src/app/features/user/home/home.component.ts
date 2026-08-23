@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,16 +6,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { forkJoin } from 'rxjs';
+import { SkinQuizComponent } from '../../../shared/components/skin-quiz/skin-quiz.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule],
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, SkinQuizComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('skinQuiz') skinQuiz!: SkinQuizComponent;
   // Static content - displayed immediately
   services = [
     { 
@@ -98,6 +100,107 @@ export class HomeComponent implements OnInit {
 
   // Active offers/coupons
   activeCoupons: any[] = [];
+
+  // Tinore Skincare 3-Step Routine
+  skincareSteps = [
+    {
+      step: '01',
+      title: 'Gentle Botanical Cleanser',
+      subtitle: 'Purify & Balance',
+      desc: 'Formulated with calendula and green tea to dissolve impurities while preserving natural skin lipid barrier.',
+      icon: 'star',
+      time: 'Step 1 • Morning & Night',
+      image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&h=700&fit=crop'
+    },
+    {
+      step: '02',
+      title: 'Revitalizing Niacinamide Tonic',
+      subtitle: 'Tone & Refine Pores',
+      desc: 'Restores skin pH, minimizes texture, and infuses active botanical antioxidants for immediate luminous radiance.',
+      icon: 'spa',
+      time: 'Step 2 • Morning & Night',
+      image: 'https://images.unsplash.com/photo-1608248597359-07304f58b094?w=600&h=700&fit=crop'
+    },
+    {
+      step: '03',
+      title: 'Deep Bio-Ceramide Hydrator',
+      subtitle: 'Hydrate & Seal Glow',
+      desc: 'A velvety ultra-nourishing cream packed with hyaluronic acid and phyto-ceramides for 48H continuous hydration.',
+      icon: 'spa',
+      time: 'Step 3 • Night Repair',
+      image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=600&h=700&fit=crop'
+    }
+  ];
+
+  // Active Key Ingredients
+  ingredients = [
+    { name: 'Multi-Depth Hyaluronic Acid', desc: 'Draws moisture 1000x its weight into dermal layers for plump, dewy skin.', tag: 'Team', icon: 'opacity' },
+    { name: 'Pure Botanical Vitamin C', desc: 'Neutralizes free radicals, boosts collagen synthesis and fades dark spots.', tag: 'Radiance', icon: 'favorite' },
+    { name: 'Niacinamide 5% + Zinc', desc: 'Refines enlarged pores, regulates sebum, and smooths skin irregularities.', tag: 'Clarity', icon: 'auto_awesome' },
+    { name: 'Organic Cold-Pressed Rosehip', desc: 'Rich in essential omegas 3, 6 & 9 to accelerate nighttime cellular rejuvenation.', tag: 'Anti-Aging', icon: 'local_florist' }
+  ];
+
+  // Category Tabs
+  categories = ['All Experiences', 'Skin & Facials', 'Hair Design', 'Body & Spa', 'Bridal'];
+  selectedCategory = 'All Experiences';
+
+  // Active routine step tab index
+  activeRoutineStep = 0;
+
+  // Before & After Interactive Transformations
+  transformations = [
+    {
+      id: 'bridal',
+      title: 'Royal Bridal Glow & Artistry',
+      category: 'Bridal Couture',
+      description: 'Custom HD bridal skin prep, airbrush radiant finish, and bespoke traditional hair adornment.',
+      beforeImg: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900&q=80',
+      afterImg: 'https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=900&q=80',
+      duration: '3.5 Hours',
+      artist: 'Lead Master Stylist',
+      serviceName: 'Bridal Makeup'
+    },
+    {
+      id: 'facial',
+      title: 'Hydra-Infusion Glass Skin Revival',
+      category: 'Clinical Skin',
+      description: 'Ultrasonic deep pore extraction, active hyaluronic oxygen infusion, and bio-lipid recovery.',
+      beforeImg: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=900&q=80',
+      afterImg: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=900&q=80',
+      duration: '75 Minutes',
+      artist: 'Senior Aesthetician',
+      serviceName: 'Skin Care'
+    },
+    {
+      id: 'hair',
+      title: 'Keratin Silk Smooth & Gloss Balayage',
+      category: 'Hair Artistry',
+      description: 'Deep bond restructuring, frizz elimination, and high-shine dimensional honey gloss.',
+      beforeImg: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=900&q=80',
+      afterImg: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&q=80',
+      duration: '2.5 Hours',
+      artist: 'Creative Hair Director',
+      serviceName: 'Hair Styling'
+    }
+  ];
+  activeTransformationIndex = 0;
+  sliderPosition = 50; // percentage for split reveal
+
+  get currentTransformation() {
+    return this.transformations[this.activeTransformationIndex];
+  }
+
+  onSliderInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.sliderPosition = Number(target.value);
+    this.cdr.markForCheck();
+  }
+
+  setTransformation(index: number): void {
+    this.activeTransformationIndex = index;
+    this.sliderPosition = 50;
+    this.cdr.markForCheck();
+  }
   
   // Loading state for dynamic content
   loadingDynamic = true;
@@ -107,6 +210,14 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     // Load dynamic content in parallel
     this.loadDynamicContent();
+  }
+
+  setCategory(cat: string) {
+    this.selectedCategory = cat;
+  }
+
+  setRoutineStep(idx: number) {
+    this.activeRoutineStep = idx;
   }
 
   loadDynamicContent() {

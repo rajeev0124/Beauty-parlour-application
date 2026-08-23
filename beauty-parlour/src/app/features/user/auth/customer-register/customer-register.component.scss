@@ -4,8 +4,8 @@
 // =============================================================
 
 // Variables
-$primary: #7C3AED;
-$primary-dark: #6D28D9;
+$primary: #C9748A;
+$primary-dark: #B85E75;
 $primary-light: #A78BFA;
 $secondary: #EC4899;
 $text-dark: #111827;
@@ -72,7 +72,7 @@ $success: #10B981;
   &.orb-1 {
     width: 600px !important;
     height: 600px !important;
-    background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%) !important;
+    background: linear-gradient(135deg, #C9748A 0%, #EC4899 100%) !important;
     top: -200px !important;
     right: -100px !important;
     animation: float 20s ease-in-out infinite !important;
