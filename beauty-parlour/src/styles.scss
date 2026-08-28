@@ -10,7 +10,7 @@ html {
   min-height: 100%;
   width: 100%;
   overflow-x: hidden;
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; removed as it conflicts with GSAP ScrollTrigger */
   @include mat.theme((
     color: (primary: mat.$rose-palette, tertiary: mat.$orange-palette),
     typography: Inter,

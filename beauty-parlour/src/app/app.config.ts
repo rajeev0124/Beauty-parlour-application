@@ -22,9 +22,12 @@ function initializeFirebase(firebaseService: FirebaseService) {
   return () => firebaseService.getApp();
 }
 
-// Factory: ping backend on startup to detect Render cold starts
+// Factory: ping backend on startup asynchronously without blocking Angular UI rendering
 function initializeWakeup(wakeupService: WakeupService) {
-  return () => wakeupService.init();
+  return () => {
+    wakeupService.init().subscribe();
+    return Promise.resolve();
+  };
 }
 
 export const appConfig: ApplicationConfig = {

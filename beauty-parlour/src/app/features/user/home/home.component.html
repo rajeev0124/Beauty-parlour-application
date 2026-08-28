@@ -84,7 +84,7 @@
 <div class="marquee-strip">
   <div class="marquee-track">
     <div class="marquee-content">
-      <span class="marquee-item"><mat-icon>star</mat-icon> Award Winning Salon</span>
+      <span class="marquee-item"><mat-icon>star</mat-icon> Award Winning Beauty Parlour</span>
       <span class="marquee-dot">·</span>
       <span class="marquee-item"><mat-icon>verified</mat-icon> Certified Expert Stylists</span>
       <span class="marquee-dot">·</span>
@@ -92,16 +92,16 @@
       <span class="marquee-dot">·</span>
       <span class="marquee-item"><mat-icon>schedule</mat-icon> Open 7 Days a Week</span>
       <span class="marquee-dot">·</span>
-      <span class="marquee-item"><mat-icon>workspace_premium</mat-icon> Premium Salon Products</span>
+      <span class="marquee-item"><mat-icon>workspace_premium</mat-icon> Premium Beauty Products</span>
       <span class="marquee-dot">·</span>
-      <span class="marquee-item"><mat-icon>spa</mat-icon> Personalised Beauty Care</span>
+      <span class="marquee-item"><mat-icon>auto_awesome</mat-icon> Personalised Beauty Care</span>
       <span class="marquee-dot">·</span>
       <span class="marquee-item"><mat-icon>local_offer</mat-icon> First Visit 20% Off</span>
       <span class="marquee-dot">·</span>
       <span class="marquee-item"><mat-icon>calendar_month</mat-icon> Book Online Instantly</span>
       <span class="marquee-dot">·</span>
       <!-- Duplicate for seamless loop -->
-      <span class="marquee-item"><mat-icon>star</mat-icon> Award Winning Salon</span>
+      <span class="marquee-item"><mat-icon>star</mat-icon> Award Winning Beauty Parlour</span>
       <span class="marquee-dot">·</span>
       <span class="marquee-item"><mat-icon>verified</mat-icon> Certified Expert Stylists</span>
       <span class="marquee-dot">·</span>
@@ -109,9 +109,9 @@
       <span class="marquee-dot">·</span>
       <span class="marquee-item"><mat-icon>schedule</mat-icon> Open 7 Days a Week</span>
       <span class="marquee-dot">·</span>
-      <span class="marquee-item"><mat-icon>workspace_premium</mat-icon> Premium Salon Products</span>
+      <span class="marquee-item"><mat-icon>workspace_premium</mat-icon> Premium Beauty Products</span>
       <span class="marquee-dot">·</span>
-      <span class="marquee-item"><mat-icon>spa</mat-icon> Personalised Beauty Care</span>
+      <span class="marquee-item"><mat-icon>auto_awesome</mat-icon> Personalised Beauty Care</span>
       <span class="marquee-dot">·</span>
       <span class="marquee-item"><mat-icon>local_offer</mat-icon> First Visit 20% Off</span>
       <span class="marquee-dot">·</span>
@@ -127,146 +127,156 @@
 <section class="tinore-section routine-section">
   <div class="tinore-container">
     <div class="tinore-section-header text-center">
-      <div class="tinore-pill-badge">
-        <mat-icon>auto_fix_high</mat-icon>
-        <span>Our Signature Rituals</span>
-      </div>
-      <h2 class="tinore-editorial-heading">Our 3-Step <span class="script-italic">Glow</span> System</h2>
+      <h2 #glowHeading class="tinore-editorial-heading glow-rolling-letters">
+        <span class="char-group">
+          <span class="char">O</span><span class="char">u</span><span class="char">r</span><span class="char">&nbsp;</span><span class="char">3</span><span class="char">-</span><span class="char">S</span><span class="char">t</span><span class="char">e</span><span class="char">p</span><span class="char">&nbsp;</span>
+        </span>
+        <span class="script-italic char-group">
+          <span class="char">G</span><span class="char">l</span><span class="char">o</span><span class="char">w</span>
+        </span>
+        <span class="char-group">
+          <span class="char">&nbsp;</span><span class="char">S</span><span class="char">y</span><span class="char">s</span><span class="char">t</span><span class="char">e</span><span class="char">m</span>
+        </span>
+      </h2>
       <p class="tinore-section-sub">
-        Three carefully crafted salon rituals — cleanse, restore, and radiate. Your complete beauty transformation, one step at a time.
+        Three carefully crafted beauty rituals — cleanse, restore, and radiate. Your complete beauty transformation, one step at a time.
       </p>
     </div>
 
-    <!-- Step Navigation Pills -->
-    <div class="routine-step-nav">
-      @for (step of skincareSteps; track step.step; let i = $index) {
-        <button 
-          class="routine-nav-btn" 
-          [class.active]="activeRoutineStep === i"
-          (click)="setRoutineStep(i)">
-          <span class="step-num">{{ step.step }}</span>
-          <span class="step-label">{{ step.subtitle }}</span>
-        </button>
-      }
-    </div>
-
-    <!-- Active Step Showcase -->
-    <div class="routine-showcase-card">
-      <div class="routine-card-grid">
-        <div class="routine-card-img-wrap">
-          <img [src]="skincareSteps[activeRoutineStep].image" [alt]="skincareSteps[activeRoutineStep].title" class="routine-card-img" />
-          <span class="routine-time-tag">
-            <mat-icon>schedule</mat-icon>
-            {{ skincareSteps[activeRoutineStep].time }}
-          </span>
+    <!-- 3D Stacked Routine Showcase -->
+    <div class="routine-3d-showcase">
+      <div class="routine-3d-grid">
+        
+        <!-- Image Card Stack -->
+        <div class="routine-stack-wrapper">
+          @for (step of skincareSteps; track step.step; let i = $index) {
+            <div 
+              class="routine-3d-card"
+              [ngStyle]="getRoutineCardStyle(i)">
+              <img [src]="step.image" [alt]="step.title" class="routine-3d-img" draggable="false" />
+              <div class="routine-3d-card-overlay">
+                <span class="routine-time-tag">
+                  <mat-icon>schedule</mat-icon>
+                  {{ step.time }}
+                </span>
+              </div>
+            </div>
+          }
         </div>
-        <div class="routine-card-content">
-          <span class="routine-step-indicator">STEP {{ skincareSteps[activeRoutineStep].step }}</span>
-          <h3 class="routine-card-title">{{ skincareSteps[activeRoutineStep].title }}</h3>
-          <p class="routine-card-desc">{{ skincareSteps[activeRoutineStep].desc }}</p>
 
-          <div class="routine-highlights">
-            <div class="highlight-item">
-              <mat-icon>check_circle</mat-icon>
-              <span>Performed by certified beauty experts</span>
+        <!-- Text Area and Controls -->
+        <div class="routine-3d-content-area">
+          <!-- Text Content Wrapper with fade animation -->
+          <div class="routine-3d-text" [attr.data-step]="skincareSteps[activeRoutineStep].step">
+            <span class="routine-step-indicator">STEP {{ skincareSteps[activeRoutineStep].step }}</span>
+            <h3 class="routine-card-title">{{ skincareSteps[activeRoutineStep].title }}</h3>
+            <p class="routine-card-desc">{{ skincareSteps[activeRoutineStep].desc }}</p>
+
+            <div class="routine-highlights">
+              <div class="highlight-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Performed by certified beauty experts</span>
+              </div>
+              <div class="highlight-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Premium beauty products only</span>
+              </div>
+              <div class="highlight-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Personalised to your skin type</span>
+              </div>
             </div>
-            <div class="highlight-item">
-              <mat-icon>check_circle</mat-icon>
-              <span>Premium salon-grade products only</span>
-            </div>
-            <div class="highlight-item">
-              <mat-icon>check_circle</mat-icon>
-              <span>Personalised to your skin type</span>
-            </div>
-          </div>
 
-          <div class="routine-actions">
-            <!-- Liquid Carve Button -->
-            <a 
-              routerLink="/book" 
-              class="liquid-carve-btn"
-              (pointerenter)="onLiquidPointerEnter($event)"
-              (pointermove)="onLiquidPointerMove($event)"
-              (pointerleave)="onLiquidPointerLeave()"
-              aria-label="Book This Ritual">
-              
-              <!-- SVG Liquid Goo Mask Filter & Layers -->
-              <svg class="liquid-carve-svg" aria-hidden="true" width="100%" height="100%">
-                <defs>
-                  <filter id="goo-carve-filter">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
-                    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" />
-                  </filter>
-                  <mask id="bite-carve-mask">
-                    <rect x="0" y="0" width="100%" height="100%" fill="#ffffff" />
-                    <g 
-                      class="liquid-bite-blob"
-                      [style.transform]="'translate(' + liquidBlobX + 'px, ' + liquidBlobY + 'px) scale(' + liquidScale + ')'">
-                      <circle cx="50%" cy="50%" r="50" fill="#000000" />
-                    </g>
-                  </mask>
-                </defs>
 
-                <!-- Underlying Reveal Layer (Vibrant Rose-Gold Reveal seen through the subtractive liquid carve) -->
-                <g filter="url(#goo-carve-filter)">
-                  <rect x="0" y="0" width="100%" height="100%" rx="30" ry="30" fill="#C9748A" />
-                </g>
+            
+            <div class="routine-actions mt-6">
+              <!-- Liquid Carve Button -->
+              <a 
+                routerLink="/book" 
+                class="liquid-carve-btn"
+                (pointerenter)="onLiquidPointerEnter($event)"
+                (pointermove)="onLiquidPointerMove($event)"
+                (pointerleave)="onLiquidPointerLeave()"
+                aria-label="Book This Ritual">
+                
+                <!-- SVG Liquid Goo Mask Filter & Layers -->
+                <svg class="liquid-carve-svg" aria-hidden="true" width="100%" height="100%">
+                  <defs>
+                    <filter id="goo-carve-filter">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
+                      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" />
+                    </filter>
+                    <mask id="bite-carve-mask">
+                      <rect x="0" y="0" width="100%" height="100%" fill="#ffffff" />
+                      <g 
+                        class="liquid-bite-blob"
+                        [style.transform]="'translate(' + liquidBlobX + 'px, ' + liquidBlobY + 'px) scale(' + liquidScale + ')'">
+                        <circle cx="50%" cy="50%" r="50" fill="#000000" />
+                      </g>
+                    </mask>
+                  </defs>
 
-                <!-- Main Pill Surface Layer (Deep Dark Surface, knocked out by liquid bite mask) -->
-                <g filter="url(#goo-carve-filter)">
-                  <rect x="0" y="0" width="100%" height="100%" rx="30" ry="30" fill="#1C1C1C" mask="url(#bite-carve-mask)" />
-                </g>
-              </svg>
+                  <!-- Underlying Reveal Layer -->
+                  <g filter="url(#goo-carve-filter)">
+                    <rect x="0" y="0" width="100%" height="100%" rx="30" ry="30" fill="#C9748A" />
+                  </g>
 
-              <!-- Foreground Content -->
-              <span class="liquid-btn-content">
-                <mat-icon>calendar_month</mat-icon>
-                <span>Book This Ritual</span>
-              </span>
-            </a>
+                  <!-- Main Pill Surface Layer -->
+                  <g filter="url(#goo-carve-filter)">
+                    <rect x="0" y="0" width="100%" height="100%" rx="30" ry="30" fill="#1C1C1C" mask="url(#bite-carve-mask)" />
+                  </g>
+                </svg>
 
-            <!-- 👁️ Vengence UI Creepy Button for 60-Sec Skin Quiz -->
-            <button 
-              #creepyBtn
-              type="button" 
-              class="creepy-skin-quiz-btn"
-              [class.is-hovered]="isCreepyHovered"
-              (mousemove)="updateCreepyEyes($event, creepyBtn)"
-              (touchmove)="updateCreepyEyes($event, creepyBtn)"
-              (mouseleave)="resetCreepyEyes()"
-              (click)="skinQuiz.open()"
-              aria-label="Take 60-Second Skin Quiz">
+                <!-- Foreground Content -->
+                <span class="liquid-btn-content">
+                  <mat-icon>calendar_month</mat-icon>
+                  <span>Book This Ritual</span>
+                </span>
+              </a>
 
-              <!-- Animated Blinking Eyes Container (Underneath) -->
-              <span class="creepy-eyes-container" aria-hidden="true">
-                <!-- Left Eye -->
-                <span class="creepy-eye left-eye">
-                  <span 
-                    class="creepy-pupil"
-                    [style.transform]="'translate(calc(-50% + ' + (creepyEyeX * 50) + '%), calc(-50% + ' + (creepyEyeY * 50) + '%))'">
+              <!-- 👁️ Vengence UI Creepy Button for 60-Sec Skin Quiz -->
+              <button 
+                #creepyBtn
+                type="button" 
+                class="creepy-skin-quiz-btn"
+                [class.is-hovered]="isCreepyHovered"
+                (mousemove)="updateCreepyEyes($event, creepyBtn)"
+                (touchmove)="updateCreepyEyes($event, creepyBtn)"
+                (mouseleave)="resetCreepyEyes()"
+                (click)="skinQuiz.open()"
+                aria-label="Take 60-Second Skin Quiz">
+
+                <!-- Animated Blinking Eyes Container (Underneath) -->
+                <span class="creepy-eyes-container" aria-hidden="true">
+                  <!-- Left Eye -->
+                  <span class="creepy-eye left-eye">
+                    <span 
+                      class="creepy-pupil"
+                      [style.transform]="'translate(calc(-50% + ' + (creepyEyeX * 50) + '%), calc(-50% + ' + (creepyEyeY * 50) + '%))'">
+                    </span>
+                  </span>
+                  <!-- Right Eye -->
+                  <span class="creepy-eye right-eye">
+                    <span 
+                      class="creepy-pupil"
+                      [style.transform]="'translate(calc(-50% + ' + (creepyEyeX * 50) + '%), calc(-50% + ' + (creepyEyeY * 50) + '%))'">
+                    </span>
                   </span>
                 </span>
-                <!-- Right Eye -->
-                <span class="creepy-eye right-eye">
-                  <span 
-                    class="creepy-pupil"
-                    [style.transform]="'translate(calc(-50% + ' + (creepyEyeX * 50) + '%), calc(-50% + ' + (creepyEyeY * 50) + '%))'">
-                  </span>
+
+                <!-- Spring-Rotated Button Cover (Upper Surface) -->
+                <span class="creepy-btn-cover">
+                  <mat-icon>auto_awesome</mat-icon>
+                  <span>60-Sec Skin Quiz</span>
                 </span>
-              </span>
 
-              <!-- Spring-Rotated Button Cover (Upper Surface) -->
-              <span class="creepy-btn-cover">
-                <mat-icon>auto_awesome</mat-icon>
-                <span>60-Sec Skin Quiz</span>
-              </span>
-
-              <!-- Invisible Layout Spacer for Width/Height -->
-              <span class="creepy-btn-spacer">
-                <mat-icon>auto_awesome</mat-icon>
-                <span>60-Sec Skin Quiz</span>
-              </span>
-            </button>
+                <!-- Invisible Layout Spacer for Width/Height -->
+                <span class="creepy-btn-spacer">
+                  <mat-icon>auto_awesome</mat-icon>
+                  <span>60-Sec Skin Quiz</span>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -281,16 +291,15 @@
   <div class="tinore-container">
     <div class="tinore-section-header">
       <div class="header-left">
-        <div class="tinore-pill-badge">
-          <mat-icon>spa</mat-icon>
-          <span>What We Offer</span>
-        </div>
-        <h2 class="tinore-editorial-heading">Curated Beauty <span class="script-italic">Experiences</span></h2>
+        <h2 class="tinore-editorial-heading typewriter-heading">
+          <span>{{ currentTypewriterMain }}</span><span class="script-italic">{{ currentTypewriterItalic }}</span><span class="typewriter-cursor"></span>
+        </h2>
       </div>
       <div class="header-right">
         <a routerLink="/services" class="tinore-link-arrow">
           <span>View All Services</span>
           <mat-icon>arrow_forward</mat-icon>
+          <span class="link-arrow-dot"></span>
         </a>
       </div>
     </div>
@@ -311,10 +320,14 @@
 
     <!-- Services Grid -->
     <div class="tinore-services-grid">
-      @for (service of services; track service.name; let i = $index) {
-        <div class="tinore-service-card" [class.featured-card]="service.featured">
+      @for (service of filteredServices; track service.name; let i = $index) {
+        <div class="tinore-service-card" 
+             [class.featured-card]="service.featured">
           <div class="service-card-image-box">
-            <img [src]="service.image" [alt]="service.name" loading="lazy" />
+            <app-auto-moving-image 
+              [src]="service.image" 
+              [productName]="service.name">
+            </app-auto-moving-image>
             <div class="service-price-pill">
               <span>From ₹{{ service.price }}</span>
             </div>
@@ -333,13 +346,13 @@
               <h3 class="service-title">{{ service.name }}</h3>
             </div>
             <p class="service-desc">{{ service.desc }}</p>
-            <div class="service-footer-action">
-              <a routerLink="/book" class="service-book-btn">
-                <span>Book Ritual</span>
-                <mat-icon>calendar_today</mat-icon>
-              </a>
-            </div>
           </div>
+        </div>
+      } @empty {
+        <div class="services-empty-state">
+          <mat-icon>search_off</mat-icon>
+          <p>No services found in this category yet.</p>
+          <button class="cat-tab-btn active" (click)="setCategory('All Experiences')">View All Services</button>
         </div>
       }
     </div>
@@ -352,13 +365,16 @@
 <section class="tinore-section transformation-section">
   <div class="tinore-container">
     <div class="tinore-section-header text-center">
-      <div class="tinore-pill-badge">
-        <mat-icon>compare</mat-icon>
-        <span>Before & After • Real Clients</span>
-      </div>
-      <h2 class="tinore-editorial-heading">See the <span class="script-italic">Transformation</span></h2>
+      <h2 #transformationHeading class="tinore-editorial-heading rotating-text-heading">
+        <span>See the </span>
+        <span class="script-italic rotating-badge">
+          @for (char of currentRotatingChars; track $index) {
+            <span class="char" [innerHTML]="char === ' ' ? '&nbsp;' : char"></span>
+          }
+        </span>
+      </h2>
       <p class="tinore-section-sub">
-        Drag the interactive slider to reveal authentic salon transformations and clinical skincare results.
+        Drag the interactive slider to reveal authentic beauty transformations and clinical skincare results.
       </p>
     </div>
 
@@ -377,21 +393,25 @@
 
     <!-- Split Image Comparison Box -->
     <div class="transformation-stage">
-      <div class="comparison-container">
+      <div 
+        class="comparison-container"
+        (mouseenter)="onComparisonHover(true)"
+        (mouseleave)="onComparisonHover(false)"
+        (touchstart)="onComparisonHover(true)"
+        (touchend)="onComparisonHover(false)">
         <!-- After Image (Base) -->
         <img [src]="currentTransformation.afterImg" alt="After Transformation" class="comp-img after-image" />
-        <span class="comp-badge after-badge">AFTER</span>
 
         <!-- Before Image (Clipped) -->
-        <div class="before-image-wrap" [style.width.%]="sliderPosition">
+        <div class="before-image-wrap" [style.clip-path]="'polygon(0% 0%, ' + sliderPosition + '% 0%, ' + sliderPosition + '% 100%, 0% 100%)'">
           <img [src]="currentTransformation.beforeImg" alt="Before Transformation" class="comp-img before-image" />
-          <span class="comp-badge before-badge">BEFORE</span>
         </div>
 
         <!-- Divider Line & Handle -->
         <div class="slider-divider-line" [style.left.%]="sliderPosition">
           <div class="slider-drag-handle">
             <mat-icon>unfold_more</mat-icon>
+            <div class="handle-glow"></div>
           </div>
         </div>
 
@@ -401,7 +421,8 @@
           min="0" 
           max="100" 
           [value]="sliderPosition" 
-          (input)="onSliderInput($event)" 
+          (input)="onSliderInput($event)"
+          (change)="onSliderChange()"
           class="slider-range-input" 
           aria-label="Drag before and after slider" 
         />
@@ -425,13 +446,38 @@
         </div>
 
         <div class="trans-actions">
-          <a routerLink="/book" class="tinore-btn-primary">
-            <span>Book This Ritual</span>
-            <mat-icon>arrow_forward</mat-icon>
-          </a>
-          <a routerLink="/gallery" class="tinore-btn-outline">
-            <span>Explore Gallery</span>
-          </a>
+          <app-flip-button
+            label="Book This Ritual"
+            hoverLabel="Reserve Slot"
+            icon="calendar_today"
+            hoverIcon="sparkles"
+            routerLink="/book"
+            direction="down"
+            radius="32px"
+            fill="linear-gradient(135deg, #1C1C1C 0%, #2A2A2A 100%)"
+            textColor="#FFFFFF"
+            hoverFill="linear-gradient(135deg, #C9748A 0%, #B9386E 100%)"
+            hoverTextColor="#FFFFFF">
+          </app-flip-button>
+          <app-radial-reveal-button
+            label="Explore Gallery"
+            link="/gallery"
+            [addIcon]="true"
+            iconType="mat-icon"
+            iconSymbol="arrow_forward"
+            iconSide="right"
+            [iconSize]="16"
+            [rounded]="100"
+            padding="12px 24px"
+            fill="transparent"
+            textColor="#1C1C1C"
+            borderColor="#C9748A"
+            borderWidth="1.5px"
+            borderStyle="solid"
+            hoverFill="#C9748A"
+            hoverTextColor="#FFFFFF"
+            hoverIconColor="#FFFFFF">
+          </app-radial-reveal-button>
         </div>
       </div>
     </div>
@@ -439,119 +485,117 @@
 </section>
 
 <!-- =============================================================
-     WHY CHOOSE Sindhura Makeovers — USPs
+     USPs
 ============================================================= -->
 <section class="tinore-section ingredients-section">
   <div class="tinore-container">
     <div class="tinore-section-header text-center">
-      <div class="tinore-pill-badge">
-        <mat-icon>local_florist</mat-icon>
-        <span>Why Choose Us</span>
-      </div>
-      <h2 class="tinore-editorial-heading">Why Clients <span class="script-italic">Love Us</span></h2>
+      <h2 class="tinore-editorial-heading">
+        <span>{{ currentWhyClientsPrefix }}</span><span class="script-italic type-highlight">{{ currentWhyClientsTyped }}</span><span class="originkit-type-cursor" [class.hidden]="isWhyClientsActivelyTyping">_</span>
+      </h2>
       <p class="tinore-section-sub">
         A Sindhura Makeovers built around you — from your first appointment to your last finishing touch.
       </p>
     </div>
 
     <div class="ingredients-grid">
-      @for (ing of ingredients; track ing.name) {
-        <div class="ingredient-card">
+      @for (ing of ingredients; track ing.name; let i = $index) {
+        <div 
+          class="ingredient-card" 
+          [style.--accent-color]="ing.color"
+          [style.--accent-bg]="ing.accentBg"
+          [style.--accent-glow]="ing.glow"
+          [style.animation-delay]="(i * 120) + 'ms'">
+          <!-- Top Ambient Glow Aura -->
+          <div class="card-aura"></div>
+
           <div class="ingredient-header">
-            <div class="ingredient-icon-wrap">
+            <div class="ingredient-icon-wrap" [style.background]="ing.accentBg" [style.color]="ing.color">
               <mat-icon>{{ ing.icon }}</mat-icon>
             </div>
-            <span class="ingredient-tag">{{ ing.tag }}</span>
+            <span class="ingredient-tag" [style.color]="ing.color" [style.border-color]="ing.color + '40'">{{ ing.tag }}</span>
           </div>
+
+          <div class="ingredient-stat-badge">
+            <span class="stat-number" [style.color]="ing.color">{{ ing.stat }}</span>
+            <span class="stat-text">{{ ing.statLabel }}</span>
+          </div>
+
           <h3 class="ingredient-name">{{ ing.name }}</h3>
           <p class="ingredient-desc">{{ ing.desc }}</p>
-        </div>
-      }
-    </div>
-  </div>
-</section>
 
-<!-- =============================================================
-     CUSTOMER REVIEWS & SOCIAL PROOF
-============================================================= -->
-<section class="tinore-section testimonials-section">
-  <div class="tinore-container">
-    <div class="tinore-section-header text-center">
-      <div class="tinore-pill-badge">
-        <mat-icon>favorite</mat-icon>
-        <span>Client Love</span>
-      </div>
-      <h2 class="tinore-editorial-heading">Loved by <span class="script-italic">Our Clients</span></h2>
-      
-      <!-- Rating Summary Pill -->
-      <div class="tinore-rating-pill">
-        <div class="stars-row">
-          @for (s of [1,2,3,4,5]; track s) {
-            <mat-icon class="gold-star">star</mat-icon>
-          }
-        </div>
-        <span class="rating-badge-text">{{ reviewStats.avgRating | number:'1.1-1' }} / 5.0 • Based on {{ reviewStats.totalReviews }}+ reviews</span>
-      </div>
-    </div>
-
-    <div class="tinore-reviews-grid">
-      @for (review of reviews; track review._id || review.userName) {
-        <div class="tinore-review-card">
-          <div class="review-card-top">
-            <div class="review-avatar">
-              {{ review.userName?.charAt(0) || 'U' }}
-            </div>
-            <div class="review-user-info">
-              <span class="review-user-name">{{ review.userName }}</span>
-              <span class="review-badge-verified">
-                <mat-icon>verified</mat-icon> Verified Client
-              </span>
-            </div>
-            <div class="review-stars-single">
-              @for (s of [1,2,3,4,5]; track s) {
-                <mat-icon [class.active-star]="s <= review.rating">star</mat-icon>
-              }
-            </div>
+          <div class="ingredient-card-footer">
+            <span class="active-formula-dot" [style.background]="ing.color"></span>
+            <span class="active-formula-text">Clinical Grade Active</span>
           </div>
-          <p class="review-quote-text">“{{ review.comment }}”</p>
         </div>
       }
     </div>
   </div>
 </section>
 
+
+
 <!-- =============================================================
-     TINORE CTA SECTION
+     TINORE CTA SECTION — Warm Silk & Champagne Rose
 ============================================================= -->
 <section class="tinore-cta-banner">
-  <div class="cta-glow-effect"></div>
   <div class="tinore-container">
     <div class="tinore-cta-card">
-      <div class="cta-badge-pill">
-        <mat-icon>auto_awesome</mat-icon>
-        <span>Your Beauty Journey Starts Here</span>
+      <!-- Silk Champagne Ambient Glows -->
+      <div class="silk-ambient-bg">
+        <div class="silk-glow-top"></div>
+        <div class="silk-glow-bottom"></div>
+        <div class="silk-pattern-overlay"></div>
       </div>
-      <h2 class="cta-editorial-heading">Experience the <span class="script-italic">Luxe Transformation</span></h2>
-      <p class="cta-body-text">
-        Book your first appointment today and let our expert stylists craft a look that's perfectly you — guaranteed to leave you glowing.
-      </p>
-      <div class="cta-action-row">
-        <a routerLink="/book" class="tinore-btn-cube-wrap" aria-label="Book My Appointment">
-          <span class="cube-inner">
-            <span class="cube-face cube-face-front">
-              <mat-icon>calendar_month</mat-icon>
-              <span>Book My Appointment</span>
-            </span>
-            <span class="cube-face cube-face-back">
-              <span>Reserve Ritual</span>
-              <mat-icon>spa</mat-icon>
-            </span>
-          </span>
-        </a>
-        <a routerLink="/products" class="tinore-btn-outline cta-outline">
-          <mat-icon>shopping_bag</mat-icon>
-          <span>Browse Products</span>
-        </a>
+
+      <div class="cta-content-inner">
+        <h2 class="cta-editorial-heading">
+          <app-mechanical-flip
+            text="Experience the Luxe Transformation"
+            [highlightWords]="['Luxe', 'Transformation']"
+            highlightClass="script-italic">
+          </app-mechanical-flip>
+        </h2>
+        <p class="cta-body-text">
+          Book your appointment today and let our master artisans craft a bespoke look that celebrates your natural radiance.
+        </p>
+
+        <div class="cta-action-row">
+          <app-flip-button
+            label="Book My Appointment"
+            hoverLabel="Reserve Ritual"
+            icon="calendar_month"
+            hoverIcon="auto_awesome"
+            routerLink="/book"
+            direction="down"
+            radius="9999px"
+            fill="linear-gradient(135deg, #1C1C1C 0%, #2D2628 100%)"
+            textColor="#FFFFFF"
+            hoverFill="linear-gradient(135deg, #C9748A 0%, #A84860 100%)"
+            hoverTextColor="#FFFFFF">
+          </app-flip-button>
+
+          <app-radial-reveal-button
+            label="Browse Products"
+            link="/products"
+            [addIcon]="true"
+            iconType="mat-icon"
+            iconSymbol="shopping_bag"
+            iconSide="left"
+            [iconSize]="17"
+            [rounded]="100"
+            padding="14px 28px"
+            fill="#FFFFFF"
+            textColor="#1C1C1C"
+            borderColor="#E6D3D8"
+            borderWidth="1.5px"
+            borderStyle="solid"
+            hoverFill="#C9748A"
+            hoverTextColor="#FFFFFF"
+            hoverIconColor="#FFFFFF">
+          </app-radial-reveal-button>
+        </div>
       </div>
     </div>
   </div>

@@ -159,7 +159,6 @@ export class StaffComponent implements OnInit, AfterViewInit {
       'junior stylist': { bg: '#d1fae5', text: '#059669' },
       'skin specialist': { bg: '#fce7f3', text: '#db2777' },
       'nail technician': { bg: '#fee2e2', text: '#dc2626' },
-      'massage therapist': { bg: '#fef3c7', text: '#d97706' },
       'bridal expert': { bg: '#fce7f3', text: '#be185d' },
     };
     const lowerRole = (role || '').toLowerCase();

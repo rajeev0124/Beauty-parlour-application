@@ -66,25 +66,8 @@
   <!-- Main Content -->
   <main class="main-content">
     <div class="content-wrapper">
-      @if (!isLoggedIn) {
-        <!-- Auth Required -->
-        <div class="auth-card">
-          <div class="auth-icon">
-            <mat-icon>account_circle</mat-icon>
-          </div>
-          <h2>Sign In Required</h2>
-          <p>Please sign in to view and manage your appointments</p>
-          <button class="btn-primary" (click)="goToSignIn()">
-            <mat-icon>login</mat-icon>
-            <span>Sign In</span>
-          </button>
-          <p class="auth-hint">
-            Don't have an account? <a routerLink="/sign-up">Create one</a>
-          </p>
-        </div>
-      } @else {
-        <!-- Tab Navigation -->
-        <nav class="tab-nav">
+      <!-- Tab Navigation -->
+      <nav class="tab-nav">
           <button class="tab-item" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
             <div class="tab-icon">
               <mat-icon>event</mat-icon>
@@ -140,17 +123,6 @@
               </div>
               <h3>Something went wrong</h3>
               <p>{{ errorMessage }}</p>
-              @if (errorMessage.includes('sign in')) {
-                <button class="btn-primary" (click)="goToSignIn()">
-                  <mat-icon>login</mat-icon>
-                  <span>Sign In</span>
-                </button>
-              } @else {
-                <button class="btn-outline" (click)="loadAppointments()">
-                  <mat-icon>refresh</mat-icon>
-                  <span>Try Again</span>
-                </button>
-              }
             </div>
           } @else if (filteredAppointments.length > 0) {
             <!-- Appointments List -->
@@ -235,7 +207,6 @@
             </div>
           }
         </div>
-      }
     </div>
   </main>
 </div>

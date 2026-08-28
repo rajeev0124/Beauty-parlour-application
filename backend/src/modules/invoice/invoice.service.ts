@@ -46,7 +46,7 @@ export class InvoiceService {
 
         // Company Logo/Name
         doc.fontSize(28).fillColor('#FFFFFF').text('Beauty Parlour', 50, 40);
-        doc.fontSize(10).text('Premium Salon & Spa', 50, 75);
+        doc.fontSize(10).text('Premium Beauty Care', 50, 75);
 
         // Invoice label
         doc.fontSize(20).text('INVOICE', doc.page.width - 150, 50, {

@@ -1,147 +1,99 @@
-<div class="about-page">
-  <!-- Hero Section with Image -->
-  <section class="hero-section">
-    <div class="hero-bg-image"></div>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <div class="hero-badge">
-        <mat-icon>auto_awesome</mat-icon>
-        <span>About Us</span>
-      </div>
-      <h1 class="hero-title">Where Beauty Meets Excellence</h1>
-      <p class="hero-subtitle">Discover our story, meet our talented team, and learn why thousands trust us for their beauty transformations</p>
-      <div class="hero-actions">
-        <a routerLink="/book" class="hero-btn primary">
-          <mat-icon>calendar_today</mat-icon>
-          <span>Book Appointment</span>
-        </a>
-        <a href="#contact" class="hero-btn secondary">
-          <span>Contact Us</span>
-          <mat-icon>arrow_downward</mat-icon>
-        </a>
-      </div>
-    </div>
-  </section>
+<div class="about-page tinore-about-page">
+  <!-- 1. CINEMATIC LUXURY HERO -->
+  <section class="editorial-hero">
+    <!-- Right-Side Cosmetic & Blossom Artwork Only -->
+    <div class="hero-right-decor" aria-hidden="true"></div>
 
-  <!-- Stats Section -->
-  <section class="stats-section">
-    <div class="stats-container">
-      @for (stat of stats; track stat.label) {
-        <div class="stat-card">
-          <div class="stat-icon">
-            <mat-icon>{{ stat.icon }}</mat-icon>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ stat.value }}</span>
-            <span class="stat-label">{{ stat.label }}</span>
-          </div>
-        </div>
-      }
-    </div>
-  </section>
+    <div class="hero-full-container">
+      <div class="hero-inner-container">
+        <h1 class="hero-headline" aria-label="Where Artistry Meets Individual Grace">
+          {{ displayedText }}<span class="typewriter-cursor" [class.cursor-off]="!cursorOn"></span>
+        </h1>
 
-  <!-- Story Section -->
-  <section class="story-section">
-    <div class="story-container">
-      <div class="story-visual">
-        <div class="visual-main">
-          <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80" alt="Our Salon">
+      <p class="hero-lede">
+        A premier sanctuary dedicated to bespoke Indian bridal craftsmanship, dermatological skincare therapies, and restorative hair artistry.
+      </p>
+
+      <!-- Action Buttons with Home Page 3D Flip & Slide Animations -->
+      <div class="hero-cta-group tinore-hero-btn-row">
+        <!-- 3D Cube Flip Button -->
+        <a routerLink="/book" class="tinore-btn-cube-wrap" aria-label="Book Appointment">
+          <span class="cube-inner">
+            <!-- Face 1 (Front) -->
+            <span class="cube-face cube-face-front">
+              <mat-icon>calendar_month</mat-icon>
+              <span>Reserve an Appointment</span>
+            </span>
+            <!-- Face 2 (Flipped on Hover) -->
+            <span class="cube-face cube-face-back">
+              <span>Reserve Your Slot</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </span>
+          </span>
+        </a>
+
+        <!-- Interactive Label Slide Button with Animated Badge -->
+        <a routerLink="/services" class="tinore-btn-slide-wrap" aria-label="Explore Studio Menu">
+          <span class="btn-slide-label-stack">
+            <!-- Invisible natural spacer -->
+            <span class="slide-spacer">Explore Studio Menu</span>
+            <!-- Top resting label (slides up on hover) -->
+            <span class="slide-label slide-label-rest">Explore Studio Menu</span>
+            <!-- Bottom incoming duplicate (slides in on hover) -->
+            <span class="slide-label slide-label-hover">Explore Studio Menu</span>
+          </span>
+          <!-- Animated Badge Icon that swaps on angle -->
+          <span class="btn-slide-badge">
+            <span class="badge-icon-rest">
+              <mat-icon>arrow_outward</mat-icon>
+            </span>
+            <span class="badge-icon-hover">
+              <mat-icon>arrow_outward</mat-icon>
+            </span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Quick Trust Indicators in Hero -->
+      <div class="hero-highlights-strip">
+        <div class="highlight-item">
+          <mat-icon>workspace_premium</mat-icon>
+          <span>11+ Years of Mastery</span>
         </div>
-        <div class="visual-accent">
-          <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80" alt="Beauty Services">
+        <span class="highlight-sep">•</span>
+        <div class="highlight-item">
+          <mat-icon>favorite</mat-icon>
+          <span>15,000+ Happy Clients</span>
         </div>
-        <div class="visual-badge">
+        <span class="highlight-sep">•</span>
+        <div class="highlight-item">
           <mat-icon>verified</mat-icon>
-          <span>Since 2013</span>
+          <span>100% Certified Formulations</span>
         </div>
       </div>
-      
-      <div class="story-content">
-        <span class="section-tag">
-          <mat-icon>history</mat-icon>
-          Our Story
-        </span>
-        <h2 class="section-title">A Decade of Redefining Beauty</h2>
-        <p class="story-text">
-          Founded in 2013, Sindhura Makeovers started as a small salon with a big vision — to make 
-          premium beauty services accessible to everyone. What began as a team of 3 passionate 
-          stylists has grown into a full-service beauty destination trusted by thousands.
-        </p>
-        <p class="story-text">
-          We believe beauty is personal. That's why every service we offer is tailored to 
-          your unique needs, using only the finest products and the latest techniques from 
-          around the world.
-        </p>
-        
-        <div class="story-highlights">
-          <div class="highlight-item">
-            <mat-icon>check_circle</mat-icon>
-            <span>Premium International Products</span>
-          </div>
-          <div class="highlight-item">
-            <mat-icon>check_circle</mat-icon>
-            <span>Certified Expert Professionals</span>
-          </div>
-          <div class="highlight-item">
-            <mat-icon>check_circle</mat-icon>
-            <span>Personalized Consultations</span>
-          </div>
-          <div class="highlight-item">
-            <mat-icon>check_circle</mat-icon>
-            <span>Hygiene & Safety Standards</span>
+
+        <div class="hero-live-pill">
+          <div class="hero-live-pill-inner">
+            <span class="live-dot"></span>
+            <span>Studio Open Today • 9:00 AM – 8:30 PM • Walk-ins & Bookings</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Values Section -->
-  <section class="values-section">
-    <div class="values-container">
-      <div class="section-header">
-        <span class="section-tag">
-          <mat-icon>stars</mat-icon>
-          Our Values
-        </span>
-        <h2 class="section-title">What Sets Us Apart</h2>
-        <p class="section-desc">Our commitment to excellence drives everything we do</p>
-      </div>
-      
-      <div class="values-grid">
-        @for (value of values; track value.title; let i = $index) {
-          <div class="value-card" [style.animation-delay]="(i * 100) + 'ms'">
-            <div class="value-icon">
-              <mat-icon>{{ value.icon }}</mat-icon>
+  <!-- 2. REFINED FLOATING KPI CAPSULE -->
+  <section class="stats-capsule-section">
+    <div class="stats-capsule-wrapper">
+      <div class="stats-grid">
+        @for (stat of stats; track stat.label) {
+          <div class="stat-card">
+            <div class="stat-icon-halo">
+              <mat-icon>{{ stat.icon }}</mat-icon>
             </div>
-            <h3>{{ value.title }}</h3>
-            <p>{{ value.description }}</p>
-          </div>
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- Timeline/Journey Section -->
-  <section class="journey-section">
-    <div class="journey-container">
-      <div class="section-header">
-        <span class="section-tag">
-          <mat-icon>timeline</mat-icon>
-          Our Journey
-        </span>
-        <h2 class="section-title">Milestones That Define Us</h2>
-        <p class="section-desc">From humble beginnings to becoming a trusted beauty destination</p>
-      </div>
-      
-      <div class="timeline">
-        @for (milestone of milestones; track milestone.year; let i = $index; let last = $last) {
-          <div class="timeline-item" [class.last]="last">
-            <div class="timeline-marker">
-              <span class="year">{{ milestone.year }}</span>
-            </div>
-            <div class="timeline-content">
-              <h3>{{ milestone.title }}</h3>
-              <p>{{ milestone.description }}</p>
+            <div class="stat-meta">
+              <span class="stat-number">{{ stat.value }}</span>
+              <span class="stat-caption">{{ stat.label }}</span>
             </div>
           </div>
         }
@@ -149,38 +101,129 @@
     </div>
   </section>
 
-  <!-- Team Section -->
-  <section class="team-section">
-    <div class="team-container">
-      <div class="section-header">
-        <span class="section-tag">
-          <mat-icon>groups</mat-icon>
-          Our Team
-        </span>
-        <h2 class="section-title">Meet the Experts</h2>
-        <p class="section-desc">Our talented team is dedicated to making you look and feel your best</p>
+  <!-- 3. THE FOUNDER'S VISION & EDITORIAL STORY -->
+  <section class="editorial-story-section">
+    <div class="section-container">
+      <div class="story-layout-grid">
+        <!-- Visual Gallery Column -->
+        <div class="story-imagery-col anim-3d anim-slide-left">
+          <div class="primary-visual-frame">
+            <img
+              src="https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=800&q=85"
+              alt="Artisan Bridal Styling Session"
+              class="primary-img"
+            >
+            <div class="img-gold-border"></div>
+          </div>
+          <div class="secondary-visual-frame">
+            <img
+              src="https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?w=600&q=85"
+              alt="Bridal Elegance"
+              class="secondary-img"
+            >
+          </div>
+        </div>
+
+        <!-- Narrative Content Column -->
+        <div class="story-narrative-col anim-3d anim-slide-right">
+          <h2 class="editorial-title">
+            Where Science Meets <span class="highlight-serif">Bespoke Elegance</span>
+          </h2>
+
+          <p class="narrative-p lead">
+            Founded in 2013 by master artist Sindhura Sharma, <strong>Sindhura Makeovers</strong> unites high-fashion bridal artistry and advanced dermatological care within a peaceful, luxury sanctuary.
+          </p>
+
+          <p class="narrative-p">
+            We believe in personalized beauty. From comprehensive skin consultations to customized bridal trials, every session is tailored around your individual features, undertones, and natural allure.
+          </p>
+
+          <div class="trust-guarantee-row">
+            <div class="guarantee-chip">
+              <mat-icon>verified_user</mat-icon>
+              <span>100% Certified Originals</span>
+            </div>
+            <div class="guarantee-chip">
+              <mat-icon>clean_hands</mat-icon>
+              <span>UV-Sanitized Suites</span>
+            </div>
+            <div class="guarantee-chip chip-cruelty-free">
+              <mat-icon>favorite</mat-icon>
+              <span>Cruelty-Free Actives</span>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. "THE SINDHURA STANDARDS" - 4-PILLAR BENTO GRID -->
+  <section class="standards-bento-section">
+    <div class="section-container">
+      <div class="section-header text-left anim-3d anim-fade-up">
+        <h2 class="editorial-title">Pillars of Uncompromising Luxury</h2>
+        <p class="editorial-desc">
+          Four foundational principles that elevate every appointment into a rejuvenating sanctuary ritual.
+        </p>
       </div>
 
-      <div class="team-grid">
-        @for (member of team; track member.name; let i = $index) {
-          <article class="team-card" [style.animation-delay]="(i * 100) + 'ms'">
-            <div class="member-image">
-              <img [src]="member.image" [alt]="member.name">
-              <div class="member-overlay">
-                <div class="social-links">
-                  <a [href]="member.social.instagram" class="social-link" aria-label="Instagram">
-                    <mat-icon>photo_camera</mat-icon>
-                  </a>
-                  <a [href]="member.social.linkedin" class="social-link" aria-label="LinkedIn">
-                    <mat-icon>work</mat-icon>
-                  </a>
+      <div class="bento-grid">
+        @for (item of standards; track item.num; let i = $index) {
+          <div class="bento-card anim-3d anim-card-pop" [style.transition-delay]="(i * 0.1) + 's'">
+            <div class="bento-card-inner">
+              <div class="bento-card-header">
+                <div class="bento-icon-box">
+                  <mat-icon>{{ item.icon }}</mat-icon>
                 </div>
+                <span class="bento-index">{{ item.num }}</span>
               </div>
+              <h3 class="bento-title">{{ item.title }}</h3>
+              <p class="bento-description">{{ item.desc }}</p>
+              <div class="bento-glow"></div>
             </div>
-            <div class="member-info">
-              <h3>{{ member.name }}</h3>
-              <span class="member-role">{{ member.role }}</span>
-              <p class="member-bio">{{ member.bio }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. SIGNATURE TRANSFORMATIONS SHOWCASE (VISUAL PROOF) -->
+  <section class="transformations-section">
+    <div class="section-container">
+      <div class="section-header text-left anim-3d anim-fade-up">
+        <h2 class="editorial-title">Featured Transformations</h2>
+        <p class="editorial-desc">
+          Real clients, real results. Explore our signature bridal and dermatological transformations.
+        </p>
+      </div>
+
+      <div class="transformations-grid">
+        @for (item of transformations; track item.title; let i = $index) {
+          <article class="trans-card anim-3d anim-card-pop" [style.transition-delay]="(i * 0.12) + 's'">
+            <div class="trans-media">
+              <img [src]="item.image" [alt]="item.title" class="trans-img">
+              <span class="trans-badge">{{ item.badge }}</span>
+            </div>
+            <div class="trans-info">
+              <span class="trans-cat">{{ item.category }}</span>
+              <h3 class="trans-title">{{ item.title }}</h3>
+              <a routerLink="/book" class="tinore-btn-slide-wrap trans-book-btn" aria-label="Book This Service">
+                <span class="btn-slide-label-stack">
+                  <span class="slide-spacer">Book This Service</span>
+                  <span class="slide-label slide-label-rest">Book This Service</span>
+                  <span class="slide-label slide-label-hover">Book This Service</span>
+                </span>
+                <span class="btn-slide-badge">
+                  <span class="badge-icon-rest">
+                    <mat-icon>arrow_forward</mat-icon>
+                  </span>
+                  <span class="badge-icon-hover">
+                    <mat-icon>arrow_forward</mat-icon>
+                  </span>
+                </span>
+              </a>
             </div>
           </article>
         }
@@ -188,35 +231,67 @@
     </div>
   </section>
 
-  <!-- Testimonials Section -->
-  <section class="testimonials-section">
-    <div class="testimonials-container">
-      <div class="section-header">
-        <span class="section-tag">
-          <mat-icon>format_quote</mat-icon>
-          Testimonials
-        </span>
-        <h2 class="section-title">What Our Clients Say</h2>
-        <p class="section-desc">Real stories from real people who trusted us with their transformations</p>
+  <!-- 6. MASTER ARTISTS & BRIDAL CURATORS -->
+  <section class="team-showcase-section">
+    <div class="section-container">
+      <div class="section-header text-left anim-3d anim-fade-up">
+        <h2 class="editorial-title">Meet Our Lead Artisans</h2>
+        <p class="editorial-desc">
+          Internationally certified cosmetologists, master trichologists, and celebrity bridal artists.
+        </p>
       </div>
-      
-      <div class="testimonials-grid">
-        @for (testimonial of testimonials; track testimonial.name; let i = $index) {
-          <div class="testimonial-card" [style.animation-delay]="(i * 100) + 'ms'">
-            <div class="quote-icon">
-              <mat-icon>format_quote</mat-icon>
+
+      <div class="team-showcase-grid">
+        @for (member of team; track member.name; let i = $index) {
+          <article class="master-card anim-3d anim-card-pop" [style.transition-delay]="(i * 0.1) + 's'">
+            <div class="master-media">
+              <img [src]="member.image" [alt]="member.name" class="master-photo">
+              <div class="master-gradient-overlay"></div>
+              <span class="master-exp-chip">{{ member.experience }}</span>
+              <div class="master-social-tray">
+                <a [href]="member.social.instagram" target="_blank" rel="noopener noreferrer" class="tray-link" aria-label="Instagram">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
-            <p class="testimonial-text">{{ testimonial.text }}</p>
-            <div class="testimonial-rating">
-              @for (star of getStars(testimonial.rating); track $index) {
-                <mat-icon class="star">star</mat-icon>
-              }
+            <div class="master-info">
+              <span class="master-role-badge">{{ member.role }}</span>
+              <h3 class="master-name">{{ member.name }}</h3>
+              <p class="master-specialty"><strong>Specialty:</strong> {{ member.specialty }}</p>
+              <p class="master-bio">{{ member.bio }}</p>
+              <a routerLink="/book" class="master-book-btn">
+                <span>Book with {{ member.name.split(' ')[0] }}</span>
+                <mat-icon>calendar_today</mat-icon>
+              </a>
             </div>
-            <div class="testimonial-author">
-              <img [src]="testimonial.image" [alt]="testimonial.name">
-              <div class="author-info">
-                <h4>{{ testimonial.name }}</h4>
-                <span>{{ testimonial.service }}</span>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. EDITORIAL HERITAGE TIMELINE -->
+  <section class="heritage-timeline-section">
+    <div class="section-container">
+      <div class="section-header text-center">
+        <h2 class="editorial-title">Milestones in Our Journey</h2>
+      </div>
+
+      <div class="luxury-timeline">
+        @for (milestone of milestones; track milestone.year; let i = $index; let even = $even) {
+          <div class="timeline-row" [class.even-row]="even" [class.odd-row]="!even">
+            <div class="timeline-node">
+              <div class="node-inner">
+                <span class="node-year">{{ milestone.year }}</span>
+              </div>
+            </div>
+            <div class="timeline-card">
+              <div class="timeline-card-inner">
+                <div class="card-year-tag">{{ milestone.year }}</div>
+                <h3 class="card-headline">{{ milestone.title }}</h3>
+                <p class="card-p">{{ milestone.description }}</p>
               </div>
             </div>
           </div>
@@ -225,169 +300,91 @@
     </div>
   </section>
 
-  <!-- Contact Section -->
-  <section class="contact-section" id="contact">
-    <div class="contact-container">
-      <div class="contact-info">
-        <span class="section-tag light">
-          <mat-icon>mail</mat-icon>
-          Get in Touch
-        </span>
-        <h2 class="section-title light">Contact Us</h2>
-        <p class="section-desc light">Have questions or ready to book? We'd love to hear from you.</p>
-
-        <div class="info-cards">
-          <div class="info-card">
-            <div class="info-icon">
-              <mat-icon>location_on</mat-icon>
-            </div>
-            <div class="info-content">
-              <h4>Visit Our Salon</h4>
-              <p>123 Beauty Lane, Anna Nagar<br>Chennai – 600040</p>
-            </div>
-          </div>
-          
-          <div class="info-card">
-            <div class="info-icon">
-              <mat-icon>phone</mat-icon>
-            </div>
-            <div class="info-content">
-              <h4>Call Us</h4>
-              <p>+91 98765 43210<br>+91 98765 43211</p>
-            </div>
-          </div>
-          
-          <div class="info-card">
-            <div class="info-icon">
-              <mat-icon>email</mat-icon>
-            </div>
-            <div class="info-content">
-              <h4>Email Us</h4>
-              <p>hello&#64;beautyparlour.com<br>booking&#64;beautyparlour.com</p>
-            </div>
-          </div>
-          
-          <div class="info-card">
-            <div class="info-icon">
-              <mat-icon>schedule</mat-icon>
-            </div>
-            <div class="info-content">
-              <h4>Working Hours</h4>
-              <p>Mon – Sat: 9 AM – 9 PM<br>Sun: 10 AM – 6 PM</p>
-            </div>
-          </div>
+  <!-- 8. VERIFIED PATRON TESTIMONIALS -->
+  <section class="editorial-testimonials-section">
+    <div class="section-container">
+      <div class="section-header text-center">
+        <h2 class="editorial-title">Words from Our Patrons</h2>
+        <div class="google-rating-banner">
+          <mat-icon class="gold-star">star</mat-icon>
+          <span class="rating-val">4.9 / 5.0</span>
+          <span class="rating-sep">•</span>
+          <span class="rating-count">Over 1,200+ Verified Client Reviews</span>
         </div>
       </div>
 
-      <div class="contact-form-wrapper">
-        <div class="contact-form-card">
-          <!-- Form Header -->
-          <div class="form-header">
-            <div class="form-icon">
-              <mat-icon>mail_outline</mat-icon>
+      <div class="testimonials-editorial-grid">
+        @for (testimonial of testimonials; track testimonial.name) {
+          <div class="editorial-quote-card">
+            <div class="quote-stars">
+              @for (star of getStars(testimonial.rating); track $index) {
+                <mat-icon>star</mat-icon>
+              }
             </div>
-            <h3>Send Us a Message</h3>
-            <p>Fill out the form below and we'll get back to you within 24 hours</p>
+            <p class="quote-body">“{{ testimonial.text }}”</p>
+            <div class="quote-author-row">
+              <img [src]="testimonial.image" [alt]="testimonial.name" class="client-avatar">
+              <div class="client-meta">
+                <span class="client-name">{{ testimonial.name }}</span>
+                <span class="client-role">{{ testimonial.role }}</span>
+                <span class="client-service-tag">{{ testimonial.service }}</span>
+              </div>
+            </div>
           </div>
-          
-          <form [formGroup]="contactForm" (ngSubmit)="sendMessage()" class="contact-form">
-            <!-- Name & Email Row -->
-            <div class="form-row">
-              <div class="form-group">
-                <label for="name" class="form-label">
-                  <mat-icon>person_outline</mat-icon>
-                  <span>Your Name</span>
-                </label>
-                <input 
-                  type="text" 
-                  id="name" 
-                  formControlName="name" 
-                  class="form-input"
-                  placeholder="Enter your full name">
-              </div>
-
-              <div class="form-group">
-                <label for="email" class="form-label">
-                  <mat-icon>email</mat-icon>
-                  <span>Email Address</span>
-                </label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  formControlName="email" 
-                  class="form-input"
-                  placeholder="Enter your email">
-              </div>
-            </div>
-
-            <!-- Subject -->
-            <div class="form-group">
-              <label for="subject" class="form-label">
-                <mat-icon>subject</mat-icon>
-                <span>Subject</span>
-              </label>
-              <input 
-                type="text" 
-                id="subject" 
-                formControlName="subject" 
-                class="form-input"
-                placeholder="How can we help you?">
-            </div>
-
-            <!-- Message -->
-            <div class="form-group">
-              <label for="message" class="form-label">
-                <mat-icon>chat_bubble_outline</mat-icon>
-                <span>Message</span>
-              </label>
-              <textarea 
-                id="message" 
-                formControlName="message" 
-                class="form-textarea"
-                rows="5"
-                placeholder="Tell us more about your inquiry..."></textarea>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="submit-btn" [disabled]="contactForm.invalid">
-              <span class="btn-content">
-                <mat-icon>send</mat-icon>
-                <span>Send Message</span>
-              </span>
-              <span class="btn-bg"></span>
-            </button>
-            
-            <!-- Form Footer -->
-            <p class="form-footer">
-              <mat-icon>lock</mat-icon>
-              Your information is secure and will never be shared
-            </p>
-          </form>
-        </div>
+        }
       </div>
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="cta-section">
-    <div class="cta-bg"></div>
-    <div class="cta-container">
-      <div class="cta-content">
-        <span class="cta-tag">
-          <mat-icon>auto_awesome</mat-icon>
-          Ready to Transform?
-        </span>
-        <h2>Start Your Beauty Journey Today</h2>
-        <p>Book your appointment now and experience the difference of premium beauty services. Our expert team is ready to make you look and feel amazing.</p>
-        <div class="cta-actions">
-          <a routerLink="/book" class="cta-btn primary">
-            <mat-icon>calendar_today</mat-icon>
-            <span>Book Appointment</span>
-          </a>
-          <a routerLink="/services" class="cta-btn secondary">
-            <span>Explore Services</span>
-            <mat-icon>arrow_forward</mat-icon>
-          </a>
+  <!-- 9. INTERACTIVE FAQ ACCORDION -->
+  <section class="faq-section">
+    <div class="section-container">
+      <div class="section-header text-left">
+        <h2 class="editorial-title">Frequently Asked Questions</h2>
+        <p class="editorial-desc">
+          Everything you need to know about our studio protocols, trials, and bridal bookings.
+        </p>
+      </div>
+
+      <div class="faq-accordion-wrapper">
+        @for (faq of faqs; track faq.q; let i = $index) {
+          <div class="faq-item" [class.active]="openFaqIndex === i">
+            <button class="faq-question-btn" (click)="toggleFaq(i)" [attr.aria-expanded]="openFaqIndex === i">
+              <span class="faq-q-text">{{ faq.q }}</span>
+              <mat-icon class="faq-chevron">{{ openFaqIndex === i ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+            @if (openFaqIndex === i) {
+              <div class="faq-answer-pane">
+                <p>{{ faq.a }}</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. GRAND FINALE CTA BANNER -->
+  <section class="editorial-finale-cta">
+    <div class="section-container">
+      <div class="finale-card">
+        <div class="finale-glow"></div>
+        <div class="finale-content">
+          <span class="finale-eyebrow">READY FOR YOUR TRANSFORMATION?</span>
+          <h2 class="finale-heading">Experience True Luxury & Personalized Care</h2>
+          <p class="finale-sub">
+            Whether preparing for your wedding day or indulging in a restorative facial therapy, our master artists await.
+          </p>
+          <div class="finale-actions">
+            <a routerLink="/book" class="tinore-btn-gold large">
+              <mat-icon>event_available</mat-icon>
+              <span>Reserve an Appointment</span>
+            </a>
+            <a routerLink="/products" class="tinore-btn-glass large">
+              <mat-icon>shopping_bag</mat-icon>
+              <span>Explore Products</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>

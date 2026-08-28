@@ -1,15 +1,27 @@
 <div class="products-page tinore-products-page">
   <!-- Tinore Luxury Hero Section -->
   <section class="tinore-hero-section">
+    <!-- Responsive artistic background elements (Transparent artwork) -->
+    <div class="hero-art-lotus" aria-hidden="true">
+      <img src="/hero-lotus.png" alt="" class="lotus-img" />
+    </div>
+    <div class="hero-art-silhouette" aria-hidden="true">
+      <img src="/hero-silhouette.png" alt="" class="silhouette-img" />
+    </div>
     <div class="tinore-hero-bg-overlay"></div>
     <div class="tinore-hero-content">
-      <div class="tinore-pill-badge">
-        <mat-icon>auto_awesome</mat-icon>
-        <span>Salon-Grade • Professionally Curated</span>
-      </div>
-      <h1 class="tinore-hero-heading">Shop Our <span class="tinore-hero-highlight">Beauty Products</span></h1>
+      <h1 class="tinore-hero-heading">
+        <app-typewriter-text 
+          prefix="" 
+          [texts]="['Shop Our Beauty Products']"
+          cursorColor="#FF8D00"
+          [typingSpeed]="60"
+          [deletingSpeed]="35"
+          [holdDuration]="2200">
+        </app-typewriter-text>
+      </h1>
       <p class="tinore-hero-desc">
-        Browse our curated collection of premium salon-grade beauty products — hand-picked by our expert stylists for the best results.
+        Browse our curated collection of premium beauty products — hand-picked by our expert stylists for the best results.
       </p>
       <div class="tinore-trust-ribbon">
         <div class="trust-ribbon-item">
@@ -23,8 +35,8 @@
         </div>
         <div class="trust-divider"></div>
         <div class="trust-ribbon-item">
-          <mat-icon>spa</mat-icon>
-          <span>Salon-Grade Formulations</span>
+          <mat-icon>auto_awesome</mat-icon>
+          <span>Parlour-Grade Formulations</span>
         </div>
       </div>
     </div>
@@ -35,10 +47,6 @@
     <!-- Skin Diagnostic Banner Card -->
     <div class="tinore-quiz-promo-card">
       <div class="quiz-promo-content">
-        <div class="quiz-promo-badge">
-          <mat-icon>auto_fix_high</mat-icon>
-          <span>Find Your Perfect Match</span>
-        </div>
         <h3 class="quiz-promo-title">Not Sure What Your Skin Needs?</h3>
         <p class="quiz-promo-sub">Take our 60-second clinical diagnostic to discover your custom 3-step botanical routine and enjoy 15% off your bundle.</p>
       </div>
@@ -105,7 +113,7 @@
       } @else if (filteredProducts.length === 0) {
         <div class="tinore-empty-card">
           <div class="empty-icon-wrap">
-            <mat-icon>spa</mat-icon>
+            <mat-icon>local_florist</mat-icon>
           </div>
           <h3>No products in this category</h3>
           <p>Explore our complete beauty collection for radiant results.</p>
@@ -118,51 +126,20 @@
         <div class="tinore-grid" [class.list-layout]="viewMode === 'list'">
           @for (product of filteredProducts; track product._id; let i = $index) {
             <article class="tinore-product-card" [style.animation-delay]="(i * 40) + 'ms'">
-              <!-- Image Container with Hover Micro-Interactions -->
+              <!-- Pure Auto-Scrolling Image Container -->
               <div class="product-media-box">
-                <!-- Floating Badges -->
-                @if (product.bestseller) {
-                  <span class="badge-pill badge-bestseller">
-                    <mat-icon>auto_awesome</mat-icon>
-                    Bestseller
-                  </span>
-                }
-                @if (product.originalPrice && product.originalPrice > product.price) {
-                  <span class="badge-pill badge-discount">
-                    -{{ ((1 - product.price / product.originalPrice) * 100) | number:'1.0-0' }}%
-                  </span>
-                }
-
-                <!-- Wishlist Toggle -->
-                <button 
-                  class="product-wishlist-btn" 
-                  [class.active]="$any(product).inWishlist"
-                  (click)="toggleWishlist(product); $event.stopPropagation()"
-                  aria-label="Add to Wishlist">
-                  <mat-icon>{{ $any(product).inWishlist ? 'favorite' : 'favorite_border' }}</mat-icon>
-                </button>
-
-                <!-- Product Image -->
                 <div class="img-zoom-wrapper" (click)="viewProduct(product)">
                   @if (!hasImageError(product._id)) {
-                    <img 
-                      [src]="$any(product).displayImage || getProductImage(product.category, i)" 
-                      [alt]="product.name"
-                      class="tinore-prod-img"
-                      loading="lazy"
-                      (error)="onImageError($event, product._id)" 
-                    />
+                    <app-auto-moving-image 
+                      [images]="$any(product).displayImages || [getProductImage(product.category, i)]"
+                      [productName]="product.name"
+                      [intervalMs]="3200"
+                      [enableKenBurns]="true"
+                      [showControls]="false">
+                    </app-auto-moving-image>
                   }
                   <div class="fallback-box" [class.visible]="hasImageError(product._id)">
                     <mat-icon>{{ getProductIcon(product.category) }}</mat-icon>
-                  </div>
-                  
-                  <!-- Hover Quick View Action -->
-                  <div class="hover-action-overlay">
-                    <button class="quick-look-btn" (click)="viewProduct(product); $event.stopPropagation()">
-                      <mat-icon>visibility</mat-icon>
-                      <span>Quick View</span>
-                    </button>
                   </div>
                 </div>
               </div>
@@ -226,6 +203,9 @@
     <div class="quickview-backdrop" (click)="closeQuickView()"></div>
     <div class="quickview-modal-container">
       <div class="tinore-quickview-card" (click)="$event.stopPropagation()">
+        <!-- Mobile Pill Drag Handle -->
+        <div class="mobile-drag-handle" aria-hidden="true"></div>
+
         <!-- Close Button -->
         <button class="quickview-close-btn" (click)="closeQuickView()" aria-label="Close modal">
           <mat-icon>close</mat-icon>
@@ -267,12 +247,7 @@
           <div class="quickview-details">
             <div class="quickview-meta">
               <span class="product-cat-pill">{{ quickViewProduct.category }}</span>
-              <div class="tinore-stars-row">
-                @for (star of [1,2,3,4,5]; track star) {
-                  <mat-icon [class.active]="star <= (quickViewProduct.rating || 4)">star</mat-icon>
-                }
-                <span class="stars-val">{{ quickViewProduct.rating || 4.8 }} • (128+ verified reviews)</span>
-              </div>
+
             </div>
 
             <h2 class="quickview-title">{{ quickViewProduct.name }}</h2>
@@ -290,7 +265,7 @@
 
             <!-- Description & Benefits -->
             <p class="quickview-description">
-              Expertly formulated for salon-grade efficacy. Enriched with botanical bio-actives to provide long-lasting hydration, barrier nourishment, and a luminous radiant complexion.
+              Expertly formulated for parlour-grade efficacy. Enriched with botanical bio-actives to provide long-lasting hydration, barrier nourishment, and a luminous radiant complexion.
             </p>
 
             <div class="quickview-features">

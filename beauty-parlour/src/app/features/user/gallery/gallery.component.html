@@ -1,129 +1,84 @@
-<div class="gallery-page tinore-gallery-page">
-  <!-- Tinore Lookbook Hero -->
-  <section class="tinore-gallery-hero">
-    <div class="tinore-hero-content">
-      <div class="tinore-pill-badge">
-        <mat-icon>auto_awesome</mat-icon>
-        <span>Couture Portfolios • Master Artistry</span>
-      </div>
-      <h1 class="tinore-gallery-title">The Radiance <span class="tinore-hero-highlight">Lookbook</span></h1>
-      <p class="tinore-gallery-subtitle">
-        Explore our curated portfolio of bridal transformations, editorial hair balayage, and clinical skincare results.
+<div class="gallery-page luxury-gallery-page">
+  <!-- Luxury Gallery Header -->
+  <section class="luxury-gallery-hero">
+    <div class="hero-glow-lights"></div>
+    <div class="hero-content-wrapper">
+
+      <h1 class="gallery-main-title">
+        The Signature <span class="gold-text">Lookbook</span>
+      </h1>
+      <p class="gallery-sub-title">
+        Explore our curated bridal styling, hair transformations, and glow rituals.
       </p>
 
-      <!-- Stats Bar -->
-      <div class="tinore-stats-row">
-        @for (s of stats; track s.label) {
-          <div class="stat-pill">
-            <span class="s-val">{{ s.value }}</span>
-            <span class="s-lbl">{{ s.label }}</span>
-          </div>
+      <!-- Category Filter Tabs -->
+      <div class="gallery-tabs-row">
+        @for (cat of categories; track cat.key) {
+          <button 
+            class="gallery-filter-btn" 
+            [class.active]="selectedCategory === cat.key"
+            (click)="filterPosts(cat.key)">
+            <mat-icon class="tab-icon">{{ cat.icon }}</mat-icon>
+            <span>{{ cat.label }}</span>
+          </button>
         }
       </div>
     </div>
   </section>
 
-  <div class="tinore-gallery-container">
-    <!-- Category Tabs -->
-    <div class="tinore-gallery-tabs">
-      <div class="tabs-scroll-wrap">
-        @for (cat of categories; track cat.key) {
-          <button 
-            class="tinore-cat-tab" 
-            [class.active]="selectedCategory === cat.key"
-            (click)="filterItems(cat.key)">
-            <mat-icon class="cat-icon">{{ cat.icon }}</mat-icon>
-            <span>{{ cat.label }}</span>
-          </button>
-        }
-      </div>
-      <span class="lookbook-count">{{ filteredItems.length }} Portfolio Looks</span>
-    </div>
-
-    <!-- Masonry Lookbook Grid -->
-    <div class="tinore-lookbook-grid">
-      @for (item of filteredItems; track item.id; let idx = $index) {
-        <article class="lookbook-card" [class.featured-item]="item.featured" (click)="openLightbox(item, idx)">
-          <div class="lookbook-media-wrap">
-            <img [src]="item.image" [alt]="item.title" loading="lazy" class="lookbook-img" />
-            <div class="lookbook-overlay">
-              <div class="overlay-top">
-                <span class="look-cat-tag">{{ item.category }}</span>
-                @if (item.featured) {
-                  <span class="look-featured-tag">
-                    <mat-icon>star</mat-icon> Signature
-                  </span>
-                }
+  <!-- Video Gallery Grid -->
+  <div class="luxury-gallery-container">
+    <div class="pure-video-grid">
+      @for (post of filteredPosts; track post.id) {
+        <article class="pure-video-card">
+          <!-- Video Frame with Top/Bottom Clutter Masked -->
+          <div class="video-viewport-wrapper">
+            @if (isBrowser) {
+              <div class="iframe-crop-frame">
+                <iframe 
+                  [src]="post.embedUrl" 
+                  class="clean-instagram-iframe" 
+                  frameborder="0" 
+                  scrolling="no" 
+                  allowtransparency="true" 
+                  allow="encrypted-media">
+                </iframe>
               </div>
-
-              <div class="overlay-bottom">
-                <span class="look-artist">
-                  <mat-icon>verified</mat-icon> {{ item.stylist }}
-                </span>
-                <h3 class="look-title">{{ item.title }}</h3>
-                <p class="look-desc">{{ item.description }}</p>
-
-                <div class="look-actions" (click)="$event.stopPropagation()">
-                  <a routerLink="/book" [queryParams]="{service: item.service}" class="tinore-book-look-btn">
-                    <span>Book This Look</span>
-                    <mat-icon>arrow_forward</mat-icon>
-                  </a>
-                  <button class="expand-btn" (click)="openLightbox(item, idx)" title="View Fullscreen">
-                    <mat-icon>fullscreen</mat-icon>
-                  </button>
-                </div>
+            } @else {
+              <div class="loading-placeholder">
+                <mat-icon>videocam</mat-icon>
+                <span>Loading Reel...</span>
               </div>
+            }
+
+            <!-- Follow on Instagram Action Overlay -->
+            <div class="card-floating-action">
+              <a [href]="post.instagramUrl" target="_blank" rel="noopener noreferrer" class="floating-instagram-btn">
+                <svg class="original-ig-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#ig-grad-1)"/>
+                  <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#ig-grad-2)"/>
+                  <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" stroke="white" stroke-width="1.8"/>
+                  <rect x="15.5" y="7.5" width="1.5" height="1.5" rx="0.75" fill="white"/>
+                  <rect x="2.9" y="2.9" width="18.2" height="18.2" rx="4.1" stroke="white" stroke-width="1.8"/>
+                  <defs>
+                    <radialGradient id="ig-grad-1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(12 23) rotate(-90) scale(21 21)">
+                      <stop stop-color="#FFDD55"/>
+                      <stop offset="0.1" stop-color="#FFDD55"/>
+                      <stop offset="0.5" stop-color="#FF543E"/>
+                      <stop offset="1" stop-color="#C837AB"/>
+                    </radialGradient>
+                    <radialGradient id="ig-grad-2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(4 24) rotate(-45) scale(26)">
+                      <stop stop-color="#FFDD55"/>
+                      <stop offset="0.5" stop-color="#FF543E" stop-opacity="0"/>
+                    </radialGradient>
+                  </defs>
+                </svg>
+                <span>Follow on Instagram</span>
+              </a>
             </div>
           </div>
         </article>
       }
     </div>
   </div>
-
-  <!-- Fullscreen Lookbook Lightbox Modal -->
-  @if (selectedItem) {
-    <div class="tinore-lightbox-backdrop" (click)="closeLightbox()"></div>
-    <div class="tinore-lightbox-modal">
-      <button class="lightbox-close-btn" (click)="closeLightbox()" aria-label="Close lightbox">
-        <mat-icon>close</mat-icon>
-      </button>
-
-      <div class="lightbox-content-card" (click)="$event.stopPropagation()">
-        <!-- Image Area -->
-        <div class="lightbox-img-stage">
-          <img [src]="selectedItem.image" [alt]="selectedItem.title" class="lightbox-main-img" />
-          <span class="lightbox-cat-badge">{{ selectedItem.category }}</span>
-        </div>
-
-        <!-- Sidebar Info -->
-        <div class="lightbox-info-sidebar">
-          <div class="lb-header">
-            <span class="lb-artist-badge">
-              <mat-icon>brush</mat-icon> Styled by {{ selectedItem.stylist }}
-            </span>
-            <h2 class="lb-title">{{ selectedItem.title }}</h2>
-            <p class="lb-desc">{{ selectedItem.description }}</p>
-          </div>
-
-          <div class="lb-service-pill">
-            <mat-icon>spa</mat-icon>
-            <div>
-              <span class="pill-label">Recommended Treatment</span>
-              <strong class="pill-service">{{ selectedItem.service }}</strong>
-            </div>
-          </div>
-
-          <div class="lb-actions">
-            <a routerLink="/book" [queryParams]="{service: selectedItem.service}" (click)="closeLightbox()" class="tinore-btn-primary">
-              <mat-icon>calendar_month</mat-icon>
-              <span>Book This Exact Look</span>
-            </a>
-            <button class="tinore-btn-outline" (click)="closeLightbox()">
-              <span>Close View</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  }
 </div>

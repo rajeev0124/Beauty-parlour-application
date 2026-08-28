@@ -10,7 +10,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       let errorMessage = 'An unexpected error occurred';
 
-      if (error.error instanceof ErrorEvent) {
+      if (typeof ErrorEvent !== 'undefined' && error.error instanceof ErrorEvent) {
         // Client-side error
         errorMessage = error.error.message;
       } else {
@@ -23,14 +23,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             errorMessage = error.error?.message || 'Bad request. Please check your input.';
             break;
           case 401:
-            errorMessage = 'Session expired. Please login again.';
-            // Clear token and redirect to login
+            errorMessage = 'Session expired or unauthenticated.';
             if (typeof localStorage !== 'undefined') {
               localStorage.removeItem('accessToken');
               localStorage.removeItem('refreshToken');
               localStorage.removeItem('user');
             }
-            router.navigate(['/login']);
             break;
           case 403:
             errorMessage = 'You do not have permission to perform this action.';
@@ -60,13 +58,15 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
-      // Log error for debugging (can be sent to monitoring service)
-      console.error('HTTP Error:', {
-        status: error.status,
-        message: errorMessage,
-        url: req.url,
-        timestamp: new Date().toISOString()
-      });
+      // Log error for debugging (except background health pings)
+      if (!req.url.includes('/health')) {
+        console.error('HTTP Error:', {
+          status: error.status,
+          message: errorMessage,
+          url: req.url,
+          timestamp: new Date().toISOString()
+        });
+      }
 
       // Return a user-friendly error
       return throwError(() => ({

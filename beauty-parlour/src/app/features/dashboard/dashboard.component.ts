@@ -15,6 +15,7 @@ import { ReportsService } from '../../core/services/reports.service';
 import type { DashboardStats } from '../../core/services/reports.service';
 
 function cssVar(name: string): string {
+  if (typeof document === 'undefined') return '';
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
@@ -155,7 +156,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private buildServiceOptions(): ChartConfiguration<'doughnut'>['options'] {
     const muted = cssVar('--ink-muted') || '#6B7280';
     const tooltipBg = cssVar('--ink') || '#111827';
-    const isMobile = window.innerWidth < 768;
+    const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
     return {
       responsive: true,
       maintainAspectRatio: true,
@@ -210,7 +211,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const faint = cssVar('--ink-faint') || '#6B7280';
     const gridColor = cssVar('--border-light') || 'rgba(0,0,0,0.04)';
     const tooltipBg = cssVar('--ink') || '#111827';
-    const isMobile = window.innerWidth < 768;
+    const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
     return {
       responsive: true,
       maintainAspectRatio: true,

@@ -23,7 +23,6 @@ import { SmsModule } from './modules/sms/sms.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { PaymentGatewayModule } from './modules/payment-gateway/payment-gateway.module';
 import { CustomerPortalModule } from './modules/customer-portal/customer-portal.module';
-import { ReviewsModule } from './modules/reviews/reviews.module';
 import { CouponsModule } from './modules/coupons/coupons.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
@@ -96,7 +95,6 @@ import { NotificationsModule } from './common/notifications';
     ReportsModule,
     PaymentGatewayModule,
     CustomerPortalModule,
-    ReviewsModule,
     CouponsModule,
     ExpensesModule,
     InvoiceModule,

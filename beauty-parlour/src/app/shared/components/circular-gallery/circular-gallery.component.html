@@ -1,0 +1,46 @@
+<div 
+  #rootRef 
+  class="circular-gallery-root"
+  [class.grabbing]="isDragging">
+  
+  <!-- Interactive Center HD Preview Frame -->
+  @if (showPreview && currentPreviewSrc) {
+    <div #previewWrapRef class="center-preview-frame">
+      <img #previewRef [src]="currentPreviewSrc" alt="Sindhura Makeovers Preview" class="preview-img" />
+      <div class="preview-scrim-overlay"></div>
+      <div class="preview-badge-pill">
+        <span>👑 Sindhura Signature Portfolio</span>
+      </div>
+    </div>
+  }
+
+  <!-- 3D Circular Ring Stage -->
+  <div #galleryRef class="circular-ring-stage">
+    @for (item of itemsArray; track item; let i = $index) {
+      @if (getImageSrc(i); as src) {
+        <div
+          data-ring-item
+          class="ring-card-item"
+          [style.width.px]="itemWidth"
+          [style.height.px]="itemHeight">
+          <img
+            [src]="src"
+            alt="Lookbook Item"
+            loading="lazy"
+            (mouseenter)="showPreviewImage(src)"
+            (mouseleave)="hidePreviewImage()"
+            (touchstart)="showPreviewImage(src)"
+            class="card-img" />
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Ambient Vignette Background -->
+  <div class="gallery-edge-vignette" aria-hidden="true"></div>
+
+  <!-- Instruction Pill -->
+  <div class="drag-hint-pill">
+    <span>✨ Drag to Spin 3D Ring • Hover to Preview</span>
+  </div>
+</div>

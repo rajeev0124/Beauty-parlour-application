@@ -51,7 +51,7 @@ export class PaymentFixtures {
     method: 'credit_card',
     transactionId: null,
     invoiceId: 'INV-003',
-    description: 'Payment for Spa Package',
+    description: 'Payment for Beauty Package',
     metadata: {
       failureReason: 'Insufficient funds',
     },

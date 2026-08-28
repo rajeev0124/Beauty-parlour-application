@@ -107,7 +107,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       hair: '💇',
       skin: '✨',
       nails: '💅',
-      massage: '💆',
       bridal: '👰',
       makeup: '💄'
     };
@@ -119,11 +118,10 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       hair: 'content_cut',
       skin: 'face_retouching_natural',
       nails: 'back_hand',
-      massage: 'self_improvement',
       bridal: 'favorite',
       makeup: 'brush'
     };
-    return icons[category?.toLowerCase()] || 'spa';
+    return icons[category?.toLowerCase()] || 'auto_awesome';
   }
 
   getCategoryColor(category: string): string {
@@ -131,7 +129,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       hair: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
       skin: 'linear-gradient(135deg, #ec4899, #db2777)',
       nails: 'linear-gradient(135deg, #f43f5e, #e11d48)',
-      massage: 'linear-gradient(135deg, #06b6d4, #0891b2)',
       bridal: 'linear-gradient(135deg, #f59e0b, #d97706)',
       makeup: 'linear-gradient(135deg, #10b981, #059669)'
     };
@@ -143,7 +140,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       hair: '#ede9fe',
       skin: '#fce7f3',
       nails: '#ffe4e6',
-      massage: '#cffafe',
       bridal: '#fef3c7',
       makeup: '#d1fae5'
     };
@@ -155,11 +151,10 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       hair: '#6d28d9',
       skin: '#be185d',
       nails: '#be123c',
-      massage: '#0e7490',
       bridal: '#b45309',
       makeup: '#047857'
     };
-    return colors[category?.toLowerCase()] || '#4b5563';
+    return colors[category?.toLowerCase()] || '#374151';
   }
 
   openDialog(service?: Service): void {

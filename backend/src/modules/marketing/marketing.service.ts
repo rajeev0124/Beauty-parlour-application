@@ -336,22 +336,26 @@ export class MarketingService {
    */
   @Cron('* * * * *', { name: 'campaign-scheduler' })
   async processScheduledCampaigns(): Promise<void> {
-    const now = new Date();
+    try {
+      const now = new Date();
 
-    const dueCampaigns = await this.campaignModel.find({
-      status: 'scheduled',
-      scheduledAt: { $lte: now },
-    });
-
-    for (const campaign of dueCampaigns) {
-      this.logger.log(`Launching scheduled campaign: ${campaign.name}`);
-      campaign.status = 'active';
-      campaign.startedAt = now;
-      await campaign.save();
-
-      this.executeCampaign(campaign._id.toString()).catch((err) => {
-        this.logger.error(`Scheduled campaign failed: ${err.message}`);
+      const dueCampaigns = await this.campaignModel.find({
+        status: 'scheduled',
+        scheduledAt: { $lte: now },
       });
+
+      for (const campaign of dueCampaigns) {
+        this.logger.log(`Launching scheduled campaign: ${campaign.name}`);
+        campaign.status = 'active';
+        campaign.startedAt = now;
+        await campaign.save();
+
+        this.executeCampaign(campaign._id.toString()).catch((err) => {
+          this.logger.error(`Scheduled campaign failed: ${err.message}`);
+        });
+      }
+    } catch (error) {
+      this.logger.warn(`Campaign scheduler skipped this cycle: ${error.message}`);
     }
   }
 

@@ -71,10 +71,6 @@ export class WishlistComponent implements OnInit {
       'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80',
       'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=400&q=80'
     ],
-    massage: [
-      'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&q=80',
-      'https://images.unsplash.com/photo-1519824145371-296894a0daa9?w=400&q=80'
-    ],
     bridal: [
       'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=400&q=80',
       'https://images.unsplash.com/photo-1457972729786-0411a3b2b626?w=400&q=80'

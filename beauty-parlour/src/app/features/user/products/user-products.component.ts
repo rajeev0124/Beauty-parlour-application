@@ -9,11 +9,13 @@ import { WishlistService } from '../../../core/services/wishlist.service';
 import { CartService } from '../../../core/services/cart.service';
 import { Product } from '../../../core/models/product.model';
 import { SkinQuizComponent } from '../../../shared/components/skin-quiz/skin-quiz.component';
+import { AutoMovingImageComponent } from '../../../shared/components/auto-moving-image/auto-moving-image.component';
+import { TypewriterTextComponent } from '../../../shared/components/typewriter-text/typewriter-text.component';
 
 @Component({
   selector: 'app-user-products',
   standalone: true,
-  imports: [DecimalPipe, MatIconModule, MatButtonModule, MatSnackBarModule, SkinQuizComponent],
+  imports: [DecimalPipe, MatIconModule, MatButtonModule, MatSnackBarModule, SkinQuizComponent, AutoMovingImageComponent, TypewriterTextComponent],
   templateUrl: './user-products.component.html',
   styleUrl: './user-products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -31,7 +33,7 @@ export class UserProductsComponent implements OnInit {
     { key: 'hair', label: 'Hair Care', icon: 'content_cut', count: 0 },
     { key: 'skin', label: 'Skin Care', icon: 'face_retouching_natural', count: 0 },
     { key: 'makeup', label: 'Makeup', icon: 'brush', count: 0 },
-    { key: 'nails', label: 'Nail Care', icon: 'spa', count: 0 },
+    { key: 'nails', label: 'Nail Care', icon: 'local_florist', count: 0 },
     { key: 'tools', label: 'Tools', icon: 'construction', count: 0 },
   ];
 
@@ -42,51 +44,19 @@ export class UserProductsComponent implements OnInit {
     hair: 'content_cut',
     skin: 'face_retouching_natural',
     makeup: 'brush',
-    nails: 'spa',
+    nails: 'local_florist',
     tools: 'construction',
     default: 'inventory_2'
   };
 
-  // Professional product images by category (Unsplash)
-  private productImages: Record<string, string[]> = {
-    hair: [
-      'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=400&q=80',
-      'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80',
-      'https://images.unsplash.com/photo-1626015365107-aa4f5d89fd6a?w=400&q=80',
-      'https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&q=80',
-      'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&q=80'
-    ],
-    skin: [
-      'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80',
-      'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80',
-      'https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=400&q=80',
-      'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400&q=80',
-      'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=400&q=80'
-    ],
-    makeup: [
-      'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=400&q=80',
-      'https://images.unsplash.com/photo-1596704017254-9b121068fb31?w=400&q=80',
-      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=80',
-      'https://images.unsplash.com/photo-1503236823255-94609f598e71?w=400&q=80',
-      'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400&q=80'
-    ],
-    nails: [
-      'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&q=80',
-      'https://images.unsplash.com/photo-1610992015732-2449b0dd2b3f?w=400&q=80',
-      'https://images.unsplash.com/photo-1607779097040-26e80aa78e66?w=400&q=80',
-      'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=400&q=80'
-    ],
-    tools: [
-      'https://images.unsplash.com/photo-1522338140262-f46f5913618a?w=400&q=80',
-      'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=400&q=80',
-      'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=400&q=80',
-      'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80'
-    ],
-    default: [
-      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=80',
-      'https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=400&q=80',
-      'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=400&q=80'
-    ]
+  // Category fallback images (100% exact local product assets)
+  private categoryDefaultImages: Record<string, string> = {
+    hair: '/products/keratin-shampoo.png',
+    skin: '/products/vit-c-facewash.png',
+    makeup: '/products/matte-lipstick-set.png',
+    nails: '/products/gel-nail-kit.png',
+    tools: '/products/hair-dryer.png',
+    default: '/products/keratin-shampoo.png'
   };
 
   // Category colors for fallback icons
@@ -115,22 +85,87 @@ export class UserProductsComponent implements OnInit {
     this.loadProducts();
   }
 
+  // Multi-angle product photo galleries (100% exact matching product photographs)
+  private readonly productGalleries: Record<string, string[]> = {
+    'keratin shampoo': [
+      '/products/keratin-shampoo.png'
+    ],
+    'argan oil conditioner': [
+      '/products/argan-conditioner.png'
+    ],
+    'hair serum – silk shine': [
+      '/products/hair-serum.png'
+    ],
+    'hair serum': [
+      '/products/hair-serum.png'
+    ],
+    'leave-in hair mask': [
+      '/products/hair-mask.png'
+    ],
+    'vitamin c face wash': [
+      '/products/vit-c-facewash.png'
+    ],
+    'hyaluronic moisturizer': [
+      '/products/hyaluronic-moisturizer.png'
+    ],
+    'sunscreen spf 50+': [
+      '/products/sunscreen-spf50.png'
+    ],
+    'night repair cream': [
+      '/products/night-repair-cream.png'
+    ],
+    'matte lipstick set': [
+      '/products/matte-lipstick-set.png'
+    ],
+    'foundation – natural glow': [
+      '/products/foundation-glow.png'
+    ],
+    'foundation': [
+      '/products/foundation-glow.png'
+    ],
+    'eye shadow palette': [
+      '/products/eyeshadow-palette.png'
+    ],
+    'gel nail polish kit': [
+      '/products/gel-nail-kit.png'
+    ],
+    'nail art stickers': [
+      '/products/nail-stickers.png'
+    ],
+    'cuticle oil': [
+      '/products/cuticle-oil.png'
+    ],
+    'professional hair dryer': [
+      '/products/hair-dryer.png'
+    ],
+    'hair dryer': [
+      '/products/hair-dryer.png'
+    ],
+    'straightening iron': [
+      '/products/straightening-iron.png'
+    ],
+    'makeup brush set (12 pcs)': [
+      '/products/makeup-brushes.png'
+    ],
+    'makeup brush set': [
+      '/products/makeup-brushes.png'
+    ]
+  };
+
   loadProducts(): void {
     this.loading = true;
     this.errorMessage = '';
     this.productService.getAll().subscribe({
       next: (products) => {
-        // Assign consistent images based on product ID
         this.products = products.map((p, index) => ({ 
           ...p, 
           inWishlist: false,
-          displayImage: this.getConsistentImage(p._id, p.category, index)
+          displayImages: this.getProductGallery(p, index)
         }));
         this.updateCategoryCounts();
         this.loading = false;
         this.cdr.markForCheck();
         
-        // Check which products are in wishlist
         this.loadWishlistStatus();
       },
       error: () => {
@@ -141,17 +176,26 @@ export class UserProductsComponent implements OnInit {
     });
   }
 
-  // Generate consistent image based on product ID hash
-  private getConsistentImage(productId: string, category: string, fallbackIndex: number): string {
-    const images = this.productImages[category?.toLowerCase()] || this.productImages['default'];
-    // Use simple hash of product ID to get consistent index
-    let hash = 0;
-    for (let i = 0; i < (productId || '').length; i++) {
-      hash = ((hash << 5) - hash) + productId.charCodeAt(i);
-      hash = hash & hash; // Convert to 32bit integer
+  // Get multi-angle photo gallery for product auto-slider
+  getProductGallery(product: Product, index: number): string[] {
+    const cleanName = (product.name || '').toLowerCase().trim();
+    if (this.productGalleries[cleanName]) {
+      return this.productGalleries[cleanName];
     }
-    const index = Math.abs(hash || fallbackIndex) % images.length;
-    return images[index];
+    for (const [key, list] of Object.entries(this.productGalleries)) {
+      if (cleanName.includes(key) || key.includes(cleanName)) {
+        return list;
+      }
+    }
+    if (product.image) {
+      return [product.image];
+    }
+    return [this.getProductImage(product.category, index)];
+  }
+
+  // Generate consistent image based on category fallback
+  private getConsistentImage(productId: string, category: string, fallbackIndex: number): string {
+    return this.categoryDefaultImages[category?.toLowerCase()] || this.categoryDefaultImages['default'];
   }
 
   private loadWishlistStatus(): void {
@@ -200,8 +244,7 @@ export class UserProductsComponent implements OnInit {
   }
 
   getProductImage(category: string, index: number): string {
-    const images = this.productImages[category?.toLowerCase()] || this.productImages['default'];
-    return images[index % images.length];
+    return this.categoryDefaultImages[category?.toLowerCase()] || this.categoryDefaultImages['default'];
   }
 
   getCategoryColor(category: string): string {
@@ -246,10 +289,12 @@ export class UserProductsComponent implements OnInit {
         },
         error: () => {
           product.inWishlist = wasInWishlist;
-          this.snackBar.open('Failed to add to wishlist. Please login first.', 'Login', { 
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          }).onAction().subscribe(() => this.router.navigate(['/login']));
+          this.snackBar.open('Failed to add to wishlist.', 'Close', { 
+            duration: 4000,
+            panelClass: ['error-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          });
           this.cdr.markForCheck();
         }
       });
@@ -283,16 +328,32 @@ export class UserProductsComponent implements OnInit {
   productGallery: string[] = [];
 
   openQuickView(product: Product): void {
-    const mainImg = (product as any).displayImage || this.getProductImage(product.category, 0);
-    const catImages = this.productImages[product.category?.toLowerCase()] || this.productImages['default'];
+    const cleanName = (product.name || '').toLowerCase().trim();
+    let gallery: string[] = (product as any).displayImages || [];
     
-    // Create a 3-image gallery starting with the main image
-    this.productGallery = [
-      mainImg,
-      ...catImages.filter(img => img !== mainImg).slice(0, 2)
-    ];
+    if (!gallery || !gallery.length) {
+      if (this.productGalleries[cleanName]) {
+        gallery = this.productGalleries[cleanName];
+      } else {
+        for (const [key, list] of Object.entries(this.productGalleries)) {
+          if (cleanName.includes(key) || key.includes(cleanName)) {
+            gallery = list;
+            break;
+          }
+        }
+      }
+    }
     
-    this.selectedGalleryImage = mainImg;
+    if (!gallery || !gallery.length) {
+      if (product.image && product.image.startsWith('/products/')) {
+        gallery = [product.image];
+      } else {
+        gallery = [this.categoryDefaultImages[product.category?.toLowerCase()] || '/products/keratin-shampoo.png'];
+      }
+    }
+
+    this.productGallery = gallery;
+    this.selectedGalleryImage = gallery[0] || '/products/keratin-shampoo.png';
     this.quickViewProduct = product;
     this.quickViewQty = 1;
     this.cdr.markForCheck();

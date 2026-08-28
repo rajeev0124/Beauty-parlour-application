@@ -27,7 +27,7 @@ import { ServiceService } from '../../core/services/service.service';
       <!-- Header -->
       <div class="sd-header">
         <div class="sd-header-icon" [class.edit]="data">
-          <mat-icon>{{ data ? 'edit_note' : 'spa' }}</mat-icon>
+          <mat-icon>{{ data ? 'edit_note' : 'auto_awesome' }}</mat-icon>
         </div>
         <div class="sd-header-text">
           <h2>{{ data ? 'Edit Service' : 'New Service' }}</h2>
@@ -75,7 +75,6 @@ import { ServiceService } from '../../core/services/service.service';
                 <option value="skin">Skin & Facial</option>
                 <option value="nails">Nails & Manicures</option>
                 <option value="makeup">Professional Makeup</option>
-                <option value="spa">Spa & Massage</option>
                 <option value="other">Other</option>
               </select>
               <mat-icon class="select-arrow">expand_more</mat-icon>

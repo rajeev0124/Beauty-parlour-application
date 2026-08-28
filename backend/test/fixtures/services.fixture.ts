@@ -80,7 +80,7 @@ export class ServiceFixtures {
   static readonly VALID_CREATE_DTO = {
     name: 'New Treatment',
     description: 'Amazing new beauty treatment',
-    category: 'Spa',
+    category: 'Body',
     price: 125.0,
     duration: 90,
     duration_unit: 'minutes',
@@ -90,7 +90,7 @@ export class ServiceFixtures {
   static readonly INVALID_PRICE_DTO = {
     name: 'Invalid Service',
     description: 'Service with invalid price',
-    category: 'Spa',
+    category: 'Body',
     price: -50.0, // Negative price
     duration: 60,
     duration_unit: 'minutes',
@@ -100,7 +100,7 @@ export class ServiceFixtures {
   static readonly MISSING_NAME_DTO = {
     // name is missing
     description: 'Service without name',
-    category: 'Spa',
+    category: 'Body',
     price: 100.0,
     duration: 60,
     duration_unit: 'minutes',
@@ -110,7 +110,7 @@ export class ServiceFixtures {
   static readonly INVALID_DURATION_DTO = {
     name: 'Invalid Duration Service',
     description: 'Service with invalid duration',
-    category: 'Spa',
+    category: 'Body',
     price: 100.0,
     duration: -30, // Negative duration
     duration_unit: 'minutes',
@@ -125,7 +125,7 @@ export class ServiceFixtures {
       Hair: this.HAIRCUT_SERVICE,
       'Skin Care': this.FACIAL_SERVICE,
       Nails: this.MANICURE_SERVICE,
-      Spa: this.PEDICURE_SERVICE,
+      Body: this.PEDICURE_SERVICE,
     };
     return services[category];
   }

@@ -141,7 +141,7 @@ export class BookAppointmentComponent implements OnInit {
     let matches: Product[] = [];
     if (svcCategory.includes('facial') || svcCategory.includes('skin') || svcName.includes('glow') || svcName.includes('facial')) {
       matches = this.allProducts.filter(p => p.category === 'skincare' || p.category === 'serums' || p.category === 'cleansers');
-    } else if (svcCategory.includes('hair') || svcName.includes('hair') || svcName.includes('spa') || svcName.includes('keratin')) {
+    } else if (svcCategory.includes('hair') || svcName.includes('hair') || svcName.includes('conditioning') || svcName.includes('keratin')) {
       matches = this.allProducts.filter(p => p.category === 'haircare' || p.category === 'masks');
     } else if (svcCategory.includes('makeup') || svcCategory.includes('bridal')) {
       matches = this.allProducts.filter(p => p.category === 'skincare' || p.category === 'tools');

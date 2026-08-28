@@ -11,6 +11,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { CartService, CartItem } from '../../core/services/cart.service';
 import { environment } from '../../../environments/environment';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
+import { SmokyTextComponent } from '../../shared/components/smoky-text/smoky-text.component';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
@@ -21,7 +22,7 @@ import { Subscription } from 'rxjs';
     CommonModule, AsyncPipe, DecimalPipe,
     RouterOutlet, RouterLink, RouterLinkActive,
     MatIconModule, MatButtonModule, MatMenuModule, MatBadgeModule, MatDividerModule,
-    ThemeToggleComponent
+    SmokyTextComponent
   ],
   templateUrl: './user-layout.component.html',
   styleUrl: './user-layout.component.scss'
@@ -30,6 +31,7 @@ export class UserLayoutComponent implements OnInit, OnDestroy {
   mobileMenuOpen = false;
   isScrolled = false;
   navHidden = false;
+  showBackToTop = false;
   private lastScrollY = 0;
   private isBrowser: boolean;
   private routerSub: Subscription | null = null;
@@ -73,29 +75,20 @@ export class UserLayoutComponent implements OnInit, OnDestroy {
     const currentScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     
     const newIsScrolled = currentScrollY > 20;
-    let newNavHidden = this.navHidden;
 
-    // Near top of page -> show header
-    if (currentScrollY <= 50) {
-      newNavHidden = false;
-    } else {
-      const scrollDiff = currentScrollY - this.lastScrollY;
-      
-      // Scroll down (diff > 4px) -> hide navbar
-      if (scrollDiff > 4) {
-        newNavHidden = true;
-      } 
-      // Scroll up (diff < -4px) -> reveal navbar
-      else if (scrollDiff < -4) {
-        newNavHidden = false;
-      }
-    }
+    // Header is visible in the hero section (top 350px) or if mobile menu is open.
+    // When scrolling down past the hero section, header hides.
+    // When visiting/reaching back up to the hero section, it appears.
+    const newNavHidden = currentScrollY > 350 && !this.mobileMenuOpen;
 
     this.lastScrollY = Math.max(0, currentScrollY);
 
-    if (newNavHidden !== this.navHidden || newIsScrolled !== this.isScrolled) {
+    const newShowBackToTop = currentScrollY > 400;
+
+    if (newNavHidden !== this.navHidden || newIsScrolled !== this.isScrolled || newShowBackToTop !== this.showBackToTop) {
       this.navHidden = newNavHidden;
       this.isScrolled = newIsScrolled;
+      this.showBackToTop = newShowBackToTop;
       this.cdr.detectChanges();
     }
   }
@@ -105,7 +98,7 @@ export class UserLayoutComponent implements OnInit, OnDestroy {
   }
 
   get userName(): string {
-    return this.authService.getCurrentUser()?.name || '';
+    return this.authService.getCurrentUser()?.name || 'User';
   }
 
   get userFirstName(): string {
@@ -130,6 +123,14 @@ export class UserLayoutComponent implements OnInit, OnDestroy {
     return `${environment.apiUrl.replace('/api', '')}${user.profileImage}`;
   }
 
+  currentYear = new Date().getFullYear();
+
+  scrollToTop(): void {
+    if (this.isBrowser) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
@@ -143,3 +144,4 @@ export class UserLayoutComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 }
+

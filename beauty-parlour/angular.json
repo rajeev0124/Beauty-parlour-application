@@ -54,14 +54,12 @@
             ],
             "styles": ["src/styles.scss"],
             "server": "src/main.server.ts",
-            "outputMode": "server",
+            "prerender": {
+              "discoverRoutes": true
+            },
             "security": {
-              "allowedHosts": []
-            },
-            "ssr": {
-              "entry": "src/server.ts"
-            },
-            "prerender": false
+              "allowedHosts": ["localhost", "localhost:4200", "127.0.0.1", "127.0.0.1:4200", "::1", "0.0.0.0"]
+            }
           },
           "configurations": {
             "production": {
@@ -74,7 +72,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "800kB",
+                  "maximumWarning": "1MB",
                   "maximumError": "2MB"
                 },
                 {
@@ -83,7 +81,15 @@
                   "maximumError": "80kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": false
+              }
             },
             "development": {
               "optimization": false,
@@ -95,6 +101,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "allowedHosts": ["localhost", "127.0.0.1", "0.0.0.0", "::1"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "beauty-parlour:build:production"

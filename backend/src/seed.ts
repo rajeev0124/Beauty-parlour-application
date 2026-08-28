@@ -101,16 +101,8 @@ async function seedDatabase() {
       availability: true,
       status: 'active',
     },
-    {
-      name: 'Swathi',
-      role: 'Massage Therapist',
-      phone: '9876543106',
-      specialization: 'Body Massage',
-      availability: true,
-      status: 'active',
-    },
   ]);
-  console.log('✅ Staff Members seeded (6 staff)');
+  console.log('✅ Staff Members seeded (5 staff)');
 
   // ========================================
   // 💇 SERVICES
@@ -126,14 +118,6 @@ async function seedDatabase() {
       isActive: true,
     },
     {
-      name: 'Hair Cut – Men',
-      category: 'hair',
-      duration: 30,
-      price: 300,
-      description: 'Trendy cuts and classic styles for men',
-      isActive: true,
-    },
-    {
       name: 'Hair Coloring',
       category: 'hair',
       duration: 90,
@@ -143,7 +127,7 @@ async function seedDatabase() {
       isActive: true,
     },
     {
-      name: 'Hair Spa',
+      name: 'Hair Deep Conditioning',
       category: 'hair',
       duration: 60,
       price: 1200,
@@ -196,7 +180,7 @@ async function seedDatabase() {
       category: 'nails',
       duration: 45,
       price: 500,
-      description: 'Relaxing foot spa with nail care and polish',
+      description: 'Relaxing foot care with nail shaping and polish',
       isActive: true,
     },
     {
@@ -205,23 +189,6 @@ async function seedDatabase() {
       duration: 60,
       price: 1200,
       description: 'Long-lasting gel polish with nail art options',
-      isActive: true,
-    },
-    {
-      name: 'Full Body Massage',
-      category: 'massage',
-      duration: 60,
-      price: 1500,
-      description: 'Relaxing Swedish or deep tissue massage',
-      popular: true,
-      isActive: true,
-    },
-    {
-      name: 'Head Massage',
-      category: 'massage',
-      duration: 30,
-      price: 500,
-      description: 'Stress-relieving head and shoulder massage',
       isActive: true,
     },
     {
@@ -242,7 +209,7 @@ async function seedDatabase() {
       isActive: true,
     },
   ]);
-  console.log('✅ Services seeded (15 services)');
+  console.log('✅ Services seeded (12 services)');
 
   // ========================================
   // 🛍️ PRODUCTS
@@ -257,7 +224,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 25,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=500&auto=format&fit=crop&q=60',
+      image: '/products/keratin-shampoo.png',
     },
     {
       name: 'Argan Oil Conditioner',
@@ -266,7 +233,7 @@ async function seedDatabase() {
       rating: 4.3,
       stock: 18,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=500&auto=format&fit=crop&q=60',
+      image: '/products/argan-conditioner.png',
     },
     {
       name: 'Hair Serum – Silk Shine',
@@ -276,7 +243,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 30,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1608248597481-496100c80836?w=500&auto=format&fit=crop&q=60',
+      image: '/products/hair-serum.png',
     },
     {
       name: 'Vitamin C Face Wash',
@@ -286,7 +253,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 40,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=500&auto=format&fit=crop&q=60',
+      image: '/products/vit-c-facewash.png',
     },
     {
       name: 'Hyaluronic Moisturizer',
@@ -296,7 +263,7 @@ async function seedDatabase() {
       rating: 4.8,
       stock: 15,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=500&auto=format&fit=crop&q=60',
+      image: '/products/hyaluronic-moisturizer.png',
     },
     {
       name: 'Sunscreen SPF 50+',
@@ -305,7 +272,7 @@ async function seedDatabase() {
       rating: 4.4,
       stock: 35,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=60',
+      image: '/products/sunscreen-spf50.png',
     },
     {
       name: 'Night Repair Cream',
@@ -314,7 +281,7 @@ async function seedDatabase() {
       rating: 4.5,
       stock: 10,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1608248597481-496100c80836?w=500&auto=format&fit=crop&q=60',
+      image: '/products/night-repair-cream.png',
     },
     {
       name: 'Matte Lipstick Set',
@@ -323,7 +290,7 @@ async function seedDatabase() {
       rating: 4.6,
       stock: 20,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500&auto=format&fit=crop&q=60',
+      image: '/products/matte-lipstick-set.png',
     },
     {
       name: 'Foundation – Natural Glow',
@@ -333,7 +300,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 22,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500&auto=format&fit=crop&q=60',
+      image: '/products/foundation-glow.png',
     },
     {
       name: 'Gel Nail Polish Kit',
@@ -342,7 +309,44 @@ async function seedDatabase() {
       rating: 4.4,
       stock: 28,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=500&auto=format&fit=crop&q=60',
+      image: '/products/gel-nail-kit.png',
+    },
+    {
+      name: 'Leave-In Hair Mask',
+      category: 'hair',
+      price: 720,
+      rating: 4.2,
+      stock: 12,
+      isActive: true,
+      image: '/products/hair-mask.png',
+    },
+    {
+      name: 'Eye Shadow Palette',
+      category: 'makeup',
+      price: 1500,
+      originalPrice: 1800,
+      rating: 4.7,
+      stock: 14,
+      isActive: true,
+      image: '/products/eyeshadow-palette.png',
+    },
+    {
+      name: 'Nail Art Stickers',
+      category: 'nails',
+      price: 250,
+      rating: 4.1,
+      stock: 50,
+      isActive: true,
+      image: '/products/nail-stickers.png',
+    },
+    {
+      name: 'Cuticle Oil',
+      category: 'nails',
+      price: 320,
+      rating: 4.3,
+      stock: 38,
+      isActive: true,
+      image: '/products/cuticle-oil.png',
     },
     {
       name: 'Professional Hair Dryer',
@@ -353,7 +357,7 @@ async function seedDatabase() {
       bestseller: true,
       stock: 8,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&auto=format&fit=crop&q=60',
+      image: '/products/hair-dryer.png',
     },
     {
       name: 'Straightening Iron',
@@ -362,10 +366,19 @@ async function seedDatabase() {
       rating: 4.5,
       stock: 10,
       isActive: true,
-      image: 'https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?w=500&auto=format&fit=crop&q=60',
+      image: '/products/straightening-iron.png',
+    },
+    {
+      name: 'Makeup Brush Set (12 pcs)',
+      category: 'tools',
+      price: 1100,
+      rating: 4.6,
+      stock: 16,
+      isActive: true,
+      image: '/products/makeup-brushes.png',
     },
   ]);
-  console.log('✅ Products seeded (12 products)');
+  console.log('✅ Products seeded (17 products)');
 
   // ========================================
   // � CUSTOMER USERS (Can book appointments)
@@ -471,20 +484,20 @@ async function seedDatabase() {
     {
       userId: customers[2]._id,
       userName: customers[2].name,
-      serviceId: services[11]._id,
-      serviceName: services[11].name,
-      staffId: staff[5]._id,
-      staffName: staff[5].name,
+      serviceId: services[10]._id, // Bridal Makeup
+      serviceName: services[10].name,
+      staffId: staff[4]._id,
+      staffName: staff[4].name,
       date: today.toISOString().split('T')[0],
       time: '02:00 PM',
       status: 'pending',
-      notes: 'Wants deep tissue massage',
+      notes: 'Wants bridal consultation',
     },
     {
       userId: customers[3]._id,
       userName: customers[3].name,
-      serviceId: services[13]._id,
-      serviceName: services[13].name,
+      serviceId: services[11]._id, // Party Makeup
+      serviceName: services[11].name,
       staffId: staff[3]._id,
       staffName: staff[3].name,
       date: tomorrow.toISOString().split('T')[0],
@@ -645,18 +658,6 @@ async function seedDatabase() {
   console.log('│  💳 Payments          │  2 transactions             │');
   console.log('└─────────────────────────────────────────────────────┘');
 
-  console.log('\n🔐 LOGIN CREDENTIALS:');
-  console.log('┌─────────────────────────────────────────────────────┐');
-  console.log('│                    ADMIN LOGINS                     │');
-  console.log('│  (Use these to access ADMIN DASHBOARD)              │');
-  console.log('├─────────────────────────────────────────────────────┤');
-  console.log('│  📧 admin@beauty.com      │  🔑 admin123            │');
-  console.log('│  📧 superadmin@beauty.com │  🔑 super123            │');
-  console.log('└─────────────────────────────────────────────────────┘');
-
-  console.log('\n🌐 URLs:');
-  console.log('   Admin Login:    http://localhost:4200/admin/login');
-  console.log('   Customer Login: http://localhost:4200/login');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
   await app.close();

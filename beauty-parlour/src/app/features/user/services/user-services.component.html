@@ -3,10 +3,10 @@
   <section class="tinore-services-hero">
     <div class="tinore-hero-content">
       <div class="tinore-pill-badge">
-        <mat-icon>spa</mat-icon>
-        <span>Expert Stylists • Premium Salon Services</span>
+        <mat-icon>auto_awesome</mat-icon>
+        <span>Expert Beauticians • Premium Beauty Services</span>
       </div>
-      <h1 class="tinore-services-title">Curated Salon & <span class="tinore-hero-highlight">Spa Rituals</span></h1>
+      <h1 class="tinore-services-title">Curated Beauty <span class="tinore-hero-highlight">Parlour Treatments</span></h1>
       <p class="tinore-services-subtitle">
         From expert haircuts and vibrant colour to relaxing facials and bridal packages — we have every beauty service you need, all in one place.
       </p>
@@ -18,7 +18,7 @@
         <div class="trust-divider"></div>
         <div class="trust-ribbon-item">
           <mat-icon>auto_awesome</mat-icon>
-          <span>Premium Salon Products</span>
+          <span>Premium Beauty Products</span>
         </div>
         <div class="trust-divider"></div>
         <div class="trust-ribbon-item">
@@ -102,14 +102,11 @@
                   <mat-icon>schedule</mat-icon>
                   {{ service.duration }} min
                 </span>
-                <div class="service-rating-row">
-                  <mat-icon>star</mat-icon>
-                  <span>4.9 (80+ Reviews)</span>
-                </div>
+
               </div>
 
               <h3 class="service-item-title">{{ service.name }}</h3>
-              <p class="service-item-desc">{{ service.description || 'Premium salon ritual curated with high-potency bio-botanicals and bespoke artisan styling.' }}</p>
+              <p class="service-item-desc">{{ service.description || 'Premium beauty treatment curated with high-potency bio-botanicals and bespoke artisan styling.' }}</p>
 
               <div class="service-card-action">
                 <a routerLink="/book" [queryParams]="{service: service._id}" class="tinore-book-btn">

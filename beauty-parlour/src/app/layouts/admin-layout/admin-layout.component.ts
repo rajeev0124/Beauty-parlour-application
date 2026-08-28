@@ -33,7 +33,7 @@ export class AdminLayoutComponent implements OnDestroy {
   isMobile = false;
   themeService = inject(ThemeService);
   private destroy$ = new Subject<void>();
-  private resizeListener: () => void;
+  private resizeListener?: () => void;
 
   private searchRouteMap: Record<string, string> = {
     dashboard: '/admin/dashboard',
@@ -56,9 +56,11 @@ export class AdminLayoutComponent implements OnDestroy {
   };
 
   constructor(private authService: AuthService, private router: Router) {
-    this.checkMobile();
-    this.resizeListener = () => this.checkMobile();
-    window.addEventListener('resize', this.resizeListener);
+    if (typeof window !== 'undefined') {
+      this.checkMobile();
+      this.resizeListener = () => this.checkMobile();
+      window.addEventListener('resize', this.resizeListener);
+    }
 
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
@@ -73,10 +75,13 @@ export class AdminLayoutComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    window.removeEventListener('resize', this.resizeListener);
+    if (typeof window !== 'undefined' && this.resizeListener) {
+      window.removeEventListener('resize', this.resizeListener);
+    }
   }
 
   private checkMobile(): void {
+    if (typeof window === 'undefined') return;
     this.isMobile = window.innerWidth <= 768;
     // Auto-collapse sidebar on small laptops to free content space
     if (window.innerWidth <= 1100 && this.sidenavOpened) {
@@ -103,6 +108,6 @@ export class AdminLayoutComponent implements OnDestroy {
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 }

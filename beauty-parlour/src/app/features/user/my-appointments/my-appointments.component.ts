@@ -44,18 +44,8 @@ export class MyAppointmentsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.isLoggedIn();
-    if (!this.isLoggedIn) {
-      this.loading = false;
-      this.errorMessage = 'Please sign in to view your appointments.';
-      this.cdr.detectChanges();
-      return;
-    }
+    this.isLoggedIn = true;
     this.loadAppointments();
-  }
-
-  goToSignIn(): void {
-    this.router.navigate(['/sign-in']);
   }
 
   loadAppointments(): void {

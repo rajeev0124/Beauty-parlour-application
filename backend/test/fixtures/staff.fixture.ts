@@ -37,7 +37,7 @@ export class StaffFixtures {
     name: 'Sarah Johnson',
     email: 'sarah.johnson@example.com',
     phone: '9876543213',
-    specialization: ['Nails', 'Spa'],
+    specialization: ['Nails', 'Beauty'],
     availability: {
       monday: { start: '10:00 AM', end: '07:00 PM', isAvailable: true },
       tuesday: { start: '10:00 AM', end: '07:00 PM', isAvailable: true },
@@ -47,7 +47,7 @@ export class StaffFixtures {
       saturday: { start: '11:00 AM', end: '06:00 PM', isAvailable: true },
       sunday: { start: '', end: '', isAvailable: false },
     },
-    bio: 'Specialist in nail art and spa treatments',
+    bio: 'Specialist in nail art and beauty care',
     profileImage: 'https://example.com/staff/sarah.jpg',
     isActive: true,
     rating: 4.9,

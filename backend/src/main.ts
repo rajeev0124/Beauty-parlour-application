@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters';
 import { AppLoggerService } from './common/logger';
@@ -19,10 +20,13 @@ function killPortProcess(port: number): void {
         .split('\n')
         .filter((line) => line.includes('LISTENING'));
       const pids = new Set<string>();
+      const currentPid = process.pid;
+      const parentPid = process.ppid;
       lines.forEach((line) => {
         const parts = line.trim().split(/\s+/);
         const pid = parts[parts.length - 1];
-        if (pid && !isNaN(Number(pid))) {
+        const numPid = Number(pid);
+        if (pid && !isNaN(numPid) && numPid !== currentPid && numPid !== parentPid) {
           pids.add(pid);
         }
       });
@@ -50,22 +54,9 @@ async function bootstrap() {
   logger.setContext('Bootstrap');
 
   const port = parseInt(process.env.PORT ?? '3000', 10);
-
-  // Kill any existing process on the port before starting
-  killPortProcess(port);
-
-  // Small delay to ensure port is released
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const app = await NestFactory.create(AppModule, {
-    logger: logger,
-  });
-
-  // Enable graceful shutdown
-  app.enableShutdownHooks();
+  const app = await NestFactory.create(AppModule);
 
   // Security Headers with Helmet
-  const helmet = (await import('helmet')).default;
   app.use(
     helmet({
       contentSecurityPolicy: {

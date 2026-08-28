@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="google-site-verification" content="0vDc6dc9evdRa_-ejo83-sBcQew984oEWmdwc4bBjaA" />
     <meta name="description" content="Professional Sindhura Makeovers management and booking application. Book appointments, browse products, and manage your beauty services." />
-    <meta name="keywords" content="Sindhura Makeovers, salon booking, beauty services, hair salon, spa, makeup, nail art, appointment booking" />
+    <meta name="keywords" content="Sindhura Makeovers, beauty parlour booking, beauty services, hair styling, makeup, nail art, appointment booking" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#C9748A" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -20,8 +20,8 @@
     <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Sindhura Makeovers" />
-    <meta property="og:title" content="Sindhura Makeovers – Premium Salon & Spa" />
-    <meta property="og:description" content="Book your next beauty appointment online. Expert stylists, top products, and luxury spa services – all in one place." />
+    <meta property="og:title" content="Sindhura Makeovers – Premium Beauty Parlour" />
+    <meta property="og:description" content="Book your next beauty appointment online. Expert stylists, top products, and luxury beauty services – all in one place." />
     <meta property="og:url" content="https://beauty-parlour-0124.web.app/" />
     <meta property="og:image" content="https://beauty-parlour-0124.web.app/icons/icon-512x512.png" />
     <meta property="og:image:width" content="512" />
@@ -29,13 +29,14 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Sindhura Makeovers – Premium Salon & Spa" />
-    <meta name="twitter:description" content="Book your next beauty appointment online. Expert stylists, top products, and luxury spa services – all in one place." />
+    <meta name="twitter:title" content="Sindhura Makeovers – Premium Beauty Parlour" />
+    <meta name="twitter:description" content="Book your next beauty appointment online. Expert stylists, top products, and luxury beauty services – all in one place." />
     <meta name="twitter:image" content="https://beauty-parlour-0124.web.app/icons/icon-512x512.png" />
 
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="manifest" href="manifest.json" />
     <link rel="apple-touch-icon" href="icons/icon-152x152.png" />
+    <link rel="preload" as="image" href="/hero-model.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -60,6 +61,13 @@
     </script> -->
   </head>
   <body>
-    <app-root></app-root>
+    <app-root>
+      <div id="initial-app-loader" style="position: fixed; inset: 0; background: #FDFAF8; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; font-family: system-ui, -apple-system, sans-serif;">
+        <div style="font-family: Georgia, 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #1C1C1C; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px;">SINDHURA</div>
+        <div style="font-size: 10px; font-weight: 600; color: #C9748A; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 24px;">MAKEOVERS</div>
+        <div style="width: 32px; height: 32px; border: 3px solid rgba(201, 116, 138, 0.2); border-top-color: #C9748A; border-radius: 50%; animation: appLoaderSpin 0.75s linear infinite;"></div>
+        <style>@keyframes appLoaderSpin { to { transform: rotate(360deg); } }</style>
+      </div>
+    </app-root>
   </body>
 </html>

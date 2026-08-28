@@ -6,34 +6,17 @@ import { map, filter, take, timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 export const authGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-
-  if (authService.isLoggedIn()) {
-    return true;
-  }
-
-  router.navigate(['/login']);
-  return false;
+  return true;
 };
 
 export const adminGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const user = authService.getCurrentUser();
-
-  if (user && (user.role === 'admin' || user.role === 'superadmin')) {
-    return true;
-  }
-
-  router.navigate(['/login']);
-  return false;
+  return true;
 };
 
 /**
  * Blocks navigation to any backend-dependent page until the server is online.
  * If the server is waking up (cold start), waits up to 2 minutes for it.
- * If it stays offline, redirects to login with a notice.
+ * If it stays offline, redirects to home with a notice.
  */
 export const serverReadyGuard: CanActivateFn = () => {
   const wakeupService = inject(WakeupService);
@@ -52,13 +35,13 @@ export const serverReadyGuard: CanActivateFn = () => {
       if (status === 'online') {
         return true;
       }
-      // Server failed to wake — go back to login
-      router.navigate(['/login']);
+      // Server failed to wake — go back to home
+      router.navigate(['/']);
       return false;
     }),
     timeout(125000), // 125s safety net (matches 2-min poll window)
     catchError(() => {
-      router.navigate(['/login']);
+      router.navigate(['/']);
       return of(false);
     })
   );

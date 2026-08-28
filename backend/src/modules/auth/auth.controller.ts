@@ -20,7 +20,7 @@ import {
   ResetPasswordDto,
   RefreshTokenDto,
 } from './dto/auth.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/guards';
 import { CurrentUser } from '../../common/decorators';
 
 @Controller('auth')

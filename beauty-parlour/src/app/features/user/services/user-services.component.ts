@@ -24,7 +24,6 @@ export class UserServicesComponent implements OnInit {
     { key: 'hair', label: 'Hair Care', icon: 'content_cut' },
     { key: 'skin', label: 'Skin Care', icon: 'face_retouching_natural' },
     { key: 'nails', label: 'Nails', icon: 'brush' },
-    { key: 'massage', label: 'Massage', icon: 'self_improvement' },
     { key: 'bridal', label: 'Bridal', icon: 'favorite' },
   ];
 
@@ -33,10 +32,9 @@ export class UserServicesComponent implements OnInit {
     hair: 'content_cut',
     skin: 'face_retouching_natural',
     nails: 'brush',
-    massage: 'self_improvement',
     bridal: 'favorite',
     makeup: 'face',
-    spa: 'spa',
+    body: 'local_florist',
     default: 'auto_awesome'
   };
 
@@ -60,12 +58,6 @@ export class UserServicesComponent implements OnInit {
       'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=600&q=80',
       'https://images.unsplash.com/photo-1607779097040-26e80aa78e66?w=600&q=80'
     ],
-    massage: [
-      'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80',
-      'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=600&q=80',
-      'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=600&q=80',
-      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80'
-    ],
     bridal: [
       'https://images.unsplash.com/photo-1457972729786-0411a3b2b626?w=600&q=80',
       'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&q=80',
@@ -77,7 +69,7 @@ export class UserServicesComponent implements OnInit {
       'https://images.unsplash.com/photo-1596704017254-9b121068fb31?w=600&q=80',
       'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=600&q=80'
     ],
-    spa: [
+    body: [
       'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80',
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
       'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&q=80'
@@ -94,10 +86,9 @@ export class UserServicesComponent implements OnInit {
     hair: '#F59E0B',
     skin: '#10B981',
     nails: '#EC4899',
-    massage: '#3B82F6',
     bridal: '#EF4444',
     makeup: '#8B5CF6',
-    spa: '#14B8A6',
+    body: '#14B8A6',
     default: '#7C3AED'
   };
 

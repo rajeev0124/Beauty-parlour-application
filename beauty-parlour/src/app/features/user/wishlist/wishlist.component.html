@@ -82,7 +82,7 @@
           <p>Save your favorite services and products to keep track of what you love</p>
           <div class="empty-actions">
             <a routerLink="/services" class="btn-primary">
-              <mat-icon>spa</mat-icon>
+              <mat-icon>local_florist</mat-icon>
               <span>Browse Services</span>
             </a>
             <a routerLink="/products" class="btn-outline">
@@ -130,7 +130,7 @@
                 
                 <!-- Type Badge -->
                 <div class="type-badge" [class]="item.itemType">
-                  <mat-icon>{{ item.itemType === 'service' ? 'spa' : 'shopping_bag' }}</mat-icon>
+                  <mat-icon>{{ item.itemType === 'service' ? 'local_florist' : 'shopping_bag' }}</mat-icon>
                   <span>{{ item.itemType | titlecase }}</span>
                 </div>
                 

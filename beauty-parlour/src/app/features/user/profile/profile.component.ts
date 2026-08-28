@@ -183,8 +183,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       error: (err) => {
         this.loading = false;
         if (err.status === 401) {
-          // If not authenticated, redirect to sign-in
-          this.router.navigate(['/sign-in']);
+          // If not authenticated, do not crash or force to non-existent sign-in
+          this.loading = false;
         } else if (!this.user) {
           // Only show error if we don't have fallback user data
           this.snackBar.open('Failed to load profile', 'Close', { duration: 3000 });

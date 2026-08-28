@@ -2,23 +2,12 @@ import { Routes } from '@angular/router';
 import { adminGuard, serverReadyGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  {
-    path: 'login',
-    title: 'Admin Login – Sindhura Makeovers',
-    loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
-  },
-  {
-    path: 'register',
-    title: 'Admin Register – Sindhura Makeovers',
-    loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
-  },
-
   // User-facing pages
   {
     path: '',
     loadComponent: () => import('./layouts/user-layout/user-layout.component').then(m => m.UserLayoutComponent),
     children: [
-      { path: '', title: 'Sindhura Makeovers – Premium Salon & Spa', loadComponent: () => import('./features/user/home/home.component').then(m => m.HomeComponent) },
+      { path: '', title: 'Sindhura Makeovers – Premium Beauty Parlour', loadComponent: () => import('./features/user/home/home.component').then(m => m.HomeComponent) },
       { path: 'services', title: 'Our Services – Sindhura Makeovers', canActivate: [serverReadyGuard], loadComponent: () => import('./features/user/services/user-services.component').then(m => m.UserServicesComponent) },
       { path: 'products', title: 'Shop Products – Sindhura Makeovers', canActivate: [serverReadyGuard], loadComponent: () => import('./features/user/products/user-products.component').then(m => m.UserProductsComponent) },
       { path: 'cart', title: 'Beauty Bag & Checkout – Sindhura Makeovers', canActivate: [serverReadyGuard], loadComponent: () => import('./features/user/cart/user-cart.component').then(m => m.UserCartComponent) },
@@ -31,10 +20,6 @@ export const routes: Routes = [
       { path: 'my-appointments', title: 'My Appointments – Sindhura Makeovers', canActivate: [serverReadyGuard], loadComponent: () => import('./features/user/my-appointments/my-appointments.component').then(m => m.MyAppointmentsComponent) },
       { path: 'wishlist', title: 'My Wishlist – Sindhura Makeovers', canActivate: [serverReadyGuard], loadComponent: () => import('./features/user/wishlist/wishlist.component').then(m => m.WishlistComponent) },
       { path: 'rewards', title: 'My Rewards – Sindhura Makeovers', canActivate: [serverReadyGuard], loadComponent: () => import('./features/user/rewards/my-rewards.component').then(m => m.MyRewardsComponent) },
-      { path: 'sign-in', title: 'Sign In – Sindhura Makeovers', loadComponent: () => import('./features/user/auth/customer-login/customer-login.component').then(m => m.CustomerLoginComponent) },
-      { path: 'sign-up', title: 'Create Account – Sindhura Makeovers', loadComponent: () => import('./features/user/auth/customer-register/customer-register.component').then(m => m.CustomerRegisterComponent) },
-      { path: 'forgot-password', title: 'Forgot Password – Sindhura Makeovers', loadComponent: () => import('./features/user/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
-      { path: 'reset-password', title: 'Reset Password – Sindhura Makeovers', loadComponent: () => import('./features/user/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent) },
     ]
   },
 
@@ -89,11 +74,7 @@ export const routes: Routes = [
         title: 'Inventory – Sindhura Makeovers Admin',
         loadComponent: () => import('./features/inventory/inventory.component').then(m => m.InventoryComponent)
       },
-      {
-        path: 'reviews',
-        title: 'Reviews – Sindhura Makeovers Admin',
-        loadComponent: () => import('./features/reviews/reviews.component').then(m => m.ReviewsComponent)
-      },
+
       {
         path: 'coupons',
         title: 'Coupons – Sindhura Makeovers Admin',

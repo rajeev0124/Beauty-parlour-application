@@ -34,7 +34,7 @@ export class App implements OnInit {
       const desc = event['description'] || defaultDesc;
       
       this.metaService.updateTag({ name: 'description', content: desc });
-      this.metaService.updateTag({ name: 'keywords', content: 'beauty, parlour, salon, spa, wellness, makeup, cosmetics' });
+      this.metaService.updateTag({ name: 'keywords', content: 'beauty, parlour, wellness, makeup, cosmetics, hair styling, skin care' });
       this.metaService.updateTag({ property: 'og:title', content: this.titleService.getTitle() });
       this.metaService.updateTag({ property: 'og:description', content: desc });
       this.metaService.updateTag({ property: 'og:type', content: 'website' });

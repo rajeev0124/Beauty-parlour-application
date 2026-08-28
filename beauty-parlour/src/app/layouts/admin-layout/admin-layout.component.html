@@ -91,11 +91,7 @@
 
       <div class="nav-group">
         @if (sidenavOpened) { <span class="nav-group-title">Analytics</span> }
-        <a class="nav-item" routerLink="/admin/reviews" routerLinkActive="nav-active"
-           [matTooltip]="!sidenavOpened ? 'Reviews' : ''" matTooltipPosition="right">
-          <mat-icon>star_rate</mat-icon>
-          @if (sidenavOpened) { <span>Reviews</span> }
-        </a>
+
         <a class="nav-item" routerLink="/admin/loyalty" routerLinkActive="nav-active"
            [matTooltip]="!sidenavOpened ? 'Loyalty' : ''" matTooltipPosition="right">
           <mat-icon>stars</mat-icon>

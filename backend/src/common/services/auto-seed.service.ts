@@ -53,8 +53,6 @@ export class AutoSeedService implements OnModuleInit {
     for (const defaultUser of this.defaultUsers) {
       await this.ensureUserExists(defaultUser);
     }
-
-    this.printLoginCredentials();
   }
 
   /**
@@ -101,21 +99,6 @@ export class AutoSeedService implements OnModuleInit {
         `❌ Failed to ensure user ${userData.email}: ${error.message}`,
       );
     }
-  }
-
-  /**
-   * Print login credentials to console
-   */
-  private printLoginCredentials(): void {
-    console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('🔐 DEFAULT LOGIN CREDENTIALS');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('');
-    console.log('👨‍💼 ADMIN LOGINS:');
-    console.log('   📧 admin@beauty.com / admin123');
-    console.log('   📧 superadmin@beauty.com / super123');
-    console.log('');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
   }
 
   /**
