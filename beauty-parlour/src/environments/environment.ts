@@ -1,7 +1,11 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
-  razorpayKey: 'rzp_test_simulation', // Should match backend key for testing
+  apiUrl: '',
+  // Parlour WhatsApp Business Phone Number (with country code, e.g. 919876543210)
+  whatsAppNumber: '919876543210',
+  // Optional Google Sheet ID for dynamic live updates by owner (leave empty to use local data)
+  googleSheetId: '',
+  razorpayKey: 'rzp_test_simulation',
   firebaseConfig: {
     apiKey: 'AIzaSyBzmssqi2wBHPKP-H5cRQwfERJ0RmV0RZk',
     authDomain: 'beauty-parlour-0124.firebaseapp.com',

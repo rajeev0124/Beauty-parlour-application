@@ -8,6 +8,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CartService, CartItem } from '../../../core/services/cart.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { WhatsAppService } from '../../../core/services/whatsapp.service';
 
 @Component({
   selector: 'app-user-cart',
@@ -38,6 +39,7 @@ export class UserCartComponent implements OnInit {
   constructor(
     public cartService: CartService,
     private authService: AuthService,
+    private whatsAppService: WhatsAppService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private router: Router,
@@ -46,12 +48,12 @@ export class UserCartComponent implements OnInit {
     const user = this.authService.getCurrentUser();
     this.checkoutForm = this.fb.group({
       fullName: [user?.name || '', Validators.required],
-      phone: [user?.phone || '', [Validators.required, Validators.pattern(/^d{10}$/)]],
-      email: [user?.email || '', [Validators.required, Validators.email]],
+      phone: [user?.phone || '', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      email: [user?.email || ''],
       streetAddress: ['', Validators.required],
       city: ['Hyderabad', Validators.required],
       state: ['Telangana', Validators.required],
-      pincode: ['', [Validators.required, Validators.pattern(/^d{6}$/)]],
+      pincode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
       orderNotes: ['']
     });
   }
@@ -120,7 +122,27 @@ export class UserCartComponent implements OnInit {
     this.cdr.markForCheck();
 
     const calculation = this.getCalculatedTotal(subtotal);
-    const orderNum = 'TNR-' + Math.floor(100000 + Math.random() * 900000);
+    const formVal = this.checkoutForm.value;
+    const orderNum = 'SM-' + Math.floor(100000 + Math.random() * 900000);
+
+    // 1. Send Order via WhatsApp
+    this.whatsAppService.sendCartOrder({
+      customerName: formVal.fullName,
+      phone: formVal.phone,
+      email: formVal.email,
+      address: formVal.streetAddress,
+      city: formVal.city,
+      state: formVal.state,
+      pincode: formVal.pincode,
+      items: items,
+      subtotal: calculation.subtotal,
+      discount: calculation.discount,
+      deliveryFee: calculation.shipping,
+      total: calculation.total,
+      couponCode: this.appliedCoupon?.code,
+      paymentMethod: this.paymentMethod,
+      notes: formVal.orderNotes
+    });
 
     setTimeout(() => {
       this.confirmedOrder = {
@@ -138,10 +160,10 @@ export class UserCartComponent implements OnInit {
       this.orderPlaced = true;
       this.cdr.markForCheck();
 
-      this.snackBar.open('✨ Order Placed Successfully! Thank you for choosing Tinore.', 'OK', {
+      this.snackBar.open('✨ Opening WhatsApp with your order details...', 'OK', {
         duration: 5000,
         panelClass: ['success-snackbar']
       });
-    }, 1500);
+    }, 600);
   }
 }

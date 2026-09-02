@@ -31,6 +31,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('glowHeading') glowHeading!: ElementRef<HTMLElement>;
   @ViewChild('transformationHeading') transformationHeading!: ElementRef<HTMLElement>;
   private glowTimeline: any = null;
+
   // Static content - displayed immediately
   services = [
     { 
@@ -47,7 +48,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Skin & Facial', 
       desc: 'Facials, cleanup & glow treatments', 
       icon: 'face_retouching_natural', 
-      price: '800',
+      price: '800', 
       category: 'Skin & Facials',
       image: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=600&h=400&fit=crop&q=80',
       featured: false,
@@ -57,7 +58,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Nail Art', 
       desc: 'Manicure, pedicure & nail extensions', 
       icon: 'brush', 
-      price: '400',
+      price: '400', 
       category: 'Body Care',
       image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&h=400&fit=crop&q=80',
       featured: false,
@@ -67,7 +68,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Advanced Skincare', 
       desc: 'Clinical facials & rejuvenation therapy', 
       icon: 'face_retouching_natural', 
-      price: '1,200',
+      price: '1,200', 
       category: 'Body Care',
       image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&h=400&fit=crop&q=80',
       featured: true,
@@ -77,7 +78,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Bridal Makeup', 
       desc: 'Complete bridal packages & trial sessions', 
       icon: 'favorite', 
-      price: '15,000',
+      price: '15,000', 
       category: 'Bridal',
       image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=400&fit=crop&q=80',
       featured: true,
@@ -87,7 +88,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Bridal Hair & Styling', 
       desc: 'Traditional & modern bridal hair designs', 
       icon: 'auto_awesome', 
-      price: '8,000',
+      price: '8,000', 
       category: 'Bridal',
       image: 'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=600&h=400&fit=crop&q=80',
       featured: false,
@@ -97,7 +98,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Hair Coloring', 
       desc: 'Balayage, highlights & full color services', 
       icon: 'palette', 
-      price: '1,500',
+      price: '1,500', 
       category: 'Hair Design',
       image: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=400&fit=crop&q=80',
       featured: false,
@@ -107,12 +108,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Waxing & Threading', 
       desc: 'Smooth skin with expert hair removal', 
       icon: 'auto_awesome', 
-      price: '300',
+      price: '300', 
       category: 'Body Care',
       image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&h=400&fit=crop&q=80',
       featured: false,
       color: '#06B6D4'
-    },
+    }
   ];
 
   // Computed filtered services based on selected category
@@ -184,7 +185,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     { 
       name: 'Multi-Depth Hyaluronic Acid', 
       desc: 'Draws moisture 1000x its weight into dermal layers for plump, dewy skin.', 
-      tag: 'Team', 
+      tag: 'Hydration', 
       icon: 'water_drop',
       color: '#0284C7',
       accentBg: 'rgba(2, 132, 199, 0.08)',
@@ -235,7 +236,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   activeRoutineStep = 0;
   routineDirection = 1;
   routineRotations = [4, -2, -9, 7];
-  // Active routine auto scroll
   private routineInterval: any = null;
 
   nextRoutineStep(): void {
@@ -260,10 +260,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private startRoutineAutoScroll(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    // Clear any existing interval
     this.stopRoutineAutoScroll();
     
-    // Auto scroll every 3.5 seconds
     this.routineInterval = setInterval(() => {
       this.nextRoutineStep();
     }, 3500);
@@ -280,7 +278,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const isActive = index === this.activeRoutineStep;
     const offset = index - this.activeRoutineStep;
     
-    // For items that are exiting (behind the active one)
     if (offset < 0) {
       return {
         'transform': `translate3d(${this.routineDirection === 1 ? -250 : 250}px, 0, -260px) rotateZ(${this.routineDirection === 1 ? -10 : 10}deg) scale(0.75)`,
@@ -291,7 +288,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     }
     
-    // For active item and items in stack
     const absOffset = Math.abs(offset);
     return {
       'transform': `translate3d(${offset * 15}px, ${absOffset * 6}px, ${-150 * absOffset}px) rotateZ(${this.routineRotations[index % 4]}deg) scale(${0.85 - absOffset * 0.04})`,
@@ -343,7 +339,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   userInteractingWithSlider = false;
 
   private sliderRafId: number | null = null;
-  private sliderDirection: 1 | -1 = 1; // 1 = moving right (revealing more Before), -1 = moving left
+  private sliderDirection: 1 | -1 = 1;
   private sliderResumeTimeout: any = null;
   private isHovered = false;
 
@@ -375,7 +371,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.sliderResumeTimeout) {
       clearTimeout(this.sliderResumeTimeout);
     }
-    // Resume auto-scroll after 3.5s of no user interaction
     this.sliderResumeTimeout = setTimeout(() => {
       if (!this.isHovered) {
         this.userInteractingWithSlider = false;
@@ -387,9 +382,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private startAutoSlider(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const minPos = 12; // reveal most of After image
-    const maxPos = 88; // reveal most of Before image
-    const speed = 0.35; // speed per frame
+    const minPos = 12;
+    const maxPos = 88;
+    const speed = 0.35;
 
     const step = () => {
       if (!this.userInteractingWithSlider) {
@@ -442,7 +437,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Load dynamic content in parallel
     this.loadDynamicContent();
   }
 
@@ -450,9 +444,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId) && this.glowHeading?.nativeElement) {
       const chars = this.glowHeading.nativeElement.querySelectorAll('.char');
       if (chars.length > 0) {
-        // Rolling Letters continuous fast slot animation loop
         this.glowTimeline = gsap.timeline({ repeat: -1, repeatDelay: 0.15 });
-
         this.glowTimeline
           .fromTo(
             chars,
@@ -462,10 +454,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               opacity: 1,
               duration: 0.35,
               ease: 'power4.out',
-              stagger: {
-                each: 0.03,
-                from: 'center'
-              }
+              stagger: { each: 0.03, from: 'center' }
             }
           )
           .to(
@@ -475,10 +464,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               opacity: 0,
               duration: 0.35,
               ease: 'power4.in',
-              stagger: {
-                each: 0.03,
-                from: 'center'
-              }
+              stagger: { each: 0.03, from: 'center' }
             },
             '+=0.9'
           );
@@ -491,21 +477,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.startRoutineAutoScroll();
     this.initScrollAnimations();
 
-    // Intersection Observer for 3D Shuffle Entrance on Scroll
     if (isPlatformBrowser(this.platformId)) {
       this.gridObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             this.triggerShuffleAnimation(1.2);
-            // Optional: Unobserve if we only want it to happen once
-            // this.gridObserver?.unobserve(entry.target);
           }
         });
       }, {
-        threshold: 0.1 // Trigger when 10% of the grid is visible
+        threshold: 0.1
       });
 
-      // Wait a tick for the view to initialize fully before querying
       setTimeout(() => {
         const grid = document.querySelector('.tinore-services-grid');
         if (grid) {
@@ -533,64 +515,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private initScrollAnimations(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    // Wait a bit longer for all Angular structural directives to finish rendering
-    setTimeout(() => {
-      // 1. Marquee Strip
-      const marquee = document.querySelector('.marquee-strip');
-      if (marquee) {
-        gsap.fromTo(marquee, 
-          { y: 50, opacity: 0, rotationX: -20 },
-          {
-            scrollTrigger: { trigger: marquee, start: 'top 90%' },
-            y: 0, opacity: 1, rotationX: 0, duration: 1, ease: 'power3.out'
-          }
-        );
-      }
-
-      // 2. 3-Step Routine Showcase Card (Animate the wrapper)
-      const routineSection = document.querySelector('.routine-showcase-card');
-      if (routineSection) {
-        gsap.fromTo(routineSection, 
-          { y: 100, opacity: 0, rotationX: -45, scale: 0.9 },
-          {
-            scrollTrigger: { trigger: '.routine-section', start: 'top 85%' },
-            y: 0, opacity: 1, rotationX: 0, scale: 1, duration: 1.2, ease: 'back.out(1.4)', transformOrigin: '50% 100%'
-          }
-        );
-      }
-
-      // 3. Luxe Transformation (Before & After)
-      const transformationBlock = document.querySelector('.transformation-stage');
-      if (transformationBlock) {
-        gsap.fromTo(transformationBlock, 
-          { y: 150, opacity: 0, scale: 0.95, rotationY: 10 },
-          {
-            scrollTrigger: { trigger: '.transformation-section', start: 'top 80%' },
-            y: 0, opacity: 1, scale: 1, rotationY: 0, duration: 1.5, ease: 'power4.out'
-          }
-        );
-      }
-
-      // 4. USPs / Ingredients Cards
-      const whyCards = gsap.utils.toArray('.ingredient-card');
-      if (whyCards.length) {
-        gsap.fromTo(whyCards, 
-          { y: 80, opacity: 0, rotationX: 30 },
-          {
-            scrollTrigger: { trigger: '.ingredients-section', start: 'top 85%' },
-            y: 0, opacity: 1, rotationX: 0, duration: 1, stagger: 0.15, ease: 'power3.out'
-          }
-        );
-      }
-
-      // Force ScrollTrigger to recalculate positions now that everything is styled and animated
-      ScrollTrigger.refresh();
-    }, 500);
-  }
-
   // =============================================================
   // 🔄 ROTATING TEXT CAROUSEL ANIMATION (See the Transformation)
   // =============================================================
@@ -616,10 +540,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         yPercent: -120,
         opacity: 0,
         duration: 0.4,
-        stagger: {
-          each: 0.03,
-          from: 'start'
-        },
+        stagger: { each: 0.03, from: 'start' },
         ease: 'power2.in',
         onComplete: () => {
           this.rotatingIndex = (this.rotatingIndex + 1) % this.rotatingWords.length;
@@ -633,10 +554,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               yPercent: 0,
               opacity: 1,
               duration: 0.4,
-              stagger: {
-                each: 0.03,
-                from: 'start'
-              },
+              stagger: { each: 0.03, from: 'start' },
               ease: 'power2.out'
             }
           );
@@ -650,6 +568,125 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       clearInterval(this.rotatingInterval);
       this.rotatingInterval = null;
     }
+  }
+
+  private initScrollAnimations(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    setTimeout(() => {
+      const marquee = document.querySelector('.marquee-strip');
+      if (marquee) {
+        gsap.fromTo(marquee, 
+          { y: 40, opacity: 0, rotationX: -15 },
+          {
+            scrollTrigger: { trigger: marquee, start: 'top 95%' },
+            y: 0, opacity: 1, rotationX: 0, duration: 0.9, ease: 'power3.out'
+          }
+        );
+      }
+
+      const routineSection = document.querySelector('.routine-showcase-card');
+      if (routineSection) {
+        gsap.fromTo(routineSection, 
+          { y: 80, opacity: 0, rotationX: -25, scale: 0.92 },
+          {
+            scrollTrigger: { trigger: '.routine-section', start: 'top 85%' },
+            y: 0, opacity: 1, rotationX: 0, scale: 1, duration: 1.1, ease: 'back.out(1.4)', transformOrigin: '50% 100%'
+          }
+        );
+      }
+
+      const serviceCards = gsap.utils.toArray('.tinore-service-card');
+      if (serviceCards.length) {
+        gsap.fromTo(serviceCards,
+          { y: 60, opacity: 0, rotationX: 20, scale: 0.95 },
+          {
+            scrollTrigger: { trigger: '.tinore-services-grid', start: 'top 88%' },
+            y: 0, opacity: 1, rotationX: 0, scale: 1, duration: 0.85, stagger: 0.1, ease: 'power3.out'
+          }
+        );
+      }
+
+      const transformationBlock = document.querySelector('.transformation-stage');
+      const transformationInfo = document.querySelector('.transformation-info-card');
+      if (transformationBlock) {
+        gsap.fromTo(transformationBlock, 
+          { y: 100, opacity: 0, scale: 0.94, rotationY: -12 },
+          {
+            scrollTrigger: { trigger: '.transformation-section', start: 'top 82%' },
+            y: 0, opacity: 1, scale: 1, rotationY: 0, duration: 1.2, ease: 'power4.out'
+          }
+        );
+      }
+      if (transformationInfo) {
+        gsap.fromTo(transformationInfo,
+          { y: 80, opacity: 0, rotationX: 18 },
+          {
+            scrollTrigger: { trigger: '.transformation-section', start: 'top 80%' },
+            y: 0, opacity: 1, rotationX: 0, duration: 1.1, delay: 0.2, ease: 'power3.out'
+          }
+        );
+      }
+
+      const whyCards = gsap.utils.toArray('.why-card');
+      if (whyCards.length) {
+        gsap.fromTo(whyCards,
+          { y: 60, opacity: 0, rotationX: 22, scale: 0.94 },
+          {
+            scrollTrigger: { trigger: '.why-grid', start: 'top 88%' },
+            y: 0, opacity: 1, rotationX: 0, scale: 1, duration: 0.8, stagger: 0.12, ease: 'power3.out'
+          }
+        );
+      }
+
+      const ingredientCards = gsap.utils.toArray('.ingredient-card');
+      if (ingredientCards.length) {
+        gsap.fromTo(ingredientCards, 
+          { y: 60, opacity: 0, rotationX: 25, scale: 0.95 },
+          {
+            scrollTrigger: { trigger: '.ingredients-section', start: 'top 85%' },
+            y: 0, opacity: 1, rotationX: 0, scale: 1, duration: 0.85, stagger: 0.12, ease: 'power3.out'
+          }
+        );
+      }
+
+      const reviewCards = gsap.utils.toArray('.tinore-review-card');
+      if (reviewCards.length) {
+        gsap.fromTo(reviewCards,
+          { y: 50, opacity: 0, rotationX: 18, scale: 0.96 },
+          {
+            scrollTrigger: { trigger: '.tinore-reviews-grid', start: 'top 88%' },
+            y: 0, opacity: 1, rotationX: 0, scale: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out'
+          }
+        );
+      }
+
+      const ctaCard = document.querySelector('.tinore-cta-card');
+      if (ctaCard) {
+        gsap.fromTo(ctaCard,
+          { y: 70, opacity: 0, scale: 0.95, rotationX: -15 },
+          {
+            scrollTrigger: { trigger: '.tinore-cta-banner', start: 'top 85%' },
+            y: 0, opacity: 1, scale: 1, rotationX: 0, duration: 1, ease: 'power3.out'
+          }
+        );
+      }
+
+      const mobileCards = document.querySelectorAll('.tinore-service-card, .ingredient-card, .why-card, .tinore-review-card, .routine-showcase-card');
+      if ('IntersectionObserver' in window && mobileCards.length) {
+        const mobileObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('mobile-3d-active');
+            }
+          });
+        }, { threshold: 0.15 });
+
+        mobileCards.forEach(card => mobileObserver.observe(card));
+      }
+
+      ScrollTrigger.refresh();
+    }, 400);
   }
 
   // =============================================================
@@ -764,9 +801,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const phrase = this.whyClientsPhrases[this.whyClientsPhraseIndex];
     const totalLength = phrase.typed.length;
 
-    const typeDelayMs = 70; // 0.07s
-    const holdMs = 1800; // 1.8s
-    const deleteDelayMs = 45; // 0.045s
+    const typeDelayMs = 70;
+    const holdMs = 1800;
+    const deleteDelayMs = 45;
 
     if (this.whyClientsPhase === 'typing') {
       if (this.whyClientsCharIndex < totalLength) {
@@ -799,8 +836,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   setCategory(cat: string) {
     this.selectedCategory = cat;
     this.cdr.markForCheck();
-    
-    // Animate cards in when category changes (slightly faster shuffle)
     this.triggerShuffleAnimation(0.8);
   }
 
@@ -814,11 +849,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       gsap.fromTo(cards, 
         { 
           y: 150, 
-          x: () => (Math.random() - 0.5) * 200, // random spread on X
+          x: () => (Math.random() - 0.5) * 200,
           opacity: 0, 
-          rotationX: () => (Math.random() - 0.5) * 60, // crazy 3d flip
+          rotationX: () => (Math.random() - 0.5) * 60,
           rotationY: () => (Math.random() - 0.5) * 60,
-          rotationZ: () => (Math.random() - 0.5) * 45, // deal like a deck of cards
+          rotationZ: () => (Math.random() - 0.5) * 45,
           scale: 0.4
         },
         { 
@@ -832,11 +867,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           duration: duration, 
           stagger: 0.1, 
           ease: 'back.out(1.5)', 
-          transformPerspective: 1200, 
+          transformPerspective: 1200, 
           clearProps: "transform" 
         }
       );
-    }, 50); // slight delay to ensure DOM is updated after *ngFor / @for
+    }, 50);
   }
 
   setRoutineStep(idx: number) {

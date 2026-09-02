@@ -1,17 +1,17 @@
 <div class="about-page tinore-about-page">
   <!-- 1. CINEMATIC LUXURY HERO -->
   <section class="editorial-hero">
-    <!-- Right-Side Cosmetic & Blossom Artwork Only -->
-    <div class="hero-right-decor" aria-hidden="true"></div>
+    <!-- Full-Bleed Cinematic Hero Background Artwork Behind All Text -->
+    <div class="hero-full-bg-decor" aria-hidden="true"></div>
 
     <div class="hero-full-container">
-      <div class="hero-inner-container">
-        <h1 class="hero-headline" aria-label="Where Artistry Meets Individual Grace">
-          {{ displayedText }}<span class="typewriter-cursor" [class.cursor-off]="!cursorOn"></span>
+      <div class="hero-inner-container anim-3d anim-fade-up">
+        <h1 class="hero-headline" aria-label="Where Luxury Meets Personal Style">
+          <span class="headline-gold-text">{{ displayedText || 'Where Luxury Meets Personal Style' }}</span><span class="typewriter-cursor" [class.cursor-off]="!cursorOn"></span>
         </h1>
 
       <p class="hero-lede">
-        A premier sanctuary dedicated to bespoke Indian bridal craftsmanship, dermatological skincare therapies, and restorative hair artistry.
+        A refined beauty sanctuary where bespoke bridal artistry, clinical skincare rituals, and restorative hair couture come together to honour your individuality.
       </p>
 
       <!-- Action Buttons with Home Page 3D Flip & Slide Animations -->
@@ -22,7 +22,7 @@
             <!-- Face 1 (Front) -->
             <span class="cube-face cube-face-front">
               <mat-icon>calendar_month</mat-icon>
-              <span>Reserve an Appointment</span>
+              <span>Book Appointment</span>
             </span>
             <!-- Face 2 (Flipped on Hover) -->
             <span class="cube-face cube-face-back">
@@ -33,14 +33,14 @@
         </a>
 
         <!-- Interactive Label Slide Button with Animated Badge -->
-        <a routerLink="/services" class="tinore-btn-slide-wrap" aria-label="Explore Studio Menu">
+        <a routerLink="/services" class="tinore-btn-slide-wrap" aria-label="Explore Menu">
           <span class="btn-slide-label-stack">
             <!-- Invisible natural spacer -->
-            <span class="slide-spacer">Explore Studio Menu</span>
+            <span class="slide-spacer">Explore Menu</span>
             <!-- Top resting label (slides up on hover) -->
-            <span class="slide-label slide-label-rest">Explore Studio Menu</span>
+            <span class="slide-label slide-label-rest">Explore Menu</span>
             <!-- Bottom incoming duplicate (slides in on hover) -->
-            <span class="slide-label slide-label-hover">Explore Studio Menu</span>
+            <span class="slide-label slide-label-hover">Explore Menu</span>
           </span>
           <!-- Animated Badge Icon that swaps on angle -->
           <span class="btn-slide-badge">
@@ -84,10 +84,10 @@
 
   <!-- 2. REFINED FLOATING KPI CAPSULE -->
   <section class="stats-capsule-section">
-    <div class="stats-capsule-wrapper">
+    <div class="stats-capsule-wrapper anim-3d anim-card-pop">
       <div class="stats-grid">
-        @for (stat of stats; track stat.label) {
-          <div class="stat-card">
+        @for (stat of stats; track stat.label; let i = $index) {
+          <div class="stat-card" [class.anim-delay-1]="i === 0" [class.anim-delay-2]="i === 1" [class.anim-delay-3]="i === 2" [class.anim-delay-4]="i === 3">
             <div class="stat-icon-halo">
               <mat-icon>{{ stat.icon }}</mat-icon>
             </div>
@@ -368,21 +368,55 @@
   <section class="editorial-finale-cta">
     <div class="section-container">
       <div class="finale-card">
-        <div class="finale-glow"></div>
+        <!-- Silk Champagne Ambient Atmosphere -->
+        <div class="silk-ambient-bg">
+          <div class="silk-glow-top"></div>
+          <div class="silk-glow-bottom"></div>
+          <div class="silk-pattern-overlay"></div>
+        </div>
+
         <div class="finale-content">
-          <span class="finale-eyebrow">READY FOR YOUR TRANSFORMATION?</span>
+
           <h2 class="finale-heading">Experience True Luxury & Personalized Care</h2>
           <p class="finale-sub">
             Whether preparing for your wedding day or indulging in a restorative facial therapy, our master artists await.
           </p>
-          <div class="finale-actions">
-            <a routerLink="/book" class="tinore-btn-gold large">
-              <mat-icon>event_available</mat-icon>
-              <span>Reserve an Appointment</span>
+          <div class="finale-actions tinore-hero-btn-row">
+            <!-- 3D Cube Flip Button -->
+            <a routerLink="/book" class="tinore-btn-cube-wrap" aria-label="Book Appointment">
+              <span class="cube-inner">
+                <!-- Face 1 (Front) -->
+                <span class="cube-face cube-face-front">
+                  <mat-icon>calendar_month</mat-icon>
+                  <span>Book Appointment</span>
+                </span>
+                <!-- Face 2 (Flipped on Hover) -->
+                <span class="cube-face cube-face-back">
+                  <span>Reserve Slot</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                </span>
+              </span>
             </a>
-            <a routerLink="/products" class="tinore-btn-glass large">
-              <mat-icon>shopping_bag</mat-icon>
-              <span>Explore Products</span>
+
+            <!-- Interactive Label Slide Button with Animated Badge -->
+            <a routerLink="/products" class="tinore-btn-slide-wrap" aria-label="Explore Products">
+              <span class="btn-slide-label-stack">
+                <!-- Invisible natural spacer -->
+                <span class="slide-spacer">Explore Products</span>
+                <!-- Top resting label (slides up on hover) -->
+                <span class="slide-label slide-label-rest">Explore Products</span>
+                <!-- Bottom incoming duplicate (slides in on hover) -->
+                <span class="slide-label slide-label-hover">Explore Products</span>
+              </span>
+              <!-- Animated Badge Icon that swaps on angle -->
+              <span class="btn-slide-badge">
+                <span class="badge-icon-rest">
+                  <mat-icon>arrow_outward</mat-icon>
+                </span>
+                <span class="badge-icon-hover">
+                  <mat-icon>arrow_outward</mat-icon>
+                </span>
+              </span>
             </a>
           </div>
         </div>

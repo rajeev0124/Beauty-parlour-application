@@ -1,26 +1,26 @@
 <div class="cart-page tinore-cart-page">
   <!-- Hero Section -->
   <section class="tinore-cart-hero">
-    <div class="tinore-hero-content">
+    <div class="tinore-hero-content anim-3d anim-fade-up">
       <div class="tinore-pill-badge">
         <mat-icon>shopping_bag</mat-icon>
-        <span>Secure Luxury Checkout</span>
+        <span>Secure Atelier Checkout</span>
       </div>
       <h1 class="tinore-cart-title">Your <span class="tinore-hero-highlight">Beauty Bag & Checkout</span></h1>
-      <p class="tinore-cart-subtitle">Review your curated botanical formulations and complete your bespoke order.</p>
+      <p class="tinore-cart-subtitle">Review your handpicked botanical formulations, enter your delivery address, and complete your studio order.</p>
     </div>
   </section>
 
   <div class="tinore-cart-container">
     @if (orderPlaced && confirmedOrder) {
       <!-- Order Confirmation View -->
-      <div class="tinore-order-confirmed-view">
+      <div class="tinore-order-confirmed-view anim-3d anim-card-pop">
         <div class="confirmed-icon-circle">
           <mat-icon>verified</mat-icon>
         </div>
         <h2 class="confirmed-title">Thank You For Your Order</h2>
         <p class="confirmed-desc">
-          Your ritual order <strong>#{{ confirmedOrder.orderId }}</strong> has been placed and is being prepared with clinical care. Confirmation sent to <strong>{{ confirmedOrder.shippingDetails.email }}</strong>.
+          Your ritual order <strong>#{{ confirmedOrder.orderId }}</strong> has been placed and is being prepared with clinical care. An instant order summary and receipt have been dispatched to <strong>{{ confirmedOrder.shippingDetails.email }}</strong> and WhatsApp.
         </p>
 
         <div class="confirmed-receipt-card">
@@ -33,7 +33,7 @@
             @for (item of confirmedOrder.items; track item.product._id) {
               <div class="receipt-item-row">
                 <div class="r-item-thumb">
-                  <img [src]="$any(item.product).displayImage || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=100&q=80'" [alt]="item.product.name" />
+                  <img [src]="cartService.getItemImage(item.product)" [alt]="item.product.name" />
                 </div>
                 <div class="r-item-info">
                   <span class="r-item-name">{{ item.product.name }}</span>
@@ -80,22 +80,22 @@
     } @else {
       @if ((cartService.items$ | async)?.length === 0) {
         <!-- Empty Bag State -->
-        <div class="tinore-empty-bag-card">
+        <div class="tinore-empty-bag-card anim-3d anim-card-pop">
           <div class="empty-bag-icon">
             <mat-icon>shopping_bag</mat-icon>
           </div>
           <h2>Your Beauty Bag is Empty</h2>
-          <p>Discover our clean botanical formulations and professional beauty care to begin your radiant transformation.</p>
+          <p>Explore our clean botanical formulations and salon-tested beauty care to start your at-home glow ritual.</p>
           <a routerLink="/products" class="tinore-btn-primary">
             <mat-icon>arrow_forward</mat-icon>
-            <span>Explore Products</span>
+            <span>Explore Essentials</span>
           </a>
         </div>
       } @else {
         <!-- Active Checkout Grid -->
         <div class="checkout-grid-layout" *ngIf="cartService.items$ | async as items">
           <!-- Left Column: Items, Shipping, Payment -->
-          <div class="checkout-left-col">
+          <div class="checkout-left-col anim-3d anim-card-pop">
             <!-- 1. Bag Items Review -->
             <div class="checkout-card">
               <div class="checkout-card-header">
@@ -107,7 +107,7 @@
                 @for (item of items; track item.product._id) {
                   <div class="checkout-item-row">
                     <div class="item-thumb-box">
-                      <img [src]="$any(item.product).displayImage || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=200&q=80'" [alt]="item.product.name" />
+                      <img [src]="cartService.getItemImage(item.product)" [alt]="item.product.name" />
                     </div>
                     <div class="item-main-details">
                       <span class="item-cat-label">{{ item.product.category }}</span>
@@ -220,7 +220,7 @@
           </div>
 
           <!-- Right Column: Sticky Summary & Coupons -->
-          <div class="checkout-right-col" *ngIf="cartService.subtotal$ | async as subtotal">
+          <div class="checkout-right-col anim-3d anim-card-pop anim-delay-1" *ngIf="cartService.subtotal$ | async as subtotal">
             <div class="summary-sticky-box" *ngIf="getCalculatedTotal(subtotal) as calc">
               <h3 class="summary-box-title">Order Summary</h3>
 

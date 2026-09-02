@@ -1,393 +1,406 @@
-<div class="luxury-contact-page">
-  <!-- 1. CINEMATIC LUXURY HERO -->
-  <section class="contact-hero-editorial">
-    <div class="hero-ambient-glow" aria-hidden="true"></div>
-    <div class="hero-corner-decor" aria-hidden="true"></div>
+<div class="contact-page tinore-contact-page">
 
-    <div class="hero-container">
-      <div class="hero-kicker-badge">
-        <span class="badge-sparkle">✦</span>
-        <span>DEDICATED CLIENT CONCIERGE</span>
-        <span class="badge-sparkle">✦</span>
-      </div>
+  <!-- ═══════════════════════════════════════ -->
+  <!-- 1. SIGNATURE LUXURY CENTERED CONTACT HERO -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="tinore-contact-hero tinore-contact-hero--centered">
+    <!-- Ambient Glowing Light Halos -->
+    <div class="hero-ambient-glow glow-1" aria-hidden="true"></div>
+    <div class="hero-ambient-glow glow-2" aria-hidden="true"></div>
 
-      <h1 class="hero-headline">
-        <app-line-mask-split text="Connect with Our" [duration]="0.8" [splitMode]="'chars'" [blurIntensity]="16"></app-line-mask-split>&nbsp;<span class="rose-gradient-text"><app-line-mask-split text="Studio Artisans" [duration]="0.8" [delay]="0.3" [splitMode]="'chars'" [blurIntensity]="16"></app-line-mask-split></span>
-      </h1>
-
-      <p class="hero-subtitle">
-        Whether curating a bespoke bridal makeover package, reserving clinical skincare sessions, or scheduling a visit to our flagship studio, our dedicated concierge is here to assist you.
-      </p>
-
-      <div class="hero-status-strip">
-        <div class="status-pill live">
-          <span class="pulse-indicator"></span>
-          <span>Concierge Active Now • Avg. Response &lt; 2 Hours</span>
-        </div>
-        <div class="status-pill hours">
-          <mat-icon>schedule</mat-icon>
-          <span>Studio Open Today: 9:00 AM – 8:30 PM</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 2. FOUR DIRECT CONCIERGE CHANNELS (PRIORITY TOUCHPOINTS) -->
-  <section class="channels-section">
     <div class="section-container">
-      <div class="channels-grid">
-        @for (channel of channels; track channel.id) {
-          <div class="channel-card">
-            <div class="channel-top">
-              <div class="channel-icon-halo">
-                <mat-icon>{{ channel.icon }}</mat-icon>
-              </div>
-              @if (channel.badge) {
-                <span class="channel-badge">{{ channel.badge }}</span>
-              }
-            </div>
-
-            <div class="channel-body">
-              <h3 class="channel-title">{{ channel.title }}</h3>
-              <p class="channel-value">{{ channel.value }}</p>
-              <p class="channel-subtext">{{ channel.subtext }}</p>
-            </div>
-
-            <div class="channel-action">
-              <a 
-                [href]="channel.actionLink" 
-                [attr.target]="channel.isExternal ? '_blank' : null"
-                [attr.rel]="channel.isExternal ? 'noopener noreferrer' : null"
-                class="channel-btn"
-              >
-                <span>{{ channel.actionLabel }}</span>
-                <mat-icon>arrow_forward</mat-icon>
-              </a>
-            </div>
-            <div class="card-corner-glow"></div>
-          </div>
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. MASTER CONCIERGE SUITE (SPLIT: HOURS & AMENITIES + BESPOKE INQUIRY FORM) -->
-  <section class="concierge-master-section">
-    <div class="section-container">
-      <div class="master-layout-grid">
+      <div class="hero-center-content anim-3d anim-fade-up">
         
-        <!-- LEFT COLUMN: STUDIO EXPERIENCE, HOURS & AMENITIES -->
-        <aside class="studio-experience-col">
-          <!-- Operating Hours Card -->
-          <div class="experience-card hours-card">
-            <div class="card-header-row">
-              <div class="header-icon-box">
-                <mat-icon>access_time</mat-icon>
-              </div>
-              <div>
-                <h3 class="card-title">Studio Operating Hours</h3>
-                <span class="card-subtitle">Walk-ins & Appointments Welcomed</span>
-              </div>
-            </div>
-
-            <div class="schedule-matrix">
-              @for (item of scheduleHours; track item.days) {
-                <div class="schedule-row" [class.is-peak]="item.isPeak">
-                  <div class="days-label">
-                    <span>{{ item.days }}</span>
-                    @if (item.isPeak) {
-                      <span class="peak-chip">Extended Hours</span>
-                    }
-                  </div>
-                  <span class="hours-val">{{ item.time }}</span>
-                </div>
-              }
-            </div>
-
-            <div class="direct-booking-prompt">
-              <mat-icon>info</mat-icon>
-              <span>Bridal consultations and pre-bridal trials require prior reservation.</span>
-            </div>
-          </div>
-
-          <!-- Studio Amenities Bento Card -->
-          <div class="experience-card amenities-card">
-            <div class="card-header-row">
-              <div class="header-icon-box">
-                <mat-icon>hotel_class</mat-icon>
-              </div>
-              <div>
-                <h3 class="card-title">Patron Studio Amenities</h3>
-                <span class="card-subtitle">Designed for absolute comfort</span>
-              </div>
-            </div>
-
-            <div class="amenities-grid">
-              @for (amenity of amenities; track amenity.label) {
-                <div class="amenity-item">
-                  <div class="amenity-icon">
-                    <mat-icon>{{ amenity.icon }}</mat-icon>
-                  </div>
-                  <div class="amenity-info">
-                    <span class="amenity-label">{{ amenity.label }}</span>
-                    <span class="amenity-desc">{{ amenity.desc }}</span>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-
-          <!-- Direct Social Channels -->
-          <div class="experience-card socials-card">
-            <div class="socials-header">
-              <h4 class="socials-title">Follow Our Artistry</h4>
-              <p class="socials-sub">Daily transformations & real bride diaries</p>
-            </div>
-            <div class="social-links-row">
-              <a href="https://www.instagram.com/sindhura_makeovers/?hl=en" target="_blank" rel="noopener noreferrer" class="social-pill instagram" aria-label="Instagram">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-                <span>Instagram (&#64;sindhura_makeovers)</span>
-              </a>
-              <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" class="social-pill whatsapp" aria-label="WhatsApp">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                <span>WhatsApp Instant Help</span>
-              </a>
-            </div>
-          </div>
-        </aside>
-
-        <!-- RIGHT COLUMN: BESPOKE LUXURY INQUIRY FORM -->
-        <main class="inquiry-form-col">
-          <div class="luxury-form-card">
-            <div class="form-intro">
-              <div class="form-kicker">
-                <mat-icon>edit_note</mat-icon>
-                <span>BESPOKE INQUIRY &amp; CONSULTATION</span>
-              </div>
-              <h2 class="form-title">Send Our Curators a Note</h2>
-              <p class="form-desc">
-                Please complete the details below. Our senior studio concierge will get back to you with custom package options within 2 hours.
-              </p>
-            </div>
-
-            <form [formGroup]="contactForm" (ngSubmit)="submitForm()" class="luxury-contact-form">
-              <!-- Service Category Selector Chips -->
-              <div class="form-section-label">Select Inquiry Purpose *</div>
-              <div class="subject-chips-grid">
-                @for (sub of inquirySubjects; track sub.value) {
-                  <button 
-                    type="button" 
-                    class="subject-chip-btn" 
-                    [class.active]="contactForm.get('subject')?.value === sub.value"
-                    (click)="selectSubject(sub.value)"
-                  >
-                    <span>{{ sub.label }}</span>
-                  </button>
-                }
-              </div>
-
-              <div class="form-dual-row">
-                <!-- Full Name -->
-                <div class="luxury-field-wrap">
-                  <label class="luxury-label">Full Name <span class="required">*</span></label>
-                  <div class="input-container" [class.has-error]="contactForm.get('name')?.invalid && contactForm.get('name')?.touched">
-                    <mat-icon class="field-icon">person</mat-icon>
-                    <input 
-                      type="text" 
-                      formControlName="name" 
-                      placeholder="e.g. Aishwarya Sharma"
-                      class="luxury-input"
-                    >
-                  </div>
-                  @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched) {
-                    <span class="field-error-msg">Please enter your full name (minimum 2 characters).</span>
-                  }
-                </div>
-
-                <!-- Phone Number -->
-                <div class="luxury-field-wrap">
-                  <label class="luxury-label">Phone Number <span class="required">*</span></label>
-                  <div class="input-container" [class.has-error]="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched">
-                    <mat-icon class="field-icon">phone</mat-icon>
-                    <input 
-                      type="tel" 
-                      formControlName="phone" 
-                      placeholder="e.g. +91 98765 43210"
-                      class="luxury-input"
-                    >
-                  </div>
-                  @if (contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched) {
-                    <span class="field-error-msg">Please provide a valid phone number.</span>
-                  }
-                </div>
-              </div>
-
-              <div class="form-dual-row">
-                <!-- Email Address -->
-                <div class="luxury-field-wrap">
-                  <label class="luxury-label">Email Address <span class="required">*</span></label>
-                  <div class="input-container" [class.has-error]="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
-                    <mat-icon class="field-icon">mail</mat-icon>
-                    <input 
-                      type="email" 
-                      formControlName="email" 
-                      placeholder="e.g. aishwarya@example.com"
-                      class="luxury-input"
-                    >
-                  </div>
-                  @if (contactForm.get('email')?.invalid && contactForm.get('email')?.touched) {
-                    <span class="field-error-msg">Please enter a valid email address.</span>
-                  }
-                </div>
-
-                <!-- Preferred Date (Optional) -->
-                <div class="luxury-field-wrap">
-                  <label class="luxury-label">Preferred Date (Optional)</label>
-                  <div class="input-container">
-                    <mat-icon class="field-icon">event</mat-icon>
-                    <input 
-                      type="date" 
-                      formControlName="preferredDate" 
-                      class="luxury-input"
-                    >
-                  </div>
-                </div>
-              </div>
-
-              <!-- Message / Consultation Details -->
-              <div class="luxury-field-wrap">
-                <label class="luxury-label">Your Message or Event Details <span class="required">*</span></label>
-                <div class="input-container textarea-container" [class.has-error]="contactForm.get('message')?.invalid && contactForm.get('message')?.touched">
-                  <mat-icon class="field-icon textarea-icon">chat_bubble</mat-icon>
-                  <textarea 
-                    formControlName="message" 
-                    rows="4" 
-                    placeholder="Tell us about the desired date, bridal venue, preferred master artist, or any specific skincare questions..."
-                    class="luxury-input luxury-textarea"
-                  ></textarea>
-                </div>
-                @if (contactForm.get('message')?.invalid && contactForm.get('message')?.touched) {
-                  <span class="field-error-msg">Please share details regarding your inquiry (minimum 10 characters).</span>
-                }
-              </div>
-
-              <!-- Submit Action & Privacy Strip -->
-              <div class="form-submit-row">
-                <button 
-                  type="submit" 
-                  class="luxury-submit-btn" 
-                  [disabled]="contactForm.invalid || sending"
-                >
-                  @if (sending) {
-                    <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
-                    <span>Routing to Concierge...</span>
-                  } @else {
-                    <span>Send Message to Concierge</span>
-                    <mat-icon>send</mat-icon>
-                  }
-                </button>
-
-                <div class="privacy-reassurance">
-                  <mat-icon>lock</mat-icon>
-                  <span>256-Bit Encrypted • Your private details are strictly confidential</span>
-                </div>
-              </div>
-            </form>
-          </div>
-        </main>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. INTERACTIVE STUDIO LOCATION & TRANSIT GUIDE -->
-  <section class="location-map-section">
-    <div class="section-container">
-      <div class="section-header-centered">
-        <h2 class="section-title">Visit Our Flagship Sanctuary</h2>
-        <p class="section-desc">
-          Located in the heart of the luxury shopping corridor with direct private elevator access and valet parking.
-        </p>
-      </div>
-
-      <div class="map-showcase-frame">
-        <!-- Interactive Iframe -->
-        <div class="map-embed-wrapper">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.0185567694694!2d77.5945627!3d12.9715987!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU4JzE3LjgiTiA3N8KwMzUnNDAuNCJF!5e0!3m2!1sen!2sin!4v1234567890"
-            width="100%" 
-            height="100%" 
-            style="border:0;" 
-            allowfullscreen="" 
-            loading="lazy" 
-            referrerpolicy="no-referrer-when-downgrade"
-            title="Sindhura Makeovers Studio Location">
-          </iframe>
+        <!-- Luxury Kicker Badge -->
+        <div class="hero-kicker-pill">
+          <span class="kicker-sparkle">✦</span>
+          <span>FLAGSHIP SANCTUARY CONCIERGE</span>
+          <span class="kicker-sparkle">✦</span>
         </div>
 
-        <!-- Floating Transit Landmark Card -->
-        <div class="transit-landmark-card">
-          <div class="transit-badge">
-            <mat-icon>directions_car</mat-icon>
-            <span>Transit &amp; Arrival</span>
-          </div>
-          <h4 class="landmark-name">Luxury Galleria Flagship</h4>
-          <p class="landmark-address">123 Beauty Boulevard, Level 4, Galleria Complex</p>
+        <h1 class="tinore-contact-title">
+          Get in Touch with Our<br />
+          <span class="tinore-hero-highlight">Studio Artisans</span>
+        </h1>
 
-          <div class="transit-tips">
-            <div class="tip-item">
-              <mat-icon>directions_subway</mat-icon>
-              <span>Metro: MG Road Station (Exit 2, 3 min walk)</span>
-            </div>
-            <div class="tip-item">
-              <mat-icon>local_taxi</mat-icon>
-              <span>Cab Drop-off: Galleria Main Portico Arch</span>
-            </div>
-            <div class="tip-item">
-              <mat-icon>local_parking</mat-icon>
-              <span>Valet: Complimentary at Gate 1 Entrance</span>
-            </div>
-          </div>
+        <div class="hero-ornament-line" aria-hidden="true">
+          <span class="line-wing"></span>
+          <span class="ornament-gem">✦</span>
+          <span class="line-wing"></span>
+        </div>
 
-          <a 
-            href="https://maps.google.com/?q=123+Beauty+Boulevard+Luxury+Galleria" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="transit-action-btn"
-          >
-            <span>Open in Google Maps</span>
-            <mat-icon>open_in_new</mat-icon>
+        <p class="tinore-contact-subtitle">
+          Whether planning your bespoke bridal transformation, reserving clinical skincare therapies, or exploring our treatment menu — our studio concierge is online to assist you promptly.
+        </p>
+
+        <!-- Centered Action CTAs -->
+        <div class="hero-actions-row">
+          <!-- WhatsApp Primary Button -->
+          <a [href]="whatsAppLink" target="_blank" rel="noopener noreferrer" class="hero-btn-wa" title="Chat on WhatsApp">
+            <div class="btn-icon-circle">
+              <svg viewBox="0 0 24 24" class="wa-svg" aria-hidden="true">
+                <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+            </div>
+            <div class="btn-text-group">
+              <span class="btn-main-label">Chat on WhatsApp</span>
+              <span class="btn-sub-label">Instant Response</span>
+            </div>
+            <span class="btn-pulse-dot" aria-hidden="true"></span>
+          </a>
+
+          <!-- Call Concierge Secondary Button -->
+          <a href="tel:+919876543210" class="hero-btn-phone" title="Call Concierge">
+            <div class="btn-icon-circle phone-icon-circle">
+              <mat-icon>call</mat-icon>
+            </div>
+            <div class="btn-text-group">
+              <span class="btn-main-label">+91 98765 43210</span>
+              <span class="btn-sub-label">Studio Concierge</span>
+            </div>
           </a>
         </div>
+
+        <!-- Centered Luxury Trust Ribbon -->
+        <div class="tinore-trust-ribbon">
+          <!-- 1. Live Concierge Status -->
+          <div class="trust-ribbon-item trust-item-live">
+            <div class="trust-status-indicator">
+              <span class="live-dot-core"></span>
+              <span class="live-dot-ping"></span>
+            </div>
+            <div class="trust-text-stack">
+              <span class="trust-title">Online Now</span>
+              <span class="trust-subtitle">&lt; 5 min reply</span>
+            </div>
+          </div>
+
+          <div class="trust-divider" aria-hidden="true"></div>
+
+          <!-- 2. Studio Timing -->
+          <div class="trust-ribbon-item trust-item-hours">
+            <div class="trust-icon-badge">
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <div class="trust-text-stack">
+              <span class="trust-title">Studio Open</span>
+              <span class="trust-subtitle">9:00 AM – 8:30 PM</span>
+            </div>
+          </div>
+
+          <div class="trust-divider" aria-hidden="true"></div>
+
+          <!-- 3. Certified Stylists -->
+          <div class="trust-ribbon-item trust-item-certified">
+            <div class="trust-icon-badge trust-icon-badge--gold">
+              <mat-icon>verified</mat-icon>
+            </div>
+            <div class="trust-text-stack">
+              <span class="trust-title">Certified Stylists</span>
+              <span class="trust-subtitle">100% Expert Care</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- 2. FOUR CONTACT WIDGETS                 -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="widgets-section">
+    <div class="section-container">
+      <div class="widgets-grid">
+
+        <!-- WhatsApp Widget -->
+        <a [href]="widgets[0].link" target="_blank" rel="noopener noreferrer" class="widget-card widget-whatsapp anim-3d anim-card-pop anim-delay-1">
+          <div class="widget-glow"></div>
+          <div class="widget-icon-ring">
+            <svg viewBox="0 0 24 24" class="widget-svg" aria-hidden="true">
+              <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+          </div>
+          <div class="widget-badge wa-badge">Instant Reply</div>
+          <h3 class="widget-label">WhatsApp</h3>
+          <p class="widget-handle">+91 98765 43210</p>
+          <p class="widget-desc">Chat instantly with our concierge</p>
+          <div class="widget-cta">Open WhatsApp →</div>
+        </a>
+
+        <!-- Instagram Widget -->
+        <a [href]="widgets[1].link" target="_blank" rel="noopener noreferrer" class="widget-card widget-instagram anim-3d anim-card-pop anim-delay-2">
+          <div class="widget-glow"></div>
+          <div class="widget-icon-ring">
+            <svg viewBox="0 0 24 24" class="widget-svg" aria-hidden="true">
+              <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </div>
+          <div class="widget-badge ig-badge">10K+ Followers</div>
+          <h3 class="widget-label">Instagram</h3>
+          <p class="widget-handle">@sindhura_makeovers</p>
+          <p class="widget-desc">Follow our bridal transformations</p>
+          <div class="widget-cta">View Profile →</div>
+        </a>
+
+        <!-- Email Widget -->
+        <a href="mailto:concierge@sindhuramakeovers.com" class="widget-card widget-email anim-3d anim-card-pop anim-delay-3">
+          <div class="widget-glow"></div>
+          <div class="widget-icon-ring">
+            <svg viewBox="0 0 24 24" class="widget-svg" aria-hidden="true">
+              <path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+          </div>
+          <div class="widget-badge email-badge">&lt; 2 Hr Response</div>
+          <h3 class="widget-label">Email Us</h3>
+          <p class="widget-handle">concierge&#64;sindhuramakeovers.com</p>
+          <p class="widget-desc">For bridal packages & collaborations</p>
+          <div class="widget-cta">Send Email →</div>
+        </a>
+
+        <!-- Phone Widget -->
+        <a href="tel:+919876543210" class="widget-card widget-phone anim-3d anim-card-pop anim-delay-4">
+          <div class="widget-glow"></div>
+          <div class="widget-icon-ring">
+            <svg viewBox="0 0 24 24" class="widget-svg" aria-hidden="true">
+              <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+            </svg>
+          </div>
+          <div class="widget-badge phone-badge">Mon–Sun</div>
+          <h3 class="widget-label">Call Us</h3>
+          <p class="widget-handle">+91 98765 43210</p>
+          <p class="widget-desc">Available 9:00 AM – 8:30 PM daily</p>
+          <div class="widget-cta">Call Now →</div>
+        </a>
+
       </div>
     </div>
   </section>
 
-  <!-- 5. CONCIERGE & VISITING FAQS -->
-  <section class="contact-faqs-section">
+  <!-- ═══════════════════════════════════════ -->
+  <!-- 3. FORM + STUDIO INFO (TWO COLUMN)      -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="form-info-section">
     <div class="section-container">
-      <div class="section-header-centered">
-        <h2 class="section-title">Concierge &amp; Booking FAQs</h2>
-        <p class="section-desc">
-          Quick clarity on walk-in policies, private chambers, destination styling, and appointment etiquette.
-        </p>
-      </div>
+      <div class="form-info-grid">
 
-      <div class="contact-faq-wrapper">
-        @for (faq of faqs; track faq.q; let i = $index) {
-          <div class="faq-card" [class.is-open]="openFaqIndex === i">
-            <button class="faq-toggle-btn" (click)="toggleFaq(i)" [attr.aria-expanded]="openFaqIndex === i">
-              <span class="faq-question">{{ faq.q }}</span>
-              <mat-icon class="faq-icon">{{ openFaqIndex === i ? 'expand_less' : 'expand_more' }}</mat-icon>
-            </button>
-            @if (openFaqIndex === i) {
-              <div class="faq-answer-body">
-                <p>{{ faq.a }}</p>
+        <!-- LEFT: Quick Inquiry Form -->
+        <div class="contact-form-panel anim-3d anim-card-pop">
+          <div class="panel-header">
+            <h2 class="panel-title">Send Us a Message</h2>
+            <p class="panel-subtitle">
+              <span class="live-dot-pulse"></span>
+              We'll reply on WhatsApp within minutes
+            </p>
+          </div>
+
+          <form [formGroup]="contactForm" (ngSubmit)="submitForm()" class="contact-form" novalidate>
+
+            <!-- Name & Phone row -->
+            <div class="form-row">
+              <!-- Name -->
+              <div class="form-field">
+                <label class="field-label" for="contact-name">
+                  <mat-icon class="label-icon">person_outline</mat-icon>
+                  <span>Your Name</span>
+                  <span class="required-star">*</span>
+                </label>
+                <div class="input-box-wrapper" [class.has-error]="contactForm.get('name')?.invalid && contactForm.get('name')?.touched">
+                  <mat-icon class="input-icon">person</mat-icon>
+                  <input type="text" id="contact-name" formControlName="name" placeholder="e.g. Priya Sharma" class="luxury-input" autocomplete="name" />
+                </div>
+                @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched) {
+                  <span class="field-error"><mat-icon class="err-icon">error_outline</mat-icon> Please enter your full name</span>
+                }
               </div>
+
+              <!-- Phone -->
+              <div class="form-field">
+                <label class="field-label" for="contact-phone">
+                  <mat-icon class="label-icon">phone_iphone</mat-icon>
+                  <span>Phone Number</span>
+                  <span class="required-star">*</span>
+                </label>
+                <div class="input-box-wrapper" [class.has-error]="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched">
+                  <mat-icon class="input-icon">call</mat-icon>
+                  <input type="tel" id="contact-phone" formControlName="phone" placeholder="+91 98765 43210" class="luxury-input" autocomplete="tel" />
+                </div>
+                @if (contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched) {
+                  <span class="field-error"><mat-icon class="err-icon">error_outline</mat-icon> Enter a valid phone number</span>
+                }
+              </div>
+            </div>
+
+            <!-- Inquiry Type Dropdown -->
+            <div class="form-field">
+              <label class="field-label" for="contact-inquiry">
+                <mat-icon class="label-icon">dashboard_customize</mat-icon>
+                <span>What are you looking for?</span>
+                <span class="required-star">*</span>
+              </label>
+              <div class="select-box-wrapper" [class.has-error]="contactForm.get('inquiryType')?.invalid && contactForm.get('inquiryType')?.touched">
+                <mat-icon class="input-icon">category</mat-icon>
+                <select id="contact-inquiry" formControlName="inquiryType" class="luxury-select">
+                  <option value="" disabled>Select a service...</option>
+                  @for (type of inquiryTypes; track type.value) {
+                    <option [value]="type.value">{{ type.label }}</option>
+                  }
+                </select>
+                <mat-icon class="select-arrow-icon">expand_more</mat-icon>
+              </div>
+              @if (contactForm.get('inquiryType')?.invalid && contactForm.get('inquiryType')?.touched) {
+                <span class="field-error"><mat-icon class="err-icon">error_outline</mat-icon> Please select what you are looking for</span>
+              }
+            </div>
+
+            <!-- Message -->
+            <div class="form-field">
+              <label class="field-label" for="contact-message">
+                <mat-icon class="label-icon">chat_bubble_outline</mat-icon>
+                <span>Your Message</span>
+                <span class="required-star">*</span>
+              </label>
+              <div class="textarea-box-wrapper" [class.has-error]="contactForm.get('message')?.invalid && contactForm.get('message')?.touched">
+                <textarea id="contact-message" formControlName="message" rows="4"
+                  placeholder="Tell us about your requirements — bridal date, event type, preferred services, budget..."
+                  class="luxury-textarea"></textarea>
+              </div>
+              @if (contactForm.get('message')?.invalid && contactForm.get('message')?.touched) {
+                <span class="field-error"><mat-icon class="err-icon">error_outline</mat-icon> Please enter your message (min. 10 characters)</span>
+              }
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="submit-whatsapp-btn" [disabled]="sending">
+              @if (sending) {
+                <span class="btn-spinner"></span>
+                <span>Opening WhatsApp...</span>
+              } @else {
+                <svg viewBox="0 0 24 24" class="btn-wa-svg" aria-hidden="true">
+                  <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                <span>Send via WhatsApp</span>
+              }
+            </button>
+
+            <!-- Privacy note -->
+            <div class="form-privacy-note">
+              <div class="privacy-icon-wrap">
+                <mat-icon>lock</mat-icon>
+              </div>
+              <p>Your details are shared <strong>only on WhatsApp</strong>. We never store or share your data with third parties.</p>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- RIGHT: Studio Info -->
+        <div class="contact-info-panel anim-3d anim-card-pop anim-delay-1">
+          
+          <!-- Panel Header -->
+          <div class="panel-header studio-panel-header">
+
+            <h2 class="panel-title">Our <span class="rose-text">Studio</span></h2>
+            <p class="panel-subtitle">
+              <mat-icon class="sub-icon">diamond</mat-icon>
+              <span>Flagship luxury beauty destination</span>
+            </p>
+          </div>
+
+          <!-- Studio Image Showcase with Live Status -->
+          <div class="studio-photo-wrap">
+            <img
+              src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&auto=format&fit=crop&q=80"
+              alt="Sindhura Makeovers Studio"
+              class="studio-photo"
+              loading="lazy"
+            />
+            <div class="studio-photo-overlay">
+              <div class="studio-open-pill">
+                <span class="live-pulse-container">
+                  <span class="live-pulse-ring"></span>
+                  <span class="live-pulse-dot"></span>
+                </span>
+                <span class="pill-text">Studio Open Now</span>
+              </div>
+              <div class="studio-location-pill">
+                <mat-icon class="loc-icon">location_on</mat-icon>
+                <span>Luxury Galleria</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Studio Details Cards -->
+          <div class="studio-details">
+            
+            <!-- Address Card -->
+            <div class="studio-detail-card address-card">
+              <div class="card-icon-box">
+                <mat-icon>place</mat-icon>
+              </div>
+              <div class="card-content">
+                <span class="card-label">Studio Address</span>
+                <p class="address-highlight">123 Beauty Boulevard, Luxury Galleria, 4th Floor</p>
+                <div class="directions-btn-wrap">
+                  <a href="https://maps.google.com/?q=123+Beauty+Boulevard+Luxury+Galleria" target="_blank" rel="noopener noreferrer" class="studio-directions-link">
+                    <mat-icon class="link-icon">near_me</mat-icon>
+                    <span>Get Directions</span>
+                    <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Operating Hours Card -->
+            <div class="studio-detail-card hours-card">
+              <div class="card-icon-box">
+                <mat-icon>schedule</mat-icon>
+              </div>
+              <div class="card-content">
+                <div class="hours-header-flex">
+                  <span class="card-label">Opening Hours</span>
+                  <span class="status-badge">7 Days Open</span>
+                </div>
+                <div class="hours-schedule-list">
+                  @for (h of scheduleHours; track h.days) {
+                    <div class="schedule-row">
+                      <span class="schedule-day">
+                        <span class="schedule-dot"></span>
+                        {{ h.days }}
+                      </span>
+                      <span class="schedule-time">{{ h.time }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- 4. FAQ ACCORDION                        -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="faq-section">
+    <div class="section-container">
+      <div class="section-heading-center anim-3d anim-fade-up">
+        <h2 class="section-title">Frequently Asked <span class="rose-text">Questions</span></h2>
+      </div>
+      <div class="faq-list">
+        @for (faq of faqs; track faq.q; let i = $index) {
+          <div class="faq-item anim-3d anim-fade-up" [class.anim-delay-1]="i % 3 === 0" [class.anim-delay-2]="i % 3 === 1" [class.anim-delay-3]="i % 3 === 2" [class.faq-open]="faq.open" (click)="toggleFaq(i)">
+            <div class="faq-question">
+              <span>{{ faq.q }}</span>
+              <mat-icon class="faq-chevron">{{ faq.open ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </div>
+            @if (faq.open) {
+              <div class="faq-answer">{{ faq.a }}</div>
             }
           </div>
         }
@@ -395,43 +408,66 @@
     </div>
   </section>
 
-  <!-- 6. QUICK NAVIGATION CARDS -->
-  <section class="contact-quick-access-section">
+  <!-- ═══════════════════════════════════════ -->
+  <!-- 5. LUXURY STUDIO LOCATOR & INTERACTIVE MAP -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="studio-map-section" class="luxury-map-section anim-3d anim-fade-up">
+
+    <!-- Section Header (constrained width) -->
     <div class="section-container">
-      <div class="quick-access-grid">
-        <a routerLink="/book" class="quick-card">
-          <div class="quick-icon-box gold">
-            <mat-icon>event_available</mat-icon>
-          </div>
-          <div class="quick-info">
-            <h4>Book an Appointment</h4>
-            <p>Schedule your session online with instant confirmation</p>
-          </div>
-          <mat-icon class="quick-arrow">arrow_forward</mat-icon>
-        </a>
-
-        <a routerLink="/services" class="quick-card">
-          <div class="quick-icon-box rose">
-            <mat-icon>spa</mat-icon>
-          </div>
-          <div class="quick-info">
-            <h4>Explore Treatment Menu</h4>
-            <p>Discover bridal rituals, clinical peels &amp; hair treatments</p>
-          </div>
-          <mat-icon class="quick-arrow">arrow_forward</mat-icon>
-        </a>
-
-        <a routerLink="/gallery" class="quick-card">
-          <div class="quick-icon-box dark">
-            <mat-icon>photo_library</mat-icon>
-          </div>
-          <div class="quick-info">
-            <h4>Bridal Lookbook Gallery</h4>
-            <p>Browse signature HD bridal transformations and styles</p>
-          </div>
-          <mat-icon class="quick-arrow">arrow_forward</mat-icon>
-        </a>
+      <div class="section-heading-center">
+        <h2 class="section-title">Find Our <span class="rose-text">Luxury Studio</span></h2>
+        <p class="section-subtitle">
+          Visit our bespoke beauty sanctuary in Hyderabad. Experience private bridal vanity suites, clinical skincare, and certified hair artistry in an ambiance of pure indulgence.
+        </p>
       </div>
     </div>
+
+    <!-- Studio Map Card (full width, outside container) -->
+    <div class="studio-map-card">
+
+      <!-- Interactive Top Bar -->
+      <div class="studio-map-topbar">
+        <div class="topbar-left">
+          <div class="pin-badge">
+            <mat-icon>location_on</mat-icon>
+          </div>
+          <div class="topbar-info">
+            <h3 class="topbar-title">Sindhura Makeovers Flagship</h3>
+            <p class="topbar-address">123 Beauty Boulevard, Luxury Galleria, 4th Floor, Hyderabad</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="status-indicator-pill">
+            <span class="live-dot-pulse"></span>
+            <span>Open Today: 9:00 AM – 8:30 PM</span>
+          </div>
+          <a href="https://maps.google.com/?q=123+Beauty+Boulevard+Luxury+Galleria" target="_blank" rel="noopener noreferrer" class="studio-nav-btn">
+            <mat-icon>near_me</mat-icon>
+            <span>Get Directions</span>
+            <mat-icon class="btn-arrow">arrow_outward</mat-icon>
+          </a>
+        </div>
+      </div>
+
+      <!-- Embedded Google Map (full width) -->
+      <div class="map-viewport-wrapper">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3806.4!2d78.4867!3d17.3850!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDIzJzA2LjAiTiA3OMKwMjknMTIuMCJF!5e0!3m2!1sen!2sin!4v1234567890"
+          width="100%"
+          height="100%"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Sindhura Makeovers Studio Location"
+          aria-label="Google Map showing Sindhura Makeovers Studio Location">
+        </iframe>
+      </div>
+
+    </div>
+
   </section>
+
 </div>

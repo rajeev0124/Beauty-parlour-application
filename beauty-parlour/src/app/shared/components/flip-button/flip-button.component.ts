@@ -1,5 +1,5 @@
-﻿import { Component, Input, Output, EventEmitter, ElementRef, ViewChild, AfterViewInit, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter, ElementRef, ViewChild, AfterViewInit, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -187,21 +187,52 @@ export class FlipButtonComponent implements AfterViewInit, OnDestroy {
   private turned = false;
   private flipping = false;
   private resizeObserver?: ResizeObserver;
+  private autoIntervalId: any = null;
+  private isBrowser: boolean;
 
   half = 24;
   currentTransform = 'translateZ(-24px) rotateX(0deg)';
 
-  constructor(private cdr: ChangeDetectorRef, private ngZone: NgZone) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
+
     this.measure();
     if (typeof ResizeObserver !== 'undefined' && this.cubeRef?.nativeElement) {
       this.resizeObserver = new ResizeObserver(() => this.measure());
       this.resizeObserver.observe(this.cubeRef.nativeElement);
     }
+    this.initMobileAutoFlip();
+  }
+
+  private initMobileAutoFlip(): void {
+    if (!this.isBrowser) return;
+    const isMobile = window.innerWidth <= 768 || window.matchMedia('(hover: none)').matches;
+    if (isMobile) {
+      this.ngZone.runOutsideAngular(() => {
+        const interval = 4000 + Math.random() * 1000;
+        this.autoIntervalId = setInterval(() => {
+          if (!this.hovered && !this.focused) {
+            this.turned = !this.turned;
+            this.updateTransform(this.turned);
+            this.cdr.markForCheck();
+          }
+        }, interval);
+      });
+    }
   }
 
   ngOnDestroy(): void {
+    if (this.autoIntervalId) {
+      clearInterval(this.autoIntervalId);
+    }
     this.resizeObserver?.disconnect();
   }
 

@@ -110,7 +110,7 @@
               <div class="bundle-card">
                 <span class="bundle-step-tag">Step {{ idx + 1 }}</span>
                 <div class="bundle-img-box">
-                  <img [src]="$any(prod).displayImage || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=200&q=80'" [alt]="prod.name" />
+                  <img [src]="cartService.getItemImage(prod)" [alt]="prod.name" />
                 </div>
                 <h4 class="bundle-prod-name">{{ prod.name }}</h4>
                 <span class="bundle-prod-price">₹{{ prod.price | number }}</span>

@@ -9,7 +9,7 @@
       <div class="hero-full-bg-image" aria-hidden="true"></div>
       <div class="hero-bg-gradient-overlay" aria-hidden="true"></div>
 
-      <div class="tinore-hero-content-wrap">
+      <div class="tinore-hero-content-wrap anim-3d anim-fade-up">
         <!-- Editorial Headline, CTAs, Social Proof -->
         <div class="tinore-hero-left">
           <h1 class="tinore-hero-main-title">
@@ -19,19 +19,17 @@
           </h1>
 
           <p class="tinore-hero-subtext">
-            Expert stylists, luxurious treatments and personalised care — all under one roof. Visit us and discover a space designed entirely for you.
+            Where master bridal artistry meets advanced clinical skincare. Step into our serene sanctuary and let our certified artisans celebrate your natural, timeless radiance.
           </p>
 
-          <!-- Action Buttons -->
+          <!-- Action Buttons (Positioned between Subtext and Customer Social Proof) -->
           <div class="tinore-hero-btn-row">
             <a routerLink="/book" class="tinore-btn-cube-wrap" aria-label="Book Appointment">
               <span class="cube-inner">
-                <!-- Face 1 (Front) -->
                 <span class="cube-face cube-face-front">
                   <mat-icon>calendar_month</mat-icon>
                   <span>Book Appointment</span>
                 </span>
-                <!-- Face 2 (Flipped on Hover) -->
                 <span class="cube-face cube-face-back">
                   <span>Reserve Your Slot</span>
                   <mat-icon>arrow_forward</mat-icon>
@@ -40,14 +38,10 @@
             </a>
             <a routerLink="/services" class="tinore-btn-slide-wrap" aria-label="Explore Collection">
               <span class="btn-slide-label-stack">
-                <!-- Invisible natural spacer -->
                 <span class="slide-spacer">Explore Collection</span>
-                <!-- Top resting label (slides up on hover) -->
                 <span class="slide-label slide-label-rest">Explore Collection</span>
-                <!-- Bottom incoming duplicate (slides in on hover) -->
                 <span class="slide-label slide-label-hover">Explore Collection</span>
               </span>
-              <!-- Animated Badge Icon that swaps on angle -->
               <span class="btn-slide-badge">
                 <span class="badge-icon-rest">
                   <mat-icon>arrow_outward</mat-icon>
@@ -67,8 +61,8 @@
               <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&h=80&fit=crop&crop=faces&q=80" alt="Customer 3" class="c-avatar c-3" />
             </div>
             <div class="customer-proof-text">
-              <strong class="proof-headline">Loved by 10,000+ Customers</strong>
-              <span class="proof-sub">Healthy, glowing skin starts here.</span>
+              <strong class="proof-headline">Loved by 10,000+ Brides & Patrons</strong>
+              <span class="proof-sub">Your journey to effortless radiance begins here.</span>
             </div>
           </div>
         </div>
@@ -126,7 +120,7 @@
 ============================================================= -->
 <section class="tinore-section routine-section">
   <div class="tinore-container">
-    <div class="tinore-section-header text-center">
+    <div class="tinore-section-header text-center anim-3d anim-fade-up">
       <h2 #glowHeading class="tinore-editorial-heading glow-rolling-letters">
         <span class="char-group">
           <span class="char">O</span><span class="char">u</span><span class="char">r</span><span class="char">&nbsp;</span><span class="char">3</span><span class="char">-</span><span class="char">S</span><span class="char">t</span><span class="char">e</span><span class="char">p</span><span class="char">&nbsp;</span>
@@ -139,12 +133,12 @@
         </span>
       </h2>
       <p class="tinore-section-sub">
-        Three carefully crafted beauty rituals — cleanse, restore, and radiate. Your complete beauty transformation, one step at a time.
+        Three curated steps to everyday luminosity — purify, infuse, and nourish with dermatologically proven botanicals.
       </p>
     </div>
 
     <!-- 3D Stacked Routine Showcase -->
-    <div class="routine-3d-showcase">
+    <div class="routine-3d-showcase anim-3d anim-card-pop">
       <div class="routine-3d-grid">
         
         <!-- Image Card Stack -->
@@ -289,7 +283,7 @@
 ============================================================= -->
 <section class="tinore-section services-showcase-section">
   <div class="tinore-container">
-    <div class="tinore-section-header">
+    <div class="tinore-section-header anim-3d anim-fade-up">
       <div class="header-left">
         <h2 class="tinore-editorial-heading typewriter-heading">
           <span>{{ currentTypewriterMain }}</span><span class="script-italic">{{ currentTypewriterItalic }}</span><span class="typewriter-cursor"></span>
@@ -305,7 +299,7 @@
     </div>
 
     <!-- Category Switcher Tabs -->
-    <div class="category-tabs-scroll">
+    <div class="category-tabs-scroll anim-3d anim-fade-up anim-delay-1">
       <div class="category-tabs">
         @for (cat of categories; track cat) {
           <button 
@@ -321,7 +315,10 @@
     <!-- Services Grid -->
     <div class="tinore-services-grid">
       @for (service of filteredServices; track service.name; let i = $index) {
-        <div class="tinore-service-card" 
+        <div class="tinore-service-card anim-3d anim-card-pop" 
+             [class.anim-delay-1]="i % 3 === 0"
+             [class.anim-delay-2]="i % 3 === 1"
+             [class.anim-delay-3]="i % 3 === 2"
              [class.featured-card]="service.featured">
           <div class="service-card-image-box">
             <app-auto-moving-image 
@@ -364,7 +361,7 @@
 ============================================================= -->
 <section class="tinore-section transformation-section">
   <div class="tinore-container">
-    <div class="tinore-section-header text-center">
+    <div class="tinore-section-header text-center anim-3d anim-fade-up">
       <h2 #transformationHeading class="tinore-editorial-heading rotating-text-heading">
         <span>See the </span>
         <span class="script-italic rotating-badge">
@@ -379,7 +376,7 @@
     </div>
 
     <!-- Transformation Tab Switcher -->
-    <div class="transformation-tab-bar">
+    <div class="transformation-tab-bar anim-3d anim-fade-up anim-delay-1">
       @for (item of transformations; track item.id; let idx = $index) {
         <button 
           class="trans-tab-btn" 
@@ -392,7 +389,7 @@
     </div>
 
     <!-- Split Image Comparison Box -->
-    <div class="transformation-stage">
+    <div class="transformation-stage anim-3d anim-card-pop">
       <div 
         class="comparison-container"
         (mouseenter)="onComparisonHover(true)"
@@ -449,14 +446,14 @@
           <app-flip-button
             label="Book This Ritual"
             hoverLabel="Reserve Slot"
-            icon="calendar_today"
+            icon="calendar_month"
             hoverIcon="sparkles"
             routerLink="/book"
             direction="down"
-            radius="32px"
-            fill="linear-gradient(135deg, #1C1C1C 0%, #2A2A2A 100%)"
+            radius="9999px"
+            fill="linear-gradient(135deg, #1C1C1C 0%, #2D2628 100%)"
             textColor="#FFFFFF"
-            hoverFill="linear-gradient(135deg, #C9748A 0%, #B9386E 100%)"
+            hoverFill="linear-gradient(135deg, #C9748A 0%, #A84860 100%)"
             hoverTextColor="#FFFFFF">
           </app-flip-button>
           <app-radial-reveal-button
@@ -465,16 +462,16 @@
             [addIcon]="true"
             iconType="mat-icon"
             iconSymbol="arrow_forward"
-            iconSide="right"
-            [iconSize]="16"
+            iconSide="left"
+            [iconSize]="17"
             [rounded]="100"
-            padding="12px 24px"
-            fill="transparent"
+            padding="14px 28px"
+            fill="#FFFFFF"
             textColor="#1C1C1C"
-            borderColor="#C9748A"
+            borderColor="#E6D3D8"
             borderWidth="1.5px"
             borderStyle="solid"
-            hoverFill="#C9748A"
+            hoverFill="#1C1C1C"
             hoverTextColor="#FFFFFF"
             hoverIconColor="#FFFFFF">
           </app-radial-reveal-button>
@@ -489,23 +486,26 @@
 ============================================================= -->
 <section class="tinore-section ingredients-section">
   <div class="tinore-container">
-    <div class="tinore-section-header text-center">
+    <div class="tinore-section-header text-center anim-3d anim-fade-up">
       <h2 class="tinore-editorial-heading">
         <span>{{ currentWhyClientsPrefix }}</span><span class="script-italic type-highlight">{{ currentWhyClientsTyped }}</span><span class="originkit-type-cursor" [class.hidden]="isWhyClientsActivelyTyping">_</span>
       </h2>
       <p class="tinore-section-sub">
-        A Sindhura Makeovers built around you — from your first appointment to your last finishing touch.
+        A luxury parlour experience built around you — from your initial consultation to your final radiant reveal.
       </p>
     </div>
 
     <div class="ingredients-grid">
       @for (ing of ingredients; track ing.name; let i = $index) {
         <div 
-          class="ingredient-card" 
+          class="ingredient-card anim-3d anim-card-pop" 
+          [class.anim-delay-1]="i % 4 === 0"
+          [class.anim-delay-2]="i % 4 === 1"
+          [class.anim-delay-3]="i % 4 === 2"
+          [class.anim-delay-4]="i % 4 === 3"
           [style.--accent-color]="ing.color"
           [style.--accent-bg]="ing.accentBg"
-          [style.--accent-glow]="ing.glow"
-          [style.animation-delay]="(i * 120) + 'ms'">
+          [style.--accent-glow]="ing.glow">
           <!-- Top Ambient Glow Aura -->
           <div class="card-aura"></div>
 
@@ -534,14 +534,12 @@
   </div>
 </section>
 
-
-
 <!-- =============================================================
      TINORE CTA SECTION — Warm Silk & Champagne Rose
 ============================================================= -->
 <section class="tinore-cta-banner">
   <div class="tinore-container">
-    <div class="tinore-cta-card">
+    <div class="tinore-cta-card anim-3d anim-fade-up">
       <!-- Silk Champagne Ambient Glows -->
       <div class="silk-ambient-bg">
         <div class="silk-glow-top"></div>

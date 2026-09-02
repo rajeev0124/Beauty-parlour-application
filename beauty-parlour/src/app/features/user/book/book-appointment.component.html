@@ -1,25 +1,25 @@
 <div class="book-page tinore-book-page">
   <!-- Tinore Page Hero -->
   <section class="tinore-book-hero">
-    <div class="tinore-hero-content">
+    <div class="tinore-hero-content anim-3d anim-fade-up">
       <div class="tinore-pill-badge">
         <mat-icon>calendar_month</mat-icon>
-        <span>Easy Online Booking</span>
+        <span>Bespoke Studio Reservations</span>
       </div>
-      <h1 class="tinore-book-title">Book Your <span class="tinore-hero-highlight">Appointment</span></h1>
-      <p class="tinore-book-subtitle">Choose your service, pick your favourite stylist, and select a date and time that works for you.</p>
+      <h1 class="tinore-book-title">Reserve Your <span class="tinore-hero-highlight">Sanctuary Time</span></h1>
+      <p class="tinore-book-subtitle">Select your bespoke salon or bridal ritual, choose your preferred master artist, and lock in your sanctuary time.</p>
     </div>
   </section>
 
   <div class="tinore-booking-container">
     @if (!submitted) {
       <!-- Stepper Indicator -->
-      <div class="tinore-steps-indicator">
+      <div class="tinore-steps-indicator anim-3d anim-fade-up anim-delay-1">
         <div class="step-badge" [class.active]="step >= 1" [class.done]="step > 1">
           <div class="step-number">
             @if (step > 1) { <mat-icon>check</mat-icon> } @else { 1 }
           </div>
-          <span class="step-name">Service & Schedule</span>
+          <span class="step-name">Ritual & Schedule</span>
         </div>
         <div class="step-connector" [class.active]="step > 1"></div>
         <div class="step-badge" [class.active]="step >= 2">
@@ -28,13 +28,13 @@
         </div>
       </div>
 
-      <form [formGroup]="bookingForm" (ngSubmit)="submit()" class="tinore-booking-form">
+      <form [formGroup]="bookingForm" (ngSubmit)="submit()" class="tinore-booking-form anim-3d anim-card-pop">
         <!-- Step 1: Service & Time -->
         @if (step === 1) {
           <div class="booking-step-card">
             <div class="step-card-header">
               <span class="step-sub-tag">STEP 01</span>
-              <h2>Choose Your Service & Time</h2>
+              <h2>Select Your Ritual & Schedule</h2>
             </div>
 
             <div class="tinore-form-group">
@@ -122,7 +122,7 @@
                   @for (prod of recommendedProducts; track prod._id) {
                     <div class="cross-sell-card">
                       <div class="cross-sell-img-box">
-                        <img [src]="$any(prod).displayImage || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=200&q=80'" [alt]="prod.name" />
+                        <img [src]="cartService.getItemImage(prod)" alt="" aria-hidden="true" />
                       </div>
                       <div class="cross-sell-details">
                         <span class="cross-sell-cat">{{ prod.category }}</span>
@@ -136,7 +136,7 @@
                       </div>
                       <button type="button" class="cross-sell-add-btn" (click)="addCareProduct(prod)" title="Add to Bag">
                         <mat-icon>shopping_bag</mat-icon>
-                        <span>Add</span>
+                        <span>Add to Bag</span>
                       </button>
                     </div>
                   }
@@ -156,111 +156,217 @@
 
         <!-- Step 2: Guest Details & Summary -->
         @if (step === 2) {
-          <div class="booking-step-card">
+          <div class="booking-step-card step-two-card">
             <div class="step-card-header">
-              <span class="step-sub-tag">STEP 02</span>
-              <h2>Confirm Guest Details</h2>
+              <div class="step-badge-kicker">
+                <span class="sparkle-icon">✦</span>
+                <span>STEP 02 • RESERVATION CONFIRMATION</span>
+                <span class="sparkle-icon">✦</span>
+              </div>
+              <h2 class="step-heading">Confirm Guest Details</h2>
+              <p class="step-desc">Please review your selected experience and provide guest contact information to finalize your appointment.</p>
             </div>
 
             <div class="step-split-layout">
               <!-- Left: Form inputs -->
               <div class="guest-inputs-col">
-                <div class="tinore-form-group">
-                  <label class="tinore-label">
-                    <mat-icon>badge</mat-icon>
-                    <span>Full Name *</span>
-                  </label>
-                  <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-                    <input matInput formControlName="name" placeholder="e.g. Priya Sharma">
-                  </mat-form-field>
-                </div>
-
-                <div class="tinore-row-grid">
-                  <div class="tinore-form-group">
-                    <label class="tinore-label">
-                      <mat-icon>phone</mat-icon>
-                      <span>Phone Number *</span>
-                    </label>
-                    <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-                      <input matInput formControlName="phone" placeholder="e.g. 9876543210" maxlength="10">
-                    </mat-form-field>
+                <!-- Section: Contact Info -->
+                <div class="form-section-block">
+                  <div class="section-micro-heading">
+                    <mat-icon>person_pin</mat-icon>
+                    <span>Guest Contact Information</span>
                   </div>
 
-                  <div class="tinore-form-group">
-                    <label class="tinore-label">
-                      <mat-icon>email</mat-icon>
-                      <span>Email Address *</span>
+                  <div class="luxury-form-group">
+                    <label class="luxury-field-label" for="guestName">
+                      <span>Full Name</span>
+                      <span class="required-star">*</span>
                     </label>
-                    <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-                      <input matInput formControlName="email" placeholder="e.g. priya@email.com">
-                    </mat-form-field>
+                    <div class="luxury-input-wrapper">
+                      <mat-icon class="input-icon">badge</mat-icon>
+                      <input id="guestName" type="text" formControlName="name" class="luxury-text-input" placeholder="e.g. Priya Sharma" autocomplete="name" />
+                    </div>
+                  </div>
+
+                  <div class="luxury-row-grid">
+                    <div class="luxury-form-group">
+                      <label class="luxury-field-label" for="guestPhone">
+                        <span>Phone Number</span>
+                        <span class="required-star">*</span>
+                      </label>
+                      <div class="luxury-input-wrapper">
+                        <mat-icon class="input-icon">call</mat-icon>
+                        <input id="guestPhone" type="tel" formControlName="phone" class="luxury-text-input" placeholder="10-digit number" maxlength="10" autocomplete="tel" />
+                      </div>
+                    </div>
+
+                    <div class="luxury-form-group">
+                      <label class="luxury-field-label" for="guestEmail">
+                        <span>Email Address</span>
+                        <span class="required-star">*</span>
+                      </label>
+                      <div class="luxury-input-wrapper">
+                        <mat-icon class="input-icon">mail_outline</mat-icon>
+                        <input id="guestEmail" type="email" formControlName="email" class="luxury-text-input" placeholder="e.g. priya@example.com" autocomplete="email" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div class="tinore-form-group">
-                  <label class="tinore-label">
-                    <mat-icon>notes</mat-icon>
-                    <span>Special Notes or Skin Concerns</span>
+                <!-- Section: Preferences & Notes -->
+                <div class="form-section-block">
+                  <div class="section-micro-heading">
+                    <mat-icon>auto_fix_high</mat-icon>
+                    <span>Treatment Preferences & Notes</span>
                     <span class="optional-pill">Optional</span>
-                  </label>
-                  <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-                    <textarea matInput formControlName="notes" rows="3" placeholder="Tell our specialists if you have allergies, sensitive skin, or specific requests..."></textarea>
-                  </mat-form-field>
+                  </div>
+
+                  <div class="luxury-form-group">
+                    <label class="luxury-field-label" for="guestNotes">
+                      <span>Special Requests, Allergies, or Skin Concerns</span>
+                    </label>
+                    <div class="luxury-textarea-wrapper">
+                      <textarea id="guestNotes" formControlName="notes" rows="3" class="luxury-textarea" placeholder="Tell our specialists if you have sensitive skin, allergies, or timing requests..."></textarea>
+                    </div>
+
+                    <!-- Quick Tag Chips -->
+                    <div class="quick-notes-container">
+                      <span class="quick-notes-label">Tap to add:</span>
+                      <div class="quick-tags-list">
+                        @for (tag of quickNotes; track tag) {
+                          <button type="button" class="quick-tag-chip" (click)="addQuickNote(tag)">
+                            <span>+ {{ tag }}</span>
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Zero-Deposit Assurance Pill -->
+                <div class="guest-trust-assurance">
+                  <div class="assurance-icon">
+                    <mat-icon>verified_user</mat-icon>
+                  </div>
+                  <div class="assurance-text">
+                    <strong>Zero-Deposit Guarantee</strong>
+                    <span>No advance payment needed. Pay in-person via UPI, Card, or Cash upon ritual completion.</span>
+                  </div>
                 </div>
               </div>
 
-              <!-- Right: Luxury Receipt Summary -->
+              <!-- Right: Luxury Reservation Pass Summary -->
               <div class="receipt-summary-box">
-                <div class="receipt-header">
-                  <mat-icon>receipt_long</mat-icon>
-                  <h3>Ritual Summary</h3>
+                <div class="pass-header">
+                  <div class="pass-brand-badge">
+                    <span class="pass-sparkle">✦</span>
+                    <span>RESERVATION PASS</span>
+                  </div>
+                  <span class="pass-studio-id">Hyderabad Flagship</span>
                 </div>
 
-                <div class="receipt-items-list">
-                  <div class="receipt-row">
-                    <span class="receipt-label">Ritual Treatment</span>
-                    <strong class="receipt-val">{{ bookingForm.get('service')?.value }}</strong>
+                <!-- Highlight Service Hero Box -->
+                <div class="pass-treatment-card">
+                  <div class="treatment-icon-wrap">
+                    <mat-icon>spa</mat-icon>
                   </div>
-
-                  @if (bookingForm.get('stylist')?.value) {
-                    <div class="receipt-row">
-                      <span class="receipt-label">Lead Stylist</span>
-                      <strong class="receipt-val">{{ bookingForm.get('stylist')?.value }}</strong>
+                  <div class="treatment-details">
+                    <span class="treatment-category">{{ selectedService?.category || 'Signature Ritual' }}</span>
+                    <h3 class="treatment-name">{{ bookingForm.get('service')?.value || selectedService?.name }}</h3>
+                    <div class="treatment-meta-chips">
+                      <span class="meta-chip duration"><mat-icon>schedule</mat-icon> {{ selectedService?.duration || 45 }} mins</span>
+                      <span class="meta-chip studio"><mat-icon>verified</mat-icon> Certified</span>
                     </div>
-                  }
-
-                  <div class="receipt-row">
-                    <span class="receipt-label">Appointment Date</span>
-                    <strong class="receipt-val">{{ bookingForm.get('date')?.value | date:'EEEE, MMM d, y' }}</strong>
                   </div>
+                </div>
 
-                  <div class="receipt-row">
-                    <span class="receipt-label">Scheduled Time</span>
-                    <strong class="receipt-val">{{ bookingForm.get('time')?.value }}</strong>
-                  </div>
-
-                  @if (selectedService) {
-                    <div class="receipt-total-row">
-                      <span>Total at Parlour</span>
-                      <strong>₹{{ selectedService.price | number }}</strong>
+                <!-- Schedule & Artist Details -->
+                <div class="pass-schedule-card">
+                  <div class="sched-row">
+                    <div class="sched-icon-circle">
+                      <mat-icon>calendar_month</mat-icon>
                     </div>
-                  }
+                    <div class="sched-info">
+                      <span class="sched-label">Appointment Date</span>
+                      <strong class="sched-val">{{ bookingForm.get('date')?.value | date:'EEEE, MMM d, y' }}</strong>
+                    </div>
+                  </div>
+
+                  <div class="sched-row">
+                    <div class="sched-icon-circle">
+                      <mat-icon>access_time</mat-icon>
+                    </div>
+                    <div class="sched-info">
+                      <span class="sched-label">Scheduled Time</span>
+                      <strong class="sched-val">{{ bookingForm.get('time')?.value }}</strong>
+                    </div>
+                  </div>
+
+                  <div class="sched-row">
+                    <div class="sched-icon-circle">
+                      <mat-icon>face</mat-icon>
+                    </div>
+                    <div class="sched-info">
+                      <span class="sched-label">Lead Stylist</span>
+                      <strong class="sched-val">
+                        @if (bookingForm.get('stylist')?.value) {
+                          {{ bookingForm.get('stylist')?.value }} <span class="stylist-badge">Master Artist</span>
+                        } @else {
+                          First Available Master Artist
+                        }
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bill & Total Amount Breakdown -->
+                <div class="pass-bill-summary">
+                  <div class="bill-line">
+                    <span class="bill-label">Treatment Ritual</span>
+                    <span class="bill-amt">₹{{ (selectedService?.price || 500) | number }}</span>
+                  </div>
+                  <div class="bill-line">
+                    <span class="bill-label">Consultation & Amenities</span>
+                    <span class="bill-amt free">Included</span>
+                  </div>
+                  <div class="bill-line total-highlight">
+                    <div class="total-label-wrap">
+                      <span class="total-title">Total at Parlour</span>
+                      <span class="total-sub">Pay after service</span>
+                    </div>
+                    <strong class="total-val">₹{{ (selectedService?.price || 500) | number }}</strong>
+                  </div>
+                </div>
+
+                <!-- Perks / Peace of mind -->
+                <div class="pass-footer-perks">
+                  <div class="perk-row">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Instant confirmation on WhatsApp & Email</span>
+                  </div>
+                  <div class="perk-row">
+                    <mat-icon>event_repeat</mat-icon>
+                    <span>Free rescheduling up to 2 hours prior</span>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <!-- Bottom Action Controls -->
             <div class="step-actions dual-actions">
               <button class="tinore-btn-outline" type="button" (click)="prevStep()">
                 <mat-icon>arrow_back</mat-icon>
                 <span>Back</span>
               </button>
-              <button class="tinore-btn-primary" type="submit" [disabled]="bookingForm.invalid || submitting">
+
+              <button class="tinore-btn-primary confirm-booking-cta" type="submit" [disabled]="bookingForm.invalid || submitting">
                 @if (submitting) {
                   <mat-spinner diameter="20" color="accent"></mat-spinner>
-                  <span>Confirming...</span>
+                  <span>Securing Your Reservation...</span>
                 } @else {
+                  <mat-icon>check_circle</mat-icon>
                   <span>Confirm Ritual Booking</span>
-                  <mat-icon>check</mat-icon>
+                  <span class="cta-price-badge">₹{{ (selectedService?.price || 500) | number }}</span>
                 }
               </button>
             </div>
@@ -275,7 +381,7 @@
         </div>
 
         <h2 class="confirmation-heading">Ritual Successfully Scheduled</h2>
-        <p class="confirmation-sub">We look forward to welcoming you. A detailed itinerary has been sent to <strong>{{ bookingForm.get('email')?.value }}</strong>.</p>
+        <p class="confirmation-sub">We look forward to welcoming you to our sanctuary. A detailed appointment confirmation and itinerary have been dispatched to <strong>{{ bookingForm.get('email')?.value }}</strong> and WhatsApp.</p>
 
         <div class="confirmed-card">
           <div class="confirmed-row">
@@ -305,11 +411,8 @@
             <mat-icon>add</mat-icon>
             <span>Book Another Service</span>
           </button>
-          <a routerLink="/my-appointments" class="tinore-btn-outline">
-            <mat-icon>calendar_month</mat-icon>
-            <span>View Appointments</span>
-          </a>
-          <a routerLink="/" class="tinore-home-link">
+          <a routerLink="/" class="tinore-btn-outline">
+            <mat-icon>home</mat-icon>
             <span>Back to Home</span>
           </a>
         </div>

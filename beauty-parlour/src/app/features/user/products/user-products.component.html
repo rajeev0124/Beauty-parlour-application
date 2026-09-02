@@ -13,15 +13,15 @@
       <h1 class="tinore-hero-heading">
         <app-typewriter-text 
           prefix="" 
-          [texts]="['Shop Our Beauty Products']"
+          [texts]="['Dermatological Skincare & Haircare', 'Botanical Home Care Formulations', 'Studio-Grade Beauty Essentials']"
           cursorColor="#FF8D00"
-          [typingSpeed]="60"
-          [deletingSpeed]="35"
-          [holdDuration]="2200">
+          [typingSpeed]="55"
+          [deletingSpeed]="32"
+          [holdDuration]="2400">
         </app-typewriter-text>
       </h1>
       <p class="tinore-hero-desc">
-        Browse our curated collection of premium beauty products — hand-picked by our expert stylists for the best results.
+        Dermatologist-formulated and parlour-tested botanical essentials, hand-curated by our master stylists to nourish your hair and skin between salon appointments.
       </p>
       <div class="tinore-trust-ribbon">
         <div class="trust-ribbon-item">
@@ -31,12 +31,12 @@
         <div class="trust-divider"></div>
         <div class="trust-ribbon-item">
           <mat-icon>verified</mat-icon>
-          <span>100% Authentic Guarantee</span>
+          <span>100% Authentic Originals</span>
         </div>
         <div class="trust-divider"></div>
         <div class="trust-ribbon-item">
           <mat-icon>auto_awesome</mat-icon>
-          <span>Parlour-Grade Formulations</span>
+          <span>Parlour-Grade Actives</span>
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@
   <!-- Main Content Container -->
   <div class="tinore-products-container">
     <!-- Skin Diagnostic Banner Card -->
-    <div class="tinore-quiz-promo-card">
+    <div class="tinore-quiz-promo-card anim-3d anim-card-pop">
       <div class="quiz-promo-content">
         <h3 class="quiz-promo-title">Not Sure What Your Skin Needs?</h3>
         <p class="quiz-promo-sub">Take our 60-second clinical diagnostic to discover your custom 3-step botanical routine and enjoy 15% off your bundle.</p>
@@ -57,7 +57,7 @@
     </div>
 
     <!-- Category Tabs Navigation -->
-    <div class="tinore-category-bar">
+    <div class="tinore-category-bar anim-3d anim-fade-up anim-delay-1">
       <div class="category-scroll-wrapper">
         @for (cat of categories; track cat.key) {
           <button 
@@ -125,7 +125,11 @@
         <!-- Products Grid -->
         <div class="tinore-grid" [class.list-layout]="viewMode === 'list'">
           @for (product of filteredProducts; track product._id; let i = $index) {
-            <article class="tinore-product-card" [style.animation-delay]="(i * 40) + 'ms'">
+            <article class="tinore-product-card anim-3d anim-card-pop" 
+                     [class.anim-delay-1]="i % 4 === 0"
+                     [class.anim-delay-2]="i % 4 === 1"
+                     [class.anim-delay-3]="i % 4 === 2"
+                     [class.anim-delay-4]="i % 4 === 3">
               <!-- Pure Auto-Scrolling Image Container -->
               <div class="product-media-box">
                 <div class="img-zoom-wrapper" (click)="viewProduct(product)">
@@ -265,7 +269,7 @@
 
             <!-- Description & Benefits -->
             <p class="quickview-description">
-              Expertly formulated for parlour-grade efficacy. Enriched with botanical bio-actives to provide long-lasting hydration, barrier nourishment, and a luminous radiant complexion.
+              {{ quickViewProduct.description || 'Expertly formulated with pure botanical bio-actives for salon-grade efficacy and long-lasting radiant results.' }}
             </p>
 
             <div class="quickview-features">
@@ -275,11 +279,11 @@
               </div>
               <div class="qv-feature-item">
                 <mat-icon>check_circle</mat-icon>
-                <span>100% Cruelty-Free & sustainably sourced</span>
+                <span>100% Cruelty-Free & ethically sourced</span>
               </div>
               <div class="qv-feature-item">
                 <mat-icon>check_circle</mat-icon>
-                <span>Suitable for sensitive and all skin types</span>
+                <span>Recommended by our certified master stylists</span>
               </div>
             </div>
 
@@ -318,11 +322,12 @@
               </button>
 
               <button 
-                class="qv-wishlist-toggle"
-                [class.active]="$any(quickViewProduct).inWishlist"
-                (click)="toggleWishlist(quickViewProduct)"
-                title="Wishlist">
-                <mat-icon>{{ $any(quickViewProduct).inWishlist ? 'favorite' : 'favorite_border' }}</mat-icon>
+                type="button"
+                style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #ffffff; border: none; padding: 0 16px; border-radius: 28px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; cursor: pointer; height: 48px; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35); transition: transform 0.2s ease;"
+                (click)="inquireProductOnWhatsApp(quickViewProduct)"
+                title="Instant Order on WhatsApp">
+                <mat-icon style="font-size: 20px; width: 20px; height: 20px;">chat</mat-icon>
+                <span>WhatsApp Buy</span>
               </button>
             </div>
 

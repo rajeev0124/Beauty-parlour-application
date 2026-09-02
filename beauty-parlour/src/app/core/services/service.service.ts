@@ -1,65 +1,68 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, delay } from 'rxjs';
+import { Observable, of, catchError, map } from 'rxjs';
 import { Service } from '../models/service.model';
+import { PARLOUR_SERVICES } from '../data/services.data';
 import { environment } from '../../../environments/environment';
-
-const DEMO_SERVICES: Service[] = [
-  { _id: 's1', name: 'Hair Cut – Women', category: 'hair', duration: 45, price: 500, description: 'Professional haircut with styling and blow dry', popular: true, isActive: true, createdAt: new Date() },
-  { _id: 's3', name: 'Hair Coloring', category: 'hair', duration: 90, price: 2500, description: 'Full color, highlights, balayage, ombre', popular: true, isActive: true, createdAt: new Date() },
-  { _id: 's4', name: 'Hair Deep Conditioning', category: 'hair', duration: 60, price: 1200, description: 'Deep conditioning treatment for healthy hair', isActive: true, createdAt: new Date() },
-  { _id: 's5', name: 'Keratin Treatment', category: 'hair', duration: 120, price: 5000, description: 'Smoothing and frizz-free keratin straightening', isActive: true, createdAt: new Date() },
-  { _id: 's6', name: 'Classic Facial', category: 'skin', duration: 45, price: 800, description: 'Deep cleansing, exfoliation and hydration', popular: true, isActive: true, createdAt: new Date() },
-  { _id: 's7', name: 'Gold Facial', category: 'skin', duration: 60, price: 1500, description: 'Luxury gold-infused anti-aging treatment', isActive: true, createdAt: new Date() },
-  { _id: 's8', name: 'Cleanup', category: 'skin', duration: 30, price: 500, description: 'Quick skin refresh with cleansing and toning', isActive: true, createdAt: new Date() },
-  { _id: 's9', name: 'Chemical Peel', category: 'skin', duration: 45, price: 2000, description: 'Exfoliation treatment for brighter skin', isActive: true, createdAt: new Date() },
-  { _id: 's10', name: 'Manicure', category: 'nails', duration: 30, price: 400, description: 'Classic manicure with nail shaping and polish', isActive: true, createdAt: new Date() },
-  { _id: 's11', name: 'Pedicure', category: 'nails', duration: 45, price: 500, description: 'Relaxing foot care with nail shaping and polish', isActive: true, createdAt: new Date() },
-  { _id: 's12', name: 'Gel Nails', category: 'nails', duration: 60, price: 1200, description: 'Long-lasting gel polish with nail art options', isActive: true, createdAt: new Date() },
-  { _id: 's13', name: 'Nail Extensions', category: 'nails', duration: 90, price: 2500, description: 'Acrylic or gel extensions with custom art', isActive: true, createdAt: new Date() },
-  { _id: 's17', name: 'Bridal Makeup', category: 'bridal', duration: 120, price: 15000, description: 'HD makeup with trial session included', popular: true, isActive: true, createdAt: new Date() },
-  { _id: 's18', name: 'Pre-Bridal Package', category: 'bridal', duration: 180, price: 8000, description: 'Facial, cleanup, waxing, mani-pedi combo', isActive: true, createdAt: new Date() },
-  { _id: 's19', name: 'Party Makeup', category: 'bridal', duration: 60, price: 3000, description: 'Glam makeup for special occasions', isActive: true, createdAt: new Date() },
-];
 
 @Injectable({ providedIn: 'root' })
 export class ServiceService {
-  private readonly apiUrl = `${environment.apiUrl}/services`;
-  private readonly demoMode = false; // Connected to backend
-
   constructor(private http: HttpClient) {}
 
+  /**
+   * Retrieves all beauty parlour services.
+   * If a Google Sheet ID is configured, fetches dynamically; otherwise serves local catalog instantly.
+   */
   getAll(): Observable<Service[]> {
-    if (this.demoMode) {
-      return of(DEMO_SERVICES).pipe(delay(300));
+    if (environment.googleSheetId && environment.googleSheetId.trim().length > 0) {
+      // Dynamic Google Sheet API fetch (public sheet exported as JSON)
+      const sheetUrl = `https://opensheet.elk.sh/${environment.googleSheetId}/Services`;
+      return this.http.get<any[]>(sheetUrl).pipe(
+        map(rows => {
+          if (!rows || rows.length === 0) return PARLOUR_SERVICES;
+          return rows.map((r, i) => ({
+            _id: r._id || r.id || `s_${i + 1}`,
+            name: r.name || r.Name,
+            price: Number(r.price || r.Price || 0),
+            duration: Number(r.duration || r.Duration || 45),
+            description: r.description || r.Description || '',
+            category: (r.category || r.Category || 'hair').toLowerCase(),
+            image: r.image || r.Image || '',
+            popular: String(r.popular || r.Popular).toLowerCase() === 'true',
+            isActive: r.isActive !== undefined ? String(r.isActive).toLowerCase() === 'true' : true,
+            createdAt: new Date()
+          } as Service));
+        }),
+        catchError(() => of(PARLOUR_SERVICES))
+      );
     }
-    return this.http.get<Service[]>(this.apiUrl);
+
+    // Default fast local catalog (Zero network delay)
+    return of(PARLOUR_SERVICES);
   }
 
-  getById(id: string): Observable<Service> {
-    if (this.demoMode) {
-      const service = DEMO_SERVICES.find(s => s._id === id);
-      return of(service!).pipe(delay(200));
-    }
-    return this.http.get<Service>(`${this.apiUrl}/${id}`);
-  }
-
-  create(service: Partial<Service>): Observable<Service> {
-    return this.http.post<Service>(this.apiUrl, service);
-  }
-
-  update(id: string, service: Partial<Service>): Observable<Service> {
-    return this.http.put<Service>(`${this.apiUrl}/${id}`, service);
-  }
-
-  delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  getById(id: string): Observable<Service | undefined> {
+    return this.getAll().pipe(
+      map(services => services.find(s => s._id === id))
+    );
   }
 
   getPopular(): Observable<Service[]> {
-    if (this.demoMode) {
-      return of(DEMO_SERVICES.filter(s => s.popular)).pipe(delay(300));
-    }
-    return this.http.get<Service[]>(`${this.apiUrl}/popular`);
+    return this.getAll().pipe(
+      map(services => services.filter(s => s.popular))
+    );
+  }
+
+  // Fallback stubs for existing code compatibility
+  create(service: Partial<Service>): Observable<Service> {
+    return of(service as Service);
+  }
+
+  update(id: string, service: Partial<Service>): Observable<Service> {
+    return of(service as Service);
+  }
+
+  delete(id: string): Observable<void> {
+    return of(void 0);
   }
 }

@@ -274,6 +274,8 @@ export class RadialRevealButtonComponent implements AfterViewInit, OnDestroy {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
+  private autoIntervalId: any = null;
+
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
 
@@ -282,9 +284,38 @@ export class RadialRevealButtonComponent implements AfterViewInit, OnDestroy {
       this.resizeObserver = new ResizeObserver(() => this.measureRadius());
       this.resizeObserver.observe(this.scopeRef.nativeElement);
     }
+    this.initMobileAutoReveal();
+  }
+
+  private initMobileAutoReveal(): void {
+    if (!this.isBrowser) return;
+    const isMobile = window.innerWidth <= 768 || window.matchMedia('(hover: none)').matches;
+    if (isMobile) {
+      this.clip.x = 50;
+      this.clip.y = 50;
+      this.clip.max = 135;
+      this.ngZone.runOutsideAngular(() => {
+        let isRevealed = false;
+        const interval = 4500 + Math.random() * 1000;
+        this.autoIntervalId = setInterval(() => {
+          isRevealed = !isRevealed;
+          if (isRevealed) {
+            this.clip.x = 50;
+            this.clip.y = 50;
+            this.clip.max = 135;
+            this.growTo(this.clip.max);
+          } else {
+            this.growTo(0);
+          }
+        }, interval);
+      });
+    }
   }
 
   ngOnDestroy(): void {
+    if (this.autoIntervalId) {
+      clearInterval(this.autoIntervalId);
+    }
     if (this.animRafId !== null) {
       cancelAnimationFrame(this.animRafId);
     }

@@ -5,8 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProductService } from '../../../core/services/product.service';
-import { WishlistService } from '../../../core/services/wishlist.service';
 import { CartService } from '../../../core/services/cart.service';
+import { WhatsAppService } from '../../../core/services/whatsapp.service';
 import { Product } from '../../../core/models/product.model';
 import { SkinQuizComponent } from '../../../shared/components/skin-quiz/skin-quiz.component';
 import { AutoMovingImageComponent } from '../../../shared/components/auto-moving-image/auto-moving-image.component';
@@ -26,7 +26,7 @@ export class UserProductsComponent implements OnInit {
   loading = true;
   errorMessage = '';
   viewMode: 'grid' | 'list' = 'grid';
-  Math = Math; // Expose Math to template
+  Math = Math;
 
   categories = [
     { key: 'all', label: 'All Products', icon: 'apps', count: 0 },
@@ -75,8 +75,8 @@ export class UserProductsComponent implements OnInit {
   constructor(
     private snackBar: MatSnackBar,
     private productService: ProductService,
-    private wishlistService: WishlistService,
     public cartService: CartService,
+    private whatsAppService: WhatsAppService,
     private cdr: ChangeDetectorRef,
     private router: Router
   ) {}
@@ -87,69 +87,27 @@ export class UserProductsComponent implements OnInit {
 
   // Multi-angle product photo galleries (100% exact matching product photographs)
   private readonly productGalleries: Record<string, string[]> = {
-    'keratin shampoo': [
-      '/products/keratin-shampoo.png'
-    ],
-    'argan oil conditioner': [
-      '/products/argan-conditioner.png'
-    ],
-    'hair serum – silk shine': [
-      '/products/hair-serum.png'
-    ],
-    'hair serum': [
-      '/products/hair-serum.png'
-    ],
-    'leave-in hair mask': [
-      '/products/hair-mask.png'
-    ],
-    'vitamin c face wash': [
-      '/products/vit-c-facewash.png'
-    ],
-    'hyaluronic moisturizer': [
-      '/products/hyaluronic-moisturizer.png'
-    ],
-    'sunscreen spf 50+': [
-      '/products/sunscreen-spf50.png'
-    ],
-    'night repair cream': [
-      '/products/night-repair-cream.png'
-    ],
-    'matte lipstick set': [
-      '/products/matte-lipstick-set.png'
-    ],
-    'foundation – natural glow': [
-      '/products/foundation-glow.png'
-    ],
-    'foundation': [
-      '/products/foundation-glow.png'
-    ],
-    'eye shadow palette': [
-      '/products/eyeshadow-palette.png'
-    ],
-    'gel nail polish kit': [
-      '/products/gel-nail-kit.png'
-    ],
-    'nail art stickers': [
-      '/products/nail-stickers.png'
-    ],
-    'cuticle oil': [
-      '/products/cuticle-oil.png'
-    ],
-    'professional hair dryer': [
-      '/products/hair-dryer.png'
-    ],
-    'hair dryer': [
-      '/products/hair-dryer.png'
-    ],
-    'straightening iron': [
-      '/products/straightening-iron.png'
-    ],
-    'makeup brush set (12 pcs)': [
-      '/products/makeup-brushes.png'
-    ],
-    'makeup brush set': [
-      '/products/makeup-brushes.png'
-    ]
+    'keratin shampoo': ['/products/keratin-shampoo.png'],
+    'argan oil conditioner': ['/products/argan-conditioner.png'],
+    'hair serum – silk shine': ['/products/hair-serum.png'],
+    'hair serum': ['/products/hair-serum.png'],
+    'leave-in hair mask': ['/products/hair-mask.png'],
+    'vitamin c face wash': ['/products/vit-c-facewash.png'],
+    'hyaluronic moisturizer': ['/products/hyaluronic-moisturizer.png'],
+    'sunscreen spf 50+': ['/products/sunscreen-spf50.png'],
+    'night repair cream': ['/products/night-repair-cream.png'],
+    'matte lipstick set': ['/products/matte-lipstick-set.png'],
+    'foundation – natural glow': ['/products/foundation-glow.png'],
+    'foundation': ['/products/foundation-glow.png'],
+    'eye shadow palette': ['/products/eyeshadow-palette.png'],
+    'gel nail polish kit': ['/products/gel-nail-kit.png'],
+    'nail art stickers': ['/products/nail-stickers.png'],
+    'cuticle oil': ['/products/cuticle-oil.png'],
+    'professional hair dryer': ['/products/hair-dryer.png'],
+    'hair dryer': ['/products/hair-dryer.png'],
+    'straightening iron': ['/products/straightening-iron.png'],
+    'makeup brush set (12 pcs)': ['/products/makeup-brushes.png'],
+    'makeup brush set': ['/products/makeup-brushes.png']
   };
 
   loadProducts(): void {
@@ -157,16 +115,19 @@ export class UserProductsComponent implements OnInit {
     this.errorMessage = '';
     this.productService.getAll().subscribe({
       next: (products) => {
-        this.products = products.map((p, index) => ({ 
-          ...p, 
-          inWishlist: false,
-          displayImages: this.getProductGallery(p, index)
-        }));
+        this.products = products.map((p, index) => {
+          const gallery = this.getProductGallery(p, index);
+          const resolvedImg = this.cartService.getItemImage(p) || gallery[0] || p.image;
+          return { 
+            ...p, 
+            image: resolvedImg,
+            displayImage: resolvedImg,
+            displayImages: gallery
+          } as any;
+        });
         this.updateCategoryCounts();
         this.loading = false;
         this.cdr.markForCheck();
-        
-        this.loadWishlistStatus();
       },
       error: () => {
         this.errorMessage = 'Failed to load products. Please try again later.';
@@ -193,27 +154,6 @@ export class UserProductsComponent implements OnInit {
     return [this.getProductImage(product.category, index)];
   }
 
-  // Generate consistent image based on category fallback
-  private getConsistentImage(productId: string, category: string, fallbackIndex: number): string {
-    return this.categoryDefaultImages[category?.toLowerCase()] || this.categoryDefaultImages['default'];
-  }
-
-  private loadWishlistStatus(): void {
-    this.wishlistService.getWishlist().subscribe({
-      next: (wishlist: any) => {
-        const items = Array.isArray(wishlist) ? wishlist : (wishlist?.items || []);
-        const wishlistIds = new Set(items.map((item: any) => item.itemId || item.item?._id));
-        
-        this.products.forEach(product => {
-          (product as any).inWishlist = wishlistIds.has(product._id);
-        });
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        // User not logged in or no wishlist - ignore
-      }
-    });
-  }
 
   private updateCategoryCounts(): void {
     this.categories.forEach(cat => {
@@ -263,62 +203,13 @@ export class UserProductsComponent implements OnInit {
 
   addToCart(product: Product): void {
     if (product.stock === 0) {
-      this.snackBar.open(`We'll notify you when ${product.name} is back in stock!`, 'OK', { 
+      this.whatsAppService.sendProductInquiry(product);
+      this.snackBar.open(`Opening WhatsApp to inquire about ${product.name}...`, 'OK', { 
         duration: 3000,
         panelClass: ['info-snackbar']
       });
     } else {
       this.cartService.addItem(product, 1);
-    }
-  }
-
-  toggleWishlist(product: any): void {
-    const wasInWishlist = product.inWishlist;
-    product.inWishlist = !product.inWishlist;
-    this.cdr.markForCheck();
-    
-    if (product.inWishlist) {
-      // Add to wishlist via API
-      this.wishlistService.addItem('product', product._id).subscribe({
-        next: () => {
-          const snackBarRef = this.snackBar.open(`💖 ${product.name} added to wishlist!`, 'View', { 
-            duration: 3000,
-            panelClass: ['wishlist-snackbar']
-          });
-          snackBarRef.onAction().subscribe(() => this.router.navigate(['/wishlist']));
-        },
-        error: () => {
-          product.inWishlist = wasInWishlist;
-          this.snackBar.open('Failed to add to wishlist.', 'Close', { 
-            duration: 4000,
-            panelClass: ['error-snackbar'],
-            horizontalPosition: 'center',
-            verticalPosition: 'top'
-          });
-          this.cdr.markForCheck();
-        }
-      });
-    } else {
-      // Remove from wishlist via API
-      this.wishlistService.removeItem(product._id).subscribe({
-        next: () => {
-          const snackBarRef = this.snackBar.open(`${product.name} removed from wishlist`, 'Undo', { 
-            duration: 3000,
-            panelClass: ['info-snackbar']
-          });
-          snackBarRef.onAction().subscribe(() => {
-            this.toggleWishlist(product); // Re-add
-          });
-        },
-        error: () => {
-          product.inWishlist = wasInWishlist;
-          this.snackBar.open('Failed to remove from wishlist', 'OK', { 
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-          this.cdr.markForCheck();
-        }
-      });
     }
   }
 
@@ -379,6 +270,10 @@ export class UserProductsComponent implements OnInit {
     if (!this.quickViewProduct) return;
     this.cartService.addItem(this.quickViewProduct, this.quickViewQty);
     this.closeQuickView();
+  }
+
+  inquireProductOnWhatsApp(product: Product): void {
+    this.whatsAppService.sendProductInquiry(product, this.quickViewQty);
   }
 
   viewProduct(product: Product): void {

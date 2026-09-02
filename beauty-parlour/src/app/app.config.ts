@@ -4,15 +4,12 @@ import {
   provideBrowserGlobalErrorListeners,
   ErrorHandler,
 } from '@angular/core';
-import { WakeupService } from './core/services/wakeup.service';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideRouter, withInMemoryScrolling, withPreloading, PreloadAllModules } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { routes } from './app.routes';
-import { authInterceptor } from './core/interceptors/auth.interceptor';
-import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { FirebaseService } from './core/services/firebase.service';
 import { GlobalErrorHandler } from './core/services/error-handler.service';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -22,32 +19,22 @@ function initializeFirebase(firebaseService: FirebaseService) {
   return () => firebaseService.getApp();
 }
 
-// Factory: ping backend on startup asynchronously without blocking Angular UI rendering
-function initializeWakeup(wakeupService: WakeupService) {
-  return () => {
-    wakeupService.init().subscribe();
-    return Promise.resolve();
-  };
-}
-
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+    provideRouter(
+      routes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
+      withPreloading(PreloadAllModules)
+    ),
+    provideHttpClient(),
     provideNoopAnimations(),
     provideCharts(withDefaultRegisterables()),
     {
       provide: APP_INITIALIZER,
       useFactory: initializeFirebase,
       deps: [FirebaseService],
-      multi: true,
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeWakeup,
-      deps: [WakeupService],
       multi: true,
     },
     provideClientHydration(withEventReplay()),

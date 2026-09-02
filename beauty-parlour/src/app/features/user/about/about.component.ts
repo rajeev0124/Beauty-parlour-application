@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, NgZone, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, NgZone, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 
@@ -7,6 +8,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CommonModule,
     RouterLink,
     MatIconModule
   ],
@@ -16,37 +18,50 @@ import { RouterLink } from '@angular/router';
 export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
   openFaqIndex: number | null = 0;
   private observer: IntersectionObserver | null = null;
+  private isBrowser: boolean;
 
   // --- Typewriter Animation ---
   private readonly typewriterTexts = [
+    'Where Luxury Meets Personal Style',
     'Where Artistry Meets Individual Grace',
     'Where Beauty Meets Timeless Elegance',
-    'Where Luxury Meets Personal Style',
   ];
   private readonly typingSpeed = 55;
   private readonly deletingSpeed = 32;
-  private readonly holdDuration = 1800;
+  private readonly holdDuration = 2200;
 
-  displayedText = '';
+  displayedText = 'Where Luxury Meets Personal Style';
   cursorOn = true;
 
   private textIndex = 0;
-  private charIndex = 0;
-  private phase: 'typing' | 'holding' | 'deleting' = 'typing';
+  private charIndex = 33; // Length of 'Where Luxury Meets Personal Style'
+  private phase: 'typing' | 'holding' | 'deleting' = 'holding';
   private timer: ReturnType<typeof setTimeout> | null = null;
   private cursorInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef,
-    private el: ElementRef
-  ) {}
+    private el: ElementRef,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
-    this.ngZone.runOutsideAngular(() => this.runTypewriter());
+    if (!this.isBrowser) return;
+
+    this.startCursorBlink();
+    // Hold the first full phrase on screen, then begin cycling
+    this.timer = setTimeout(() => {
+      this.phase = 'deleting';
+      this.runTypewriter();
+    }, this.holdDuration);
   }
 
   ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
+
     this.ngZone.runOutsideAngular(() => {
       this.observer = new IntersectionObserver(
         (entries) => {
@@ -75,6 +90,7 @@ export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private runTypewriter(): void {
+    if (!this.isBrowser) return;
     if (this.timer) clearTimeout(this.timer);
 
     if (this.phase === 'typing') {
@@ -83,7 +99,8 @@ export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (this.charIndex < this.currentText.length) {
         this.displayedText = this.currentText.slice(0, ++this.charIndex);
-        this.cdr.detectChanges(); // only repaint when text changes
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
         this.timer = setTimeout(() => this.runTypewriter(), this.typingSpeed);
       } else {
         this.phase = 'holding';
@@ -92,6 +109,7 @@ export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
           this.phase = 'deleting';
           if (this.cursorInterval) { clearInterval(this.cursorInterval); this.cursorInterval = null; }
           this.cursorOn = true;
+          this.cdr.markForCheck();
           this.cdr.detectChanges();
           this.runTypewriter();
         }, this.holdDuration);
@@ -99,12 +117,13 @@ export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.phase === 'deleting') {
       if (this.charIndex > 0) {
         this.displayedText = this.currentText.slice(0, --this.charIndex);
-        this.cdr.detectChanges(); // only repaint when text changes
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
         this.timer = setTimeout(() => this.runTypewriter(), this.deletingSpeed);
       } else {
         this.textIndex = (this.textIndex + 1) % this.typewriterTexts.length;
         this.phase = 'typing';
-        this.timer = setTimeout(() => this.runTypewriter(), 0);
+        this.timer = setTimeout(() => this.runTypewriter(), 120);
       }
     }
   }
@@ -113,41 +132,41 @@ export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.cursorInterval) clearInterval(this.cursorInterval);
     this.cursorInterval = setInterval(() => {
       this.cursorOn = !this.cursorOn;
-      this.cdr.detectChanges(); // only repaint cursor blink
+      this.cdr.markForCheck();
     }, 530);
   }
   // --- End Typewriter Animation ---
 
   stats = [
-    { value: '11+', label: 'Years of Excellence', icon: 'workspace_premium' },
-    { value: '15K+', label: 'Happy Clients', icon: 'favorite' },
-    { value: '50+', label: 'Certified Artists', icon: 'stars' },
-    { value: '4.9 ★', label: 'Client Trust Score', icon: 'verified' }
+    { value: '11+', label: 'Years of Heritage', icon: 'workspace_premium' },
+    { value: '15K+', label: 'Celebrated Brides & Patrons', icon: 'favorite' },
+    { value: '50+', label: 'Certified Artisans', icon: 'stars' },
+    { value: '4.9 ★', label: 'Patron Trust Score', icon: 'verified' }
   ];
 
   standards = [
     {
       num: '01',
       title: 'Medical-Grade Hygiene',
-      desc: '3-tier autoclave and UV sterilization for all tools, with single-use eco-friendly linens for every guest.',
+      desc: 'Hospital-grade 3-tier autoclave and UV sterilization for all implements, with single-use eco-friendly linens for every guest.',
       icon: 'sanitizer'
     },
     {
       num: '02',
-      title: 'Clean & Proven Formulations',
-      desc: 'Dermatologist-tested, cruelty-free, and internationally certified skincare and hair actives.',
+      title: 'Clean & Proven Actives',
+      desc: 'Dermatologist-tested, cruelty-free, and internationally certified skincare and haircare formulations with zero parabens.',
       icon: 'spa'
     },
     {
       num: '03',
       title: 'Private Bridal Suites',
-      desc: 'Exclusive private makeup rooms with cinema-grade high-CRI lighting for true color fidelity.',
+      desc: 'Exclusive private dressing suites with cinema-grade high-CRI vanity illumination for absolute tone precision.',
       icon: 'meeting_room'
     },
     {
       num: '04',
-      title: 'Personalized Consultations',
-      desc: 'Complimentary high-precision skin and hair diagnostic assessments before every treatment.',
+      title: 'Diagnostic Consultations',
+      desc: 'Detailed digital skin and scalp diagnostic assessments prior to formulating every tailored treatment.',
       icon: 'biotech'
     }
   ];
@@ -221,10 +240,10 @@ export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
 
   milestones = [
     { year: '2013', title: 'The Genesis', description: 'Established as an exclusive bridal studio with 3 master artisans.' },
-    { year: '2016', title: 'Clinical Skin Care', description: 'Introduced medical-grade aesthetic facials and organic hair therapies.' },
-    { year: '2019', title: 'Excellence Award', description: 'Recognized as South India’s Most Trusted Bridal Destination.' },
-    { year: '2022', title: 'Digital Concierge', description: 'Launched online appointments and on-location bridal vanity services.' },
-    { year: '2024+', title: 'Present & Beyond', description: 'Serving 15,000+ patrons with 50+ accredited beauty professionals.' }
+    { year: '2016', title: 'Clinical Dermatology', description: 'Expanded into medical-grade aesthetic skin therapies and organic scalp rejuvenation rituals.' },
+    { year: '2019', title: 'Regional Recognition', description: 'Recognized as South India’s Most Trusted Luxury Bridal and Beauty Sanctuary.' },
+    { year: '2022', title: 'On-Location Artistry', description: 'Introduced mobile bridal vanity suites and high-definition destination wedding services.' },
+    { year: '2024+', title: 'A Living Legacy', description: 'Proudly serving 15,000+ patrons with an accredited collective of 50+ beauty professionals.' }
   ];
 
   testimonials = [
@@ -233,7 +252,7 @@ export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
       role: 'Bride (Grand Hyatt Wedding)',
       image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
       rating: 5,
-      text: 'Sindhura and her team made my wedding day effortless. The HD makeup stayed intact through 14 hours of festivities without a single smudge!',
+      text: 'Sindhura and her team made my wedding day completely stress-free. The HD airbrush makeup stayed luminous through 14 hours of continuous festivities and bright stage lights without a single touch-up!',
       service: 'Muhurtham Bridal Package'
     },
     {
@@ -241,7 +260,7 @@ export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
       role: 'Corporate Executive',
       image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80',
       rating: 5,
-      text: 'The Hydra-Facial is miraculous. My skin has an ethereal glow, and their private suites feel like a 5-star sanctuary.',
+      text: 'The Hydra-Infusion facial gave me noticeable, long-lasting clarity. The private suites are peaceful, impeccably sanitized, and feel like a true 5-star retreat.',
       service: 'Hydra-Infusion Ritual'
     },
     {
@@ -249,7 +268,7 @@ export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
       role: 'Fashion Model & Creator',
       image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
       rating: 5,
-      text: 'From Botoplex hair therapy to bespoke nail artistry, this is the only salon in the city I trust blindly with my hair and skin.',
+      text: 'From Botoplex hair therapy to intricate nail extensions, this is the only salon in the city I trust blindly. The attention to detail and personalized care is world-class.',
       service: 'Hair Restoration & Styling'
     }
   ];

@@ -34,11 +34,11 @@ export class GalleryComponent implements OnInit {
   isBrowser = false;
 
   categories = [
-    { key: 'All', label: 'All Creations (10)', icon: 'auto_awesome' },
-    { key: 'Bridal', label: 'Royal Bridal Reels', icon: 'favorite' },
-    { key: 'Makeup', label: 'Party & Sangeet Glam', icon: 'face_retouching_natural' },
-    { key: 'Hair', label: 'Hair Styling & Spa', icon: 'content_cut' },
-    { key: 'Skincare', label: 'Glass Skin & Glow', icon: 'spa' }
+    { key: 'All', label: 'All Masterpieces (10)', icon: 'auto_awesome' },
+    { key: 'Bridal', label: 'Royal Muhurtham & Bridal', icon: 'favorite' },
+    { key: 'Makeup', label: 'Sangeet & Evening Glam', icon: 'face_retouching_natural' },
+    { key: 'Hair', label: 'Hair Artistry & Couture', icon: 'content_cut' },
+    { key: 'Skincare', label: 'Clinical Glow & Skin Prep', icon: 'spa' }
   ];
 
   selectedCategory = 'All';
@@ -46,10 +46,10 @@ export class GalleryComponent implements OnInit {
   lightboxIndex = 0;
 
   stats = [
-    { value: '500+', label: 'Brides Styled', icon: 'favorite' },
+    { value: '850+', label: 'Brides Styled', icon: 'favorite' },
     { value: '100%', label: 'Real Client Reels', icon: 'videocam' },
-    { value: '650+', label: 'Verified Reviews', icon: 'star' },
-    { value: '10+', label: 'Years of Artistry', icon: 'verified' }
+    { value: '1,200+', label: 'Verified Reviews', icon: 'star' },
+    { value: '11+', label: 'Years of Artistry', icon: 'verified' }
   ];
 
   rawPosts = [
@@ -59,7 +59,7 @@ export class GalleryComponent implements OnInit {
       title: 'Royal Muhurtham Bridal Artistry',
       category: 'Bridal' as const,
       tag: '👑 Signature Muhurtham',
-      description: 'Traditional royal bridal makeover featuring flawless HD airbrush base, authentic temple jewelry setting & radiant bridal glow.',
+      description: 'Traditional royal bridal transformation featuring lightweight HD airbrush artistry, precise temple jewelry alignment, and an enduring dewy radiance.',
       service: 'Royal Bridal Package',
       stylist: 'Sindhura Makeovers',
       featured: true
@@ -70,7 +70,7 @@ export class GalleryComponent implements OnInit {
       title: 'Bespoke Bridal Elegance & Radiance',
       category: 'Bridal' as const,
       tag: '✨ Couture Bride',
-      description: 'Intricate wedding day styling with customized eye sculpting, velvet blush and long-lasting waterproof finish.',
+      description: 'Bespoke bridal styling with soft cut-crease eye sculpting, petal velvet blush, and a 14-hour humidity-resistant finish.',
       service: 'Bridal Package Deluxe',
       stylist: 'Sindhura Makeovers',
       featured: true
@@ -81,7 +81,7 @@ export class GalleryComponent implements OnInit {
       title: 'Sangeet & Reception Glamour',
       category: 'Makeup' as const,
       tag: '💄 Sunset Glam',
-      description: 'Show-stopping cocktail and sangeet night look with soft metallic tones and sculpted cheekbones.',
+      description: 'High-impact cocktail and sangeet night glamour featuring soft gilded bronze lids and sculpted cheekbones.',
       service: 'Engagement & Party Glam',
       stylist: 'Sindhura Makeovers'
     },
@@ -91,7 +91,7 @@ export class GalleryComponent implements OnInit {
       title: 'Couture Bridal Hair Styling & Florals',
       category: 'Hair' as const,
       tag: '🌸 Floral Braid Art',
-      description: 'Delicate handcrafted fresh baby breath floral braids with traditional accessories for morning wedding ceremonies.',
+      description: 'Handcrafted fresh jasmine and baby’s breath braid adornments woven seamlessly with traditional South Indian temple accessories.',
       service: 'Bridal Hair Styling',
       stylist: 'Sindhura Makeovers',
       featured: true
@@ -102,7 +102,7 @@ export class GalleryComponent implements OnInit {
       title: 'Traditional South Indian Bride',
       category: 'Bridal' as const,
       tag: '👑 Temple Heritage',
-      description: 'Classic Kanjeevaram saree drape coordination, kundan matha patti placement, and luminous matte skin.',
+      description: 'Flawless Kanjeevaram silk saree pleating and drape architecture paired with secure matha patti placement and satin skin finish.',
       service: 'Royal Bridal Package',
       stylist: 'Sindhura Makeovers'
     },
@@ -112,7 +112,7 @@ export class GalleryComponent implements OnInit {
       title: 'Dewy Engagement & Cocktail Glamour',
       category: 'Makeup' as const,
       tag: '✨ HD Glow Makeover',
-      description: 'Soft, romantic engagement glam paired with modern Hollywood waves and glossy peach lips.',
+      description: 'Soft romantic engagement makeover featuring modern dimensional Hollywood waves and signature glazed lips.',
       service: 'Engagement & Party Glam',
       stylist: 'Sindhura Makeovers'
     },
@@ -122,7 +122,7 @@ export class GalleryComponent implements OnInit {
       title: 'Silk Hair Spa & Balayage Transformation',
       category: 'Hair' as const,
       tag: '💇‍♀️ Silk Botoplex',
-      description: 'Advanced hair nourishing therapy restoring damaged strands into mirror-shine, silky cascades.',
+      description: 'Intensive bio-protein Botoplex therapy that deeply restructures stressed cuticles into high-gloss, frizz-free cascades.',
       service: 'Balayage & Botoplex Spa',
       stylist: 'Sindhura Makeovers'
     },
@@ -132,7 +132,7 @@ export class GalleryComponent implements OnInit {
       title: 'Glass Skin & Bridal Prep Facial Ritual',
       category: 'Skincare' as const,
       tag: '🌟 Hydra-Glow Facial',
-      description: 'Deep clinical pore hydration and botanical nutrient infusion ensuring bridal skin radiates from within.',
+      description: 'Ultrasonic clinical deep-pore hydration and active bio-ceramide infusion for translucent, lit-from-within wedding skin.',
       service: 'Advanced Hydra-Glow Facial',
       stylist: 'Sindhura Makeovers'
     },
@@ -142,7 +142,7 @@ export class GalleryComponent implements OnInit {
       title: 'Haldi & Mehendi Day Glow Styling',
       category: 'Bridal' as const,
       tag: '🌸 Haldi Sunshine',
-      description: 'Vibrant yellow palette coordination with dewy watercolor blush and floral ear accessories.',
+      description: 'Fresh, sun-kissed Haldi and Mehendi day styling with sheer watercolor cheek tints and bespoke fresh floral jewellery.',
       service: 'Mehendi & Haldi Package',
       stylist: 'Sindhura Makeovers'
     },
@@ -152,7 +152,7 @@ export class GalleryComponent implements OnInit {
       title: 'Grand Wedding Reception Masterpiece',
       category: 'Bridal' as const,
       tag: '👑 Grand Reception',
-      description: 'Regal evening bridal transformation crafted to shine under stage lighting with flawless long-wear setting.',
+      description: 'Stately evening reception transformation sculpted to radiate under multi-directional stage lighting with zero flashbacks.',
       service: 'Signature Deluxe Bridal',
       stylist: 'Sindhura Makeovers',
       featured: true

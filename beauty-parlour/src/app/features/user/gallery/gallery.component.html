@@ -2,17 +2,17 @@
   <!-- Luxury Gallery Header -->
   <section class="luxury-gallery-hero">
     <div class="hero-glow-lights"></div>
-    <div class="hero-content-wrapper">
+    <div class="hero-content-wrapper anim-3d anim-fade-up">
 
       <h1 class="gallery-main-title">
         The Signature <span class="gold-text">Lookbook</span>
       </h1>
       <p class="gallery-sub-title">
-        Explore our curated bridal styling, hair transformations, and glow rituals.
+        A living archive of our celebrated bridal reveals, signature hair transformations, and bespoke radiant makeovers captured in motion.
       </p>
 
       <!-- Category Filter Tabs -->
-      <div class="gallery-tabs-row">
+      <div class="gallery-tabs-row anim-3d anim-fade-up anim-delay-1">
         @for (cat of categories; track cat.key) {
           <button 
             class="gallery-filter-btn" 
@@ -29,8 +29,11 @@
   <!-- Video Gallery Grid -->
   <div class="luxury-gallery-container">
     <div class="pure-video-grid">
-      @for (post of filteredPosts; track post.id) {
-        <article class="pure-video-card">
+      @for (post of filteredPosts; track post.id; let i = $index) {
+        <article class="pure-video-card anim-3d anim-card-pop" 
+                 [class.anim-delay-1]="i % 3 === 0"
+                 [class.anim-delay-2]="i % 3 === 1"
+                 [class.anim-delay-3]="i % 3 === 2">
           <!-- Video Frame with Top/Bottom Clutter Masked -->
           <div class="video-viewport-wrapper">
             @if (isBrowser) {

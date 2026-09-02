@@ -2,11 +2,10 @@ import { Component, signal, OnInit, inject } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { filter, map, mergeMap } from 'rxjs';
-import { ServerWakeupBannerComponent } from './shared/components/server-wakeup-banner.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ServerWakeupBannerComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
 })
 export class App implements OnInit {

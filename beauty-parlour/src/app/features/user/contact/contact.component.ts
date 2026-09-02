@@ -5,30 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RouterLink } from '@angular/router';
-import { LineMaskSplitComponent } from '../../../shared/components/line-mask-split/line-mask-split.component';
 
-export interface ConciergeChannel {
-  id: string;
-  icon: string;
-  title: string;
-  value: string;
-  actionLabel: string;
-  actionLink: string;
-  isExternal?: boolean;
-  subtext: string;
-  badge?: string;
-}
-
-export interface AmenityItem {
-  icon: string;
-  label: string;
-  desc: string;
-}
+import { WhatsAppService } from '../../../core/services/whatsapp.service';
 
 export interface ContactFaq {
   q: string;
   a: string;
+  open: boolean;
 }
 
 @Component({
@@ -41,9 +24,7 @@ export interface ContactFaq {
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule,
-    RouterLink,
-    LineMaskSplitComponent
+    MatProgressSpinnerModule
   ],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss'
@@ -52,103 +33,120 @@ export class ContactComponent implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder);
   private snackBar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
+  public whatsAppService = inject(WhatsAppService);
 
   contactForm!: FormGroup;
   sending = false;
-  openFaqIndex: number | null = 0;
 
-  channels: ConciergeChannel[] = [
-    {
-      id: 'phone',
-      icon: 'call',
-      title: 'Studio Hotline & Desk',
-      value: '+91 98765 43210',
-      actionLabel: 'Call Directly',
-      actionLink: 'tel:+919876543210',
-      subtext: 'Instant reservations & urgent inquiries',
-      badge: 'Available 9AM–8:30PM'
-    },
+  get whatsAppNumber(): string {
+    return this.whatsAppService.getWhatsAppNumber();
+  }
+
+  get whatsAppLink(): string {
+    const msg = encodeURIComponent('Hello Sindhura Makeovers! I would like to inquire about your services.');
+    return `https://wa.me/${this.whatsAppNumber}?text=${msg}`;
+  }
+
+  // 4 Social / Contact Widgets
+  widgets = [
     {
       id: 'whatsapp',
-      icon: 'chat',
-      title: 'WhatsApp Concierge',
-      value: '+91 98765 43210',
-      actionLabel: 'Chat on WhatsApp',
-      actionLink: 'https://wa.me/919876543210?text=Hello%20Sindhura%20Makeovers%20Concierge%2C%20I%20would%20like%20to%20inquire%20about%20a%20booking.',
-      isExternal: true,
-      subtext: 'Fastest bridal portfolio & pricing lookbook',
-      badge: 'Instant Replies'
+      label: 'WhatsApp',
+      handle: '+91 98765 43210',
+      desc: 'Chat instantly with our studio team',
+      badge: 'Instant Reply',
+      badgeColor: '#25D366',
+      link: `https://wa.me/919876543210?text=Hello%20Sindhura%20Makeovers!%20I%20would%20like%20to%20inquire.`,
+      external: true,
+      gradient: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+      iconType: 'whatsapp'
+    },
+    {
+      id: 'instagram',
+      label: 'Instagram',
+      handle: '@sindhura_makeovers',
+      desc: 'Follow our bridal transformations',
+      badge: '10K+ Community',
+      badgeColor: '#E1306C',
+      link: 'https://www.instagram.com/sindhura_makeovers/?hl=en',
+      external: true,
+      gradient: 'linear-gradient(135deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%)',
+      iconType: 'instagram'
     },
     {
       id: 'email',
-      icon: 'mail',
-      title: 'Official Studio Email',
-      value: 'concierge@sindhuramakeovers.com',
-      actionLabel: 'Send an Email',
-      actionLink: 'mailto:concierge@sindhuramakeovers.com',
-      subtext: 'Detailed bridal RFPs, PR & collaborations',
-      badge: '< 2 Hr Response'
+      label: 'Email Us',
+      handle: 'concierge@sindhuramakeovers.com',
+      desc: 'For bridal packages & editorial inquiries',
+      badge: '< 2 Hr Response',
+      badgeColor: '#C9748A',
+      link: 'mailto:concierge@sindhuramakeovers.com',
+      external: false,
+      gradient: 'linear-gradient(135deg, #C9748A 0%, #9A4860 100%)',
+      iconType: 'email'
     },
     {
-      id: 'location',
-      icon: 'location_on',
-      title: 'Flagship Studio Suite',
-      value: '123 Beauty Boulevard, Luxury Galleria, 4th Floor',
-      actionLabel: 'Get Map Directions',
-      actionLink: 'https://maps.google.com/?q=123+Beauty+Boulevard+Luxury+Galleria',
-      isExternal: true,
-      subtext: 'Valet parking at Galleria Main Gate',
-      badge: 'Central Landmark'
+      id: 'phone',
+      label: 'Call Us',
+      handle: '+91 98765 43210',
+      desc: 'Available 9:00 AM – 8:30 PM daily',
+      badge: 'Mon–Sun',
+      badgeColor: '#6366F1',
+      link: 'tel:+919876543210',
+      external: false,
+      gradient: 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)',
+      iconType: 'phone'
     }
   ];
 
-  amenities: AmenityItem[] = [
-    { icon: 'local_parking', label: 'Valet Parking', desc: 'Dedicated concierge parking at Main Gate' },
-    { icon: 'dry_cleaning', label: 'Private VIP Suites', desc: 'Soundproof chambers with cinema vanity lighting' },
-    { icon: 'local_cafe', label: 'Beverage Bar', desc: 'Artisanal espresso, matcha & organic floral teas' },
-    { icon: 'wifi', label: 'High-Speed Wi-Fi', desc: 'Ultra-fast guest connectivity & device chargers' }
-  ];
-
   scheduleHours = [
-    { days: 'Monday – Friday', time: '9:00 AM – 8:30 PM', isPeak: false },
-    { days: 'Saturday', time: '9:00 AM – 9:00 PM', isPeak: true },
-    { days: 'Sunday', time: '10:00 AM – 7:00 PM', isPeak: true }
+    { days: 'Monday – Friday', time: '9:00 AM – 8:30 PM', open: true },
+    { days: 'Saturday', time: '9:00 AM – 9:00 PM', open: true },
+    { days: 'Sunday', time: '10:00 AM – 7:00 PM', open: true }
   ];
 
-  inquirySubjects = [
+  inquiryTypes = [
     { label: 'Bridal Makeover & Trials', value: 'Bridal Makeover & Trials' },
-    { label: 'Clinical Facial / Dermatological Care', value: 'Clinical Facial & Dermatology' },
-    { label: 'Hair Botoplex / Restructure & Color', value: 'Hair Restructure & Color' },
-    { label: 'Party & Celebrity Styling', value: 'Party & Celebrity Styling' },
-    { label: 'General Studio Inquiry / Custom Package', value: 'General Studio Inquiry' }
+    { label: 'Hair Treatment & Color', value: 'Hair Treatment & Color' },
+    { label: 'Facial & Clinical Skin Care', value: 'Facial & Clinical Skin Care' },
+    { label: 'Party & Event Styling', value: 'Party & Event Styling' },
+    { label: 'Product Purchase', value: 'Product Purchase' },
+    { label: 'General Inquiry', value: 'General Inquiry' }
   ];
 
   faqs: ContactFaq[] = [
     {
-      q: 'Do I need to book an appointment, or do you accept walk-ins?',
-      a: 'We warmly welcome walk-ins for express hair styling, threading, and standard manicures subject to availability. However, for bridal trials, clinical facials, and advanced hair rituals, we strongly recommend reserving your slot in advance to guarantee your private chamber.'
+      q: 'Do I need to book in advance or can I walk in?',
+      a: 'Walk-ins are warmly welcomed for express grooming, haircuts, and blowouts. For bridal trials, clinical skin therapies, and advanced hair rituals, we recommend booking in advance to reserve your private suite and preferred master artist.',
+      open: true
     },
     {
-      q: 'What is the standard cancellation and rescheduling policy?',
-      a: 'Appointments can be rescheduled or cancelled with zero fee up to 24 hours prior to the scheduled start time. For dedicated bridal package bookings, please provide at least 72 hours notice.'
+      q: 'What is your cancellation and rescheduling policy?',
+      a: 'You may reschedule or cancel your salon appointment with zero fees up to 24 hours prior. For extensive bridal packages, we kindly request a 72-hour advance notice.',
+      open: false
     },
     {
-      q: 'Is there parking available at the flagship studio?',
-      a: 'Yes, complimentary valet parking is provided for all our patrons directly at the Luxury Galleria main entrance portico.'
+      q: 'Is parking available at the studio?',
+      a: 'Yes, complimentary valet parking is provided for all patrons directly at the main Luxury Galleria entrance.',
+      open: false
     },
     {
-      q: 'Can the team travel for destination weddings and venue makeovers?',
-      a: 'Yes! Our On-Location Bridal Vanity Team travels globally with high-CRI cinema lighting kits and custom vanity stations. Reach out via WhatsApp or our inquiry form for destination quotes.'
+      q: 'Do your master artists travel for destination weddings?',
+      a: 'Yes, our On-Location Bridal Team travels across India and internationally, equipped with portable cinema lighting and complete vanity kits. Connect with us on WhatsApp for destination itineraries.',
+      open: false
+    },
+    {
+      q: 'How quickly do you reply on WhatsApp?',
+      a: 'Our concierge team typically replies within minutes during studio hours (9:00 AM – 8:30 PM). The floating chat button connects you directly to our front desk.',
+      open: false
     }
   ];
 
   ngOnInit(): void {
     this.contactForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^[0-9+ ]{10,14}$/)]],
-      subject: ['Bridal Makeover & Trials', Validators.required],
-      preferredDate: [''],
+      inquiryType: ['Bridal Makeover & Trials', Validators.required],
       message: ['', [Validators.required, Validators.minLength(10)]]
     });
   }
@@ -157,12 +155,8 @@ export class ContactComponent implements OnInit, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  selectSubject(subjectValue: string): void {
-    this.contactForm.patchValue({ subject: subjectValue });
-  }
-
   toggleFaq(index: number): void {
-    this.openFaqIndex = this.openFaqIndex === index ? null : index;
+    this.faqs[index].open = !this.faqs[index].open;
   }
 
   submitForm(): void {
@@ -172,15 +166,28 @@ export class ContactComponent implements OnInit, AfterViewInit {
     }
 
     this.sending = true;
-    
+    const f = this.contactForm.value;
+
+    const msg = [
+      '💌 *NEW INQUIRY – SINDHURA MAKEOVERS*',
+      '──────────────────────────',
+      `👤 *Name:* ${f.name}`,
+      `📱 *Phone:* ${f.phone}`,
+      `🏷️ *Inquiry:* ${f.inquiryType}`,
+      `💬 *Message:* ${f.message}`,
+      '──────────────────────────'
+    ].join('\n');
+
+    this.whatsAppService.openWhatsApp(msg);
+
     setTimeout(() => {
       this.sending = false;
-      this.contactForm.reset({ subject: 'Bridal Makeover & Trials' });
-      this.snackBar.open('Thank you! Your message has been routed to our Studio Concierge. We will contact you within 2 hours.', 'Close', { 
-        duration: 5000,
+      this.contactForm.reset({ inquiryType: 'Bridal Makeover & Trials' });
+      this.snackBar.open('✨ Opening WhatsApp with your message...', 'Close', {
+        duration: 4000,
         panelClass: ['luxury-snackbar']
       });
       this.cdr.detectChanges();
-    }, 1200);
+    }, 400);
   }
 }

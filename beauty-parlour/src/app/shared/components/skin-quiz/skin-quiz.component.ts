@@ -60,7 +60,7 @@ export class SkinQuizComponent {
   bundleDiscountPrice = 0;
 
   constructor(
-    private cartService: CartService,
+    public cartService: CartService,
     private productService: ProductService,
     private cdr: ChangeDetectorRef
   ) {}

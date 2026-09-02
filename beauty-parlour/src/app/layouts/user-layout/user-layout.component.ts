@@ -22,7 +22,7 @@ import { Subscription } from 'rxjs';
     CommonModule, AsyncPipe, DecimalPipe,
     RouterOutlet, RouterLink, RouterLinkActive,
     MatIconModule, MatButtonModule, MatMenuModule, MatBadgeModule, MatDividerModule,
-    SmokyTextComponent
+    SmokyTextComponent,
   ],
   templateUrl: './user-layout.component.html',
   styleUrl: './user-layout.component.scss'
@@ -35,6 +35,20 @@ export class UserLayoutComponent implements OnInit, OnDestroy {
   private lastScrollY = 0;
   private isBrowser: boolean;
   private routerSub: Subscription | null = null;
+
+  get whatsAppNumber(): string {
+    return environment.whatsAppNumber || '919876543210';
+  }
+
+  get whatsAppConciergeUrl(): string {
+    const phone = this.whatsAppNumber.replace(/[^0-9]/g, '');
+    const msg = encodeURIComponent('Hi Sindhura Makeovers! I would like to inquire about your parlour services & bridal bookings.');
+    return `https://wa.me/${phone}?text=${msg}`;
+  }
+
+  private animObserver: IntersectionObserver | null = null;
+
+  private headerResizeObserver: ResizeObserver | null = null;
 
   constructor(
     private authService: AuthService,
@@ -52,19 +66,93 @@ export class UserLayoutComponent implements OnInit, OnDestroy {
 
     this.lastScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
 
+    this.initHeaderMeasurement();
+
     this.routerSub = this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe(() => {
       this.navHidden = false;
       this.isScrolled = false;
       this.lastScrollY = 0;
+      this.closeMobileMenu();
+      this.updateHeaderHeight();
+      setTimeout(() => this.init3DScrollObserver(), 120);
     });
+
+    setTimeout(() => {
+      this.updateHeaderHeight();
+      this.init3DScrollObserver();
+    }, 150);
   }
 
   ngOnDestroy(): void {
     if (this.routerSub) {
       this.routerSub.unsubscribe();
     }
+    if (this.animObserver) {
+      this.animObserver.disconnect();
+    }
+    if (this.headerResizeObserver) {
+      this.headerResizeObserver.disconnect();
+    }
+  }
+
+  private initHeaderMeasurement(): void {
+    if (!this.isBrowser) return;
+    this.updateHeaderHeight();
+
+    const header = document.querySelector('.top-header-sticky-wrapper') as HTMLElement;
+    if (header && typeof ResizeObserver !== 'undefined') {
+      this.headerResizeObserver = new ResizeObserver(() => {
+        this.updateHeaderHeight();
+      });
+      this.headerResizeObserver.observe(header);
+    }
+
+    window.addEventListener('resize', () => this.updateHeaderHeight(), { passive: true });
+  }
+
+  private updateHeaderHeight(): void {
+    if (!this.isBrowser) return;
+    const header = document.querySelector('.top-header-sticky-wrapper') as HTMLElement;
+    if (header) {
+      const height = Math.ceil(header.getBoundingClientRect().height);
+      if (height > 0) {
+        document.documentElement.style.setProperty('--user-header-height', `${height}px`);
+      }
+    }
+  }
+
+  init3DScrollObserver(): void {
+    if (!this.isBrowser) return;
+
+    this.ngZone.runOutsideAngular(() => {
+      if (this.animObserver) {
+        this.animObserver.disconnect();
+      }
+
+      this.animObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('anim-visible');
+              this.animObserver?.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.05, rootMargin: '0px 0px -25px 0px' }
+      );
+
+      const targets = document.querySelectorAll('.anim-3d:not(.anim-visible)');
+      targets.forEach((el: Element) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          el.classList.add('anim-visible');
+        } else {
+          this.animObserver!.observe(el);
+        }
+      });
+    });
   }
 
   @HostListener('window:scroll', [])
@@ -113,16 +201,6 @@ export class UserLayoutComponent implements OnInit, OnDestroy {
     return this.authService.getCurrentUser()?.email || '';
   }
 
-  get userProfileImage(): string | null {
-    const user = this.authService.getCurrentUser();
-    if (!user?.profileImage) return null;
-    // Handle both relative and absolute URLs
-    if (user.profileImage.startsWith('http')) {
-      return user.profileImage;
-    }
-    return `${environment.apiUrl.replace('/api', '')}${user.profileImage}`;
-  }
-
   currentYear = new Date().getFullYear();
 
   scrollToTop(): void {
@@ -144,4 +222,3 @@ export class UserLayoutComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 }
-

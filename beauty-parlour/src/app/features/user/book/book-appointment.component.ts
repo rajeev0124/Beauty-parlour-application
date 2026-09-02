@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,6 +17,7 @@ import { AppointmentService } from '../../../core/services/appointment.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart.service';
+import { WhatsAppService } from '../../../core/services/whatsapp.service';
 import { Service } from '../../../core/models/service.model';
 import { Staff } from '../../../core/models/staff.model';
 import { Product } from '../../../core/models/product.model';
@@ -35,7 +36,7 @@ import { Product } from '../../../core/models/product.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class BookAppointmentComponent implements OnInit {
+export class BookAppointmentComponent implements OnInit, AfterViewInit {
   step = 1;
   bookingForm: FormGroup;
   submitted = false;
@@ -62,15 +63,17 @@ export class BookAppointmentComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private router: Router,
+    private route: ActivatedRoute,
     private serviceService: ServiceService,
     private staffService: StaffService,
     private appointmentService: AppointmentService,
     private authService: AuthService,
     private productService: ProductService,
     public cartService: CartService,
-    private cdr: ChangeDetectorRef
+    private whatsAppService: WhatsAppService,
+    private cdr: ChangeDetectorRef,
+    private el: ElementRef
   ) {
-    // Initialize minDate to today at midnight
     const today = new Date();
     this.minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     
@@ -98,6 +101,7 @@ export class BookAppointmentComponent implements OnInit {
       next: (services) => {
         this.services = services;
         this.loadingData = false;
+        this.checkQueryParamService();
         this.cdr.markForCheck();
       },
       error: () => {
@@ -122,8 +126,50 @@ export class BookAppointmentComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    if (typeof window !== 'undefined') {
+      requestAnimationFrame(() => {
+        const targets = this.el.nativeElement.querySelectorAll('.anim-3d');
+        targets.forEach((el: Element) => el.classList.add('anim-visible'));
+      });
+    }
+  }
+
+  private checkQueryParamService(): void {
+    const serviceParam = this.route.snapshot.queryParams['service'];
+    if (serviceParam && this.services.length > 0) {
+      const match = this.services.find(s => 
+        s._id === serviceParam || 
+        s.name.toLowerCase() === serviceParam.toLowerCase() ||
+        s.name.toLowerCase().includes(serviceParam.toLowerCase())
+      );
+      if (match) {
+        this.bookingForm.patchValue({ service: match.name });
+      }
+    }
+  }
+
   get selectedService(): Service | undefined {
     return this.services.find(s => s.name === this.bookingForm.get('service')?.value);
+  }
+
+  get selectedStylist(): Staff | undefined {
+    return this.stylists.find(s => s.name === this.bookingForm.get('stylist')?.value);
+  }
+
+  quickNotes = [
+    'Sensitive Skin',
+    'Quiet Session Preferred',
+    'Fragrance Allergy',
+    'Special Occasion / Bridal'
+  ];
+
+  addQuickNote(tag: string): void {
+    const current = this.bookingForm.get('notes')?.value || '';
+    if (current.includes(tag)) return;
+    const updated = current ? `${current}, ${tag}` : tag;
+    this.bookingForm.patchValue({ notes: updated });
+    this.cdr.markForCheck();
   }
 
   updateRecommendedProducts(): void {
@@ -140,11 +186,11 @@ export class BookAppointmentComponent implements OnInit {
     // Smart matching based on service keyword
     let matches: Product[] = [];
     if (svcCategory.includes('facial') || svcCategory.includes('skin') || svcName.includes('glow') || svcName.includes('facial')) {
-      matches = this.allProducts.filter(p => p.category === 'skincare' || p.category === 'serums' || p.category === 'cleansers');
+      matches = this.allProducts.filter(p => p.category === 'skincare' || p.category === 'skin' || p.category === 'serums');
     } else if (svcCategory.includes('hair') || svcName.includes('hair') || svcName.includes('conditioning') || svcName.includes('keratin')) {
-      matches = this.allProducts.filter(p => p.category === 'haircare' || p.category === 'masks');
+      matches = this.allProducts.filter(p => p.category === 'haircare' || p.category === 'hair');
     } else if (svcCategory.includes('makeup') || svcCategory.includes('bridal')) {
-      matches = this.allProducts.filter(p => p.category === 'skincare' || p.category === 'tools');
+      matches = this.allProducts.filter(p => p.category === 'makeup' || p.category === 'tools');
     }
 
     if (matches.length < 3) {
@@ -186,54 +232,69 @@ export class BookAppointmentComponent implements OnInit {
     this.cdr.markForCheck();
     
     const formVal = this.bookingForm.value;
-    const user = this.authService.getCurrentUser();
     const selectedSvc = this.selectedService;
     const selectedStaff = this.stylists.find(s => s.name === formVal.stylist);
 
-    // Format date to YYYY-MM-DD for backend compatibility
+    // Format date string
     const dateObj = new Date(formVal.date);
-    const formattedDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+    const formattedDate = `${dateObj.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`;
 
-    const appointmentData: any = {
-      userId: user?._id || '',
-      userName: formVal.name,
-      serviceId: selectedSvc?._id || '',
+    // 1. Send via WhatsApp Integration
+    this.whatsAppService.sendAppointmentBooking({
+      customerName: formVal.name,
+      phone: formVal.phone,
+      email: formVal.email,
       serviceName: selectedSvc?.name || formVal.service,
+      price: selectedSvc?.price,
+      duration: selectedSvc?.duration,
       date: formattedDate,
       time: formVal.time,
-      notes: formVal.notes || ''
-      // Note: status is set automatically by backend to 'pending'
-    };
+      stylistName: selectedStaff?.name || formVal.stylist || undefined,
+      notes: formVal.notes || undefined
+    });
 
-    // Only add staff fields if a stylist was selected
-    if (selectedStaff) {
-      appointmentData.staffId = selectedStaff._id;
-      appointmentData.staffName = selectedStaff.name;
-    }
+    // 2. Also register in local memory
+    this.appointmentService.create({
+      userName: formVal.name,
+      serviceName: selectedSvc?.name || formVal.service,
+      serviceId: selectedSvc?._id || 's1',
+      date: dateObj.toISOString(),
+      time: formVal.time,
+      staffName: selectedStaff?.name,
+      notes: formVal.notes
+    }).subscribe();
 
-    this.appointmentService.create(appointmentData).subscribe({
-      next: () => {
-        this.submitting = false;
-        this.submitted = true;
-        this.cdr.markForCheck();
-        this.snackBar.open('🎉 Appointment booked successfully!', 'OK', { 
-          duration: 6000,
-          panelClass: ['success-snackbar'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-      },
-      error: (err) => {
-        this.submitting = false;
-        this.cdr.markForCheck();
-        console.error('Booking error:', err);
-        this.snackBar.open('Failed to book appointment. Please try again.', 'Retry', { 
-          duration: 6000,
-          panelClass: ['error-snackbar'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-      }
+    setTimeout(() => {
+      this.submitting = false;
+      this.submitted = true;
+      this.cdr.markForCheck();
+      this.snackBar.open('✨ Opening WhatsApp to confirm your appointment...', 'OK', { 
+        duration: 5000,
+        panelClass: ['success-snackbar'],
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
+    }, 100);
+  }
+
+  resendToWhatsApp(): void {
+    const formVal = this.bookingForm.value;
+    const selectedSvc = this.selectedService;
+    const selectedStaff = this.stylists.find(s => s.name === formVal.stylist);
+    const dateObj = new Date(formVal.date);
+    const formattedDate = `${dateObj.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`;
+
+    this.whatsAppService.sendAppointmentBooking({
+      customerName: formVal.name,
+      phone: formVal.phone,
+      email: formVal.email,
+      serviceName: selectedSvc?.name || formVal.service,
+      price: selectedSvc?.price,
+      duration: selectedSvc?.duration,
+      date: formattedDate,
+      time: formVal.time,
+      stylistName: selectedStaff?.name || formVal.stylist || undefined,
+      notes: formVal.notes || undefined
     });
   }
 

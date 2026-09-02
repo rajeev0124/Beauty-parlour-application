@@ -28,6 +28,10 @@
   text-align: center;
   overflow: hidden;
 
+  @media (max-width: 768px) {
+    padding: 40px 16px 20px;
+  }
+
   .hero-glow-lights {
     position: absolute;
     top: -60px;
@@ -102,12 +106,14 @@
       gap: 10px;
       flex-wrap: wrap;
       justify-content: center;
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       padding: 6px;
       border-radius: 9999px;
       border: 1px solid #EDDBDF;
-      box-shadow: 0 4px 16px rgba(28, 28, 28, 0.04);
+      box-shadow: 0 4px 18px rgba(28, 28, 28, 0.04);
+      max-width: 100%;
 
       .gallery-filter-btn {
         display: inline-flex;
@@ -122,6 +128,8 @@
         font-weight: 600;
         font-family: inherit;
         cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
         transition: all 0.25s ease;
 
         .tab-icon {
@@ -137,15 +145,62 @@
           background: #FBF0F3;
         }
 
+        &:active {
+          transform: scale(0.96);
+        }
+
         &.active {
           background: #1C1C1C;
           color: #FFFFFF;
           font-weight: 700;
-          box-shadow: 0 4px 12px rgba(28, 28, 28, 0.15);
+          box-shadow: 0 4px 14px rgba(28, 28, 28, 0.18);
 
           .tab-icon {
             color: #E8D5CE;
           }
+        }
+      }
+
+      // Mobile View: Seamless App-Style Horizontal Swipe Bar
+      @media (max-width: 768px) {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        width: 100%;
+        max-width: 100%;
+        padding: 6px 8px;
+        gap: 8px;
+        border-radius: 9999px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        .gallery-filter-btn {
+          padding: 8px 16px;
+          font-size: 13px;
+          scroll-snap-align: center;
+
+          .tab-icon {
+            font-size: 15px;
+            width: 15px;
+            height: 15px;
+          }
+        }
+      }
+
+      @media (max-width: 480px) {
+        padding: 5px 6px;
+        gap: 6px;
+
+        .gallery-filter-btn {
+          padding: 7px 13px;
+          font-size: 12.5px;
+          gap: 5px;
         }
       }
     }
@@ -159,6 +214,10 @@
   max-width: 1360px;
   margin: 0 auto;
   padding: 30px 20px 0;
+
+  @media (max-width: 640px) {
+    padding: 20px 16px 0;
+  }
 }
 
 .pure-video-grid {
@@ -292,6 +351,144 @@
           }
         }
       }
+    }
+  }
+}
+
+// =============================================================
+// GALLERY LOOKBOOK — COMPLETE RESPONSIVE OVERRIDES
+// Laptop (≤1280px) · Tablet (≤992px) · Mobile (≤640px) · XS (≤420px)
+// =============================================================
+
+// ── LAPTOP (≤1280px) ─────────────────────────────────────────
+@media (max-width: 1280px) {
+  .luxury-gallery-hero {
+    padding: 50px 20px 24px;
+  }
+
+  .luxury-gallery-container {
+    padding: 24px 20px 0;
+  }
+
+  .pure-video-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .pure-video-card .video-viewport-wrapper {
+    height: 400px;
+  }
+}
+
+// ── TABLET (≤992px) ──────────────────────────────────────────
+@media (max-width: 992px) {
+  .luxury-gallery-hero {
+    padding: 44px 18px 20px;
+
+    .hero-content-wrapper {
+      .gallery-main-title {
+        font-size: clamp(28px, 4vw, 38px);
+        margin: 12px 0 8px;
+      }
+
+      .gallery-sub-title {
+        font-size: 14.5px;
+        margin-bottom: 22px;
+      }
+    }
+  }
+
+  .luxury-gallery-container {
+    padding: 20px 16px 0;
+  }
+
+  .pure-video-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .pure-video-card .video-viewport-wrapper {
+    height: 380px;
+  }
+}
+
+// ── MOBILE (≤640px) ──────────────────────────────────────────
+@media (max-width: 640px) {
+  .luxury-gallery-hero {
+    padding: 34px 14px 16px;
+
+    .hero-content-wrapper {
+      .gallery-main-title {
+        font-size: clamp(22px, 6.5vw, 30px);
+        line-height: 1.2;
+        margin: 10px 0 6px;
+      }
+
+      .gallery-sub-title {
+        font-size: 13.5px;
+        line-height: 1.5;
+        margin-bottom: 18px;
+        padding: 0 4px;
+      }
+    }
+  }
+
+  .luxury-gallery-container {
+    padding: 14px 12px 0;
+  }
+
+  .pure-video-grid {
+    grid-template-columns: 1fr;
+    max-width: 460px;
+    margin: 0 auto;
+    gap: 18px;
+  }
+
+  .pure-video-card {
+    border-radius: 20px;
+
+    .video-viewport-wrapper {
+      height: 370px;
+      border-radius: 18px;
+
+      .card-floating-action .floating-instagram-btn {
+        padding: 8px 18px;
+        font-size: 12px;
+
+        .original-ig-icon {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+}
+
+// ── EXTRA SMALL (≤420px) ─────────────────────────────────────
+@media (max-width: 420px) {
+  .luxury-gallery-hero {
+    padding: 28px 10px 12px;
+
+    .hero-content-wrapper .gallery-main-title {
+      font-size: clamp(20px, 7vw, 25px);
+    }
+  }
+
+  .luxury-gallery-container {
+    padding: 10px 8px 0;
+  }
+
+  .pure-video-grid {
+    max-width: 100%;
+    gap: 14px;
+  }
+
+  .pure-video-card .video-viewport-wrapper {
+    height: 330px;
+
+    .card-floating-action .floating-instagram-btn {
+      padding: 7px 14px;
+      font-size: 11.5px;
     }
   }
 }

@@ -1,16 +1,20 @@
 <div class="services-page tinore-services-page">
-  <!-- Tinore Luxury Hero Banner -->
-  <section class="tinore-services-hero">
+  <!-- Tinore Luxury Hero Banner with 3D Parallax & Float -->
+  <section class="tinore-services-hero anim-3d anim-fade-up">
+    <!-- Responsive artistic background elements (Transparent artwork) -->
+    <div class="hero-art-lotus" aria-hidden="true">
+      <img src="/hero-lotus.png" alt="" class="lotus-img" />
+    </div>
+    <div class="hero-art-silhouette" aria-hidden="true">
+      <img src="/hero-silhouette.png" alt="" class="silhouette-img" />
+    </div>
+    <div class="tinore-hero-bg-overlay"></div>
     <div class="tinore-hero-content">
-      <div class="tinore-pill-badge">
-        <mat-icon>auto_awesome</mat-icon>
-        <span>Expert Beauticians • Premium Beauty Services</span>
-      </div>
-      <h1 class="tinore-services-title">Curated Beauty <span class="tinore-hero-highlight">Parlour Treatments</span></h1>
+      <h1 class="tinore-services-title">Curated Beauty & <span class="tinore-hero-highlight">Bridal Rituals</span></h1>
       <p class="tinore-services-subtitle">
-        From expert haircuts and vibrant colour to relaxing facials and bridal packages — we have every beauty service you need, all in one place.
+        Explore our bespoke menu of precision hair couture, clinical skincare therapies, artisan nail aesthetics, and signature South Indian bridal makeovers.
       </p>
-      <div class="tinore-trust-ribbon">
+      <div class="tinore-trust-ribbon anim-3d anim-card-pop">
         <div class="trust-ribbon-item">
           <mat-icon>verified</mat-icon>
           <span>Certified Master Stylists</span>
@@ -18,7 +22,7 @@
         <div class="trust-divider"></div>
         <div class="trust-ribbon-item">
           <mat-icon>auto_awesome</mat-icon>
-          <span>Premium Beauty Products</span>
+          <span>Bio-Botanical Actives</span>
         </div>
         <div class="trust-divider"></div>
         <div class="trust-ribbon-item">
@@ -30,14 +34,14 @@
   </section>
 
   <div class="tinore-services-container">
-    <!-- Category Filter Bar -->
-    <div class="tinore-category-bar">
+    <!-- Category Filter Bar with 3D Elevation -->
+    <div class="tinore-category-bar anim-3d anim-fade-up">
       <div class="category-scroll-wrapper">
         @for (cat of categories; track cat.key) {
           <button 
             class="tinore-cat-tab" 
             [class.active]="activeCategory === cat.key"
-            (click)="activeCategory = cat.key">
+            (click)="selectCategory(cat.key, $event)">
             <mat-icon class="cat-icon">{{ cat.icon }}</mat-icon>
             <span class="cat-label">{{ cat.label }}</span>
           </button>
@@ -61,7 +65,7 @@
         }
       </div>
     } @else if (errorMessage) {
-      <div class="tinore-error-card">
+      <div class="tinore-error-card anim-3d anim-fade-up">
         <mat-icon class="error-icon">error_outline</mat-icon>
         <h3>Unable to Load Services</h3>
         <p>{{ errorMessage }}</p>
@@ -71,26 +75,47 @@
         </button>
       </div>
     } @else {
-      <!-- Services Grid -->
+      <!-- Services Grid with 3D Card Hover & Stagger Reveal -->
       <div class="tinore-services-grid">
         @for (service of filteredServices; track service._id; let i = $index) {
-          <article class="tinore-service-card" [style.animation-delay]="(i * 50) + 'ms'">
-            <!-- Card Media Section -->
-            <div class="service-media-wrap">
+          <article 
+            class="tinore-service-card anim-3d anim-card-pop" 
+            [style.transition-delay]="((i % 6) * 0.08) + 's'">
+            <!-- 3D Shine Effect overlay -->
+            <div class="card-glass-shine" aria-hidden="true"></div>
+
+            <!-- Card Media Section (Click to Open Authentic Service Details) -->
+            <div 
+              class="service-media-wrap" 
+              (click)="openServiceDetails(service, i)"
+              role="button"
+              tabindex="0"
+              (keydown.enter)="openServiceDetails(service, i)"
+              aria-label="Click image to view complete details for {{ service.name }}">
               @if (!hasImageError(service._id)) {
                 <img 
-                  [src]="getServiceImage(service.category, i)" 
+                  [src]="getServiceImage(service, i)" 
                   [alt]="service.name"
                   class="service-cover-img"
                   loading="lazy"
                   (error)="onImageError($event, service._id)"
                 />
               }
+              <div class="service-media-gradient"></div>
+
+              <!-- Quick View / Click Indicator Overlay -->
+              <div class="service-image-click-hint">
+                <span class="click-hint-pill">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Explore Details</span>
+                </span>
+              </div>
+              
               <div class="service-fallback" [class.show]="hasImageError(service._id)">
                 <mat-icon>{{ getServiceIcon(service.category) }}</mat-icon>
               </div>
 
-              <!-- Badges -->
+              <!-- 3D Floating Badges -->
               <span class="service-cat-badge">{{ service.category || 'Ritual' }}</span>
               <span class="service-price-badge">From ₹{{ service.price | number }}</span>
             </div>
@@ -102,16 +127,21 @@
                   <mat-icon>schedule</mat-icon>
                   {{ service.duration }} min
                 </span>
-
+                @if (service.popular) {
+                  <span class="popular-pill">
+                    <mat-icon>star</mat-icon>
+                    Popular
+                  </span>
+                }
               </div>
 
-              <h3 class="service-item-title">{{ service.name }}</h3>
+              <h3 class="service-item-title" (click)="openServiceDetails(service, i)" role="button" tabindex="0">{{ service.name }}</h3>
               <p class="service-item-desc">{{ service.description || 'Premium beauty treatment curated with high-potency bio-botanicals and bespoke artisan styling.' }}</p>
 
               <div class="service-card-action">
                 <a routerLink="/book" [queryParams]="{service: service._id}" class="tinore-book-btn">
                   <span>Book Ritual</span>
-                  <mat-icon>calendar_today</mat-icon>
+                  <mat-icon class="btn-arrow">arrow_forward</mat-icon>
                 </a>
               </div>
             </div>
@@ -120,37 +150,319 @@
       </div>
 
       @if (filteredServices.length === 0) {
-        <div class="tinore-empty-card">
+        <div class="tinore-empty-card anim-3d anim-fade-up">
           <mat-icon class="empty-icon">search_off</mat-icon>
           <h3>No rituals found</h3>
           <p>No experiences currently available in this category.</p>
-          <button class="tinore-btn-primary" (click)="activeCategory = 'all'">
+          <button class="tinore-btn-primary" (click)="selectCategory('all')">
             <span>View All Services Available</span>
           </button>
         </div>
       }
     }
 
-    <!-- Bottom Bespoke Rituals CTA Banner -->
-    <section class="tinore-services-cta">
+    <!-- Bottom Bespoke Rituals CTA Banner with Warm Silk & Champagne Rose Luxury Atmosphere -->
+    <section class="tinore-services-cta anim-3d anim-card-pop">
       <div class="cta-inner-card">
-        <div class="cta-badge">
-          <mat-icon>auto_awesome</mat-icon>
-          <span>Personalized Consultation</span>
+        <!-- Ambient Silk & Champagne Rose Atmospheric Glows -->
+        <div class="silk-ambient-bg" aria-hidden="true">
+          <div class="silk-glow-top"></div>
+          <div class="silk-glow-bottom"></div>
+          <div class="silk-glow-center"></div>
+          <div class="silk-pattern-overlay"></div>
+          
+          <!-- Subtle Luxury Corner Flourishes -->
+          <svg class="cta-flourish flourish-top-left" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="url(#flourishGrad1)" stroke-width="1" stroke-dasharray="3 4"/>
+            <circle cx="50" cy="50" r="30" stroke="url(#flourishGrad1)" stroke-width="0.75"/>
+            <path d="M50 8 L50 92 M8 50 L92 50" stroke="url(#flourishGrad1)" stroke-width="0.5"/>
+            <defs>
+              <linearGradient id="flourishGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#C9748A" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#C9A96E" stop-opacity="0.1"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <svg class="cta-flourish flourish-bottom-right" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="url(#flourishGrad2)" stroke-width="1" stroke-dasharray="3 4"/>
+            <circle cx="50" cy="50" r="30" stroke="url(#flourishGrad2)" stroke-width="0.75"/>
+            <path d="M50 8 L50 92 M8 50 L92 50" stroke="url(#flourishGrad2)" stroke-width="0.5"/>
+            <defs>
+              <linearGradient id="flourishGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#C9A96E" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#C9748A" stop-opacity="0.1"/>
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
-        <h2>Looking for a Bespoke Beauty Package?</h2>
-        <p>Our lead artists create custom bridal, hair restoration, and holistic skin rejuvenation packages tailored to your schedule.</p>
-        <div class="cta-btns">
-          <a routerLink="/book" class="tinore-btn-primary">
-            <mat-icon>calendar_month</mat-icon>
-            <span>Book a Consultation</span>
-          </a>
-          <a routerLink="/contact" class="tinore-btn-outline cta-outline">
-            <mat-icon>chat</mat-icon>
-            <span>Contact Concierge</span>
-          </a>
+
+        <div class="cta-content-inner">
+
+          <!-- Editorial Serif Heading -->
+          <h2 class="cta-heading">
+            Looking for a <span class="cta-heading-highlight">Bespoke Beauty Package?</span>
+          </h2>
+
+          <!-- Subtitle / Narrative Description -->
+          <p class="cta-subtitle">
+            Our lead artists create custom bridal, hair restoration, and holistic skin rejuvenation packages tailored to your schedule.
+          </p>
+
+          <!-- Interactive Action Buttons with Home Page Hero 3D Animations -->
+          <div class="cta-btns tinore-hero-btn-row">
+            <!-- 3D Cube Flip Button for 'Book a Consultation' -->
+            <a routerLink="/book" class="tinore-btn-cube-wrap" aria-label="Book a Consultation">
+              <span class="cube-inner">
+                <!-- Face 1 (Front / Rest) -->
+                <span class="cube-face cube-face-front">
+                  <mat-icon>calendar_month</mat-icon>
+                  <span>Book a Consultation</span>
+                </span>
+                <!-- Face 2 (Back / Flipped on Hover) -->
+                <span class="cube-face cube-face-back">
+                  <span>Reserve Your Slot</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                </span>
+              </span>
+            </a>
+
+            <!-- Interactive Label Slide Button with Animated Circular Badge for 'Contact Concierge' -->
+            <a routerLink="/contact" class="tinore-btn-slide-wrap" aria-label="Contact Concierge">
+              <span class="btn-slide-label-stack">
+                <!-- Invisible natural spacer -->
+                <span class="slide-spacer">Contact Concierge</span>
+                <!-- Top resting label (slides up on hover) -->
+                <span class="slide-label slide-label-rest">Contact Concierge</span>
+                <!-- Bottom incoming duplicate (slides in on hover) -->
+                <span class="slide-label slide-label-hover">Chat with Concierge</span>
+              </span>
+              <!-- Animated Badge Icon that swaps on angle -->
+              <span class="btn-slide-badge">
+                <span class="badge-icon-rest">
+                  <mat-icon>chat</mat-icon>
+                </span>
+                <span class="badge-icon-hover">
+                  <mat-icon>arrow_outward</mat-icon>
+                </span>
+              </span>
+            </a>
+          </div>
+
+          <!-- Trust Badges & Value Strip -->
+          <div class="cta-perks-row" aria-label="Package Highlights">
+            <div class="cta-perk">
+              <mat-icon>verified</mat-icon>
+              <span>Complimentary Face Diagnostic</span>
+            </div>
+            <span class="perk-divider" aria-hidden="true">•</span>
+            <div class="cta-perk">
+              <mat-icon>spa</mat-icon>
+              <span>100% Bio-Botanical Formulations</span>
+            </div>
+            <span class="perk-divider" aria-hidden="true">•</span>
+            <div class="cta-perk">
+              <mat-icon>support_agent</mat-icon>
+              <span>Dedicated Lead Master Stylist</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   </div>
 </div>
+
+<!-- =============================================================
+     ✨ 100% ACCURATE & AUTHENTIC SERVICE DETAILS MODAL DIALOG
+============================================================= -->
+@if (isModalOpen && selectedService && selectedServiceDetail) {
+  <div 
+    class="service-modal-backdrop" 
+    (click)="closeModal()" 
+    aria-modal="true" 
+    role="dialog"
+    aria-labelledby="modalServiceTitle">
+    <div class="service-modal-container" (click)="$event.stopPropagation()">
+      
+      <!-- Mobile Pull / Drag Indicator Bar (Tap or Swipe to dismiss) -->
+      <div class="mobile-sheet-pull-bar" (click)="closeModal()" aria-label="Tap to close">
+        <span class="sheet-pill-handle"></span>
+      </div>
+
+      <!-- Top Image Hero Section -->
+      <div class="modal-hero-cover">
+        <img 
+          [src]="getServiceImage(selectedService, selectedServiceIndex)" 
+          [alt]="selectedService.name" 
+          class="modal-cover-img"
+        />
+        <div class="modal-cover-gradient"></div>
+
+        <!-- Floating Chips -->
+        <div class="modal-top-badges">
+          <span class="modal-badge-category">{{ getCategoryLabel(selectedService.category) }}</span>
+          <span class="modal-badge-duration">
+            <mat-icon>schedule</mat-icon>
+            {{ selectedService.duration }} Mins
+          </span>
+          <span class="modal-badge-price">₹{{ selectedService.price | number }}</span>
+          @if (selectedService.popular) {
+            <span class="modal-badge-popular">
+              <mat-icon>star</mat-icon>
+              Popular
+            </span>
+          }
+        </div>
+
+        <!-- Close Button (Top Right) -->
+        <button 
+          type="button" 
+          class="modal-close-trigger" 
+          (click)="closeModal()" 
+          aria-label="Close service details">
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <!-- Modal Header Titles inside Banner -->
+        <div class="modal-banner-headline">
+          <h2 id="modalServiceTitle" class="modal-service-name">{{ selectedService.name }}</h2>
+          <p class="modal-service-tagline">{{ selectedServiceDetail.tagline }}</p>
+        </div>
+      </div>
+
+      <!-- Scrollable Authentic Matter Content Area -->
+      <div class="modal-body-scroll">
+        
+        <!-- 3 Feature Highlight Cards -->
+        <div class="modal-highlights-row">
+          @for (h of selectedServiceDetail.highlights; track h.title) {
+            <div class="highlight-pill-card">
+              <div class="highlight-icon-circle">
+                <mat-icon>{{ h.icon }}</mat-icon>
+              </div>
+              <div class="highlight-text-wrap">
+                <strong class="h-title">{{ h.title }}</strong>
+                <span class="h-sub">{{ h.text }}</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- 1. Treatment Overview -->
+        <section class="modal-section-block">
+          <div class="section-heading-row">
+            <mat-icon class="heading-icon">spa</mat-icon>
+            <h3 class="section-title">Ritual Overview & Essence</h3>
+          </div>
+          <p class="section-narrative-text">
+            {{ selectedServiceDetail.fullOverview }}
+          </p>
+        </section>
+
+        <!-- 2. Step-by-Step Procedure Included -->
+        <section class="modal-section-block">
+          <div class="section-heading-row">
+            <mat-icon class="heading-icon">format_list_numbered</mat-icon>
+            <h3 class="section-title">What’s Included & Step-by-Step Process</h3>
+          </div>
+          <div class="steps-vertical-timeline">
+            @for (st of selectedServiceDetail.steps; track st.step) {
+              <div class="timeline-step-item">
+                <div class="step-badge-number">{{ st.step }}</div>
+                <div class="step-narrative">
+                  <h4 class="step-name">{{ st.title }}</h4>
+                  <p class="step-explanation">{{ st.desc }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- 3. Key Benefits & Clinical Results -->
+        <section class="modal-section-block">
+          <div class="section-heading-row">
+            <mat-icon class="heading-icon">verified</mat-icon>
+            <h3 class="section-title">Key Benefits & Proven Results</h3>
+          </div>
+          <div class="benefits-two-column-grid">
+            @for (benefit of selectedServiceDetail.benefits; track benefit) {
+              <div class="benefit-card-bullet">
+                <mat-icon class="check-icon">check_circle</mat-icon>
+                <span class="benefit-label">{{ benefit }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- 4. Formulations & Suitable Profile Duo -->
+        <div class="info-duo-cards-row">
+          <div class="duo-info-card">
+            <div class="duo-card-header">
+              <mat-icon>science</mat-icon>
+              <h4>Formulations & Products</h4>
+            </div>
+            <p>{{ selectedServiceDetail.productsUsed }}</p>
+          </div>
+
+          <div class="duo-info-card">
+            <div class="duo-card-header">
+              <mat-icon>face</mat-icon>
+              <h4>Ideal Candidate & Profile</h4>
+            </div>
+            <p>{{ selectedServiceDetail.suitableFor }}</p>
+          </div>
+        </div>
+
+        <!-- 5. Master Stylist Aftercare & Maintenance Tips -->
+        <section class="modal-section-block aftercare-block">
+          <div class="section-heading-row">
+            <mat-icon class="heading-icon">tips_and_updates</mat-icon>
+            <h3 class="section-title">Master Stylist Aftercare & Home Maintenance</h3>
+          </div>
+          <div class="aftercare-tips-box">
+            @for (tip of selectedServiceDetail.aftercare; track tip) {
+              <div class="aftercare-tip-row">
+                <mat-icon class="tip-star">auto_awesome</mat-icon>
+                <span class="tip-text">{{ tip }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Bottom Sticky Action Bar -->
+      <div class="modal-sticky-footer">
+        <div class="footer-price-col">
+          <span class="investment-label">Service Fee</span>
+          <div class="price-row">
+            <span class="currency">₹</span>
+            <span class="amount">{{ selectedService.price | number }}</span>
+            <span class="duration-tag">• {{ selectedService.duration }} mins</span>
+          </div>
+        </div>
+
+        <div class="footer-actions-group">
+          <button 
+            type="button" 
+            class="btn-whatsapp-modal" 
+            (click)="quickBookOnWhatsApp(selectedService)"
+            title="Book directly on WhatsApp">
+            <svg class="wa-icon-svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            <span class="btn-text">WhatsApp</span>
+          </button>
+          <a 
+            routerLink="/book" 
+            [queryParams]="{service: selectedService._id}" 
+            (click)="closeModal()" 
+            class="btn-book-ritual-modal">
+            <mat-icon>calendar_month</mat-icon>
+            <span>Book Appointment</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

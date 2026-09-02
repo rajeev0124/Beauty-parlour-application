@@ -1,10 +1,10 @@
 export const environment = {
   production: true,
-  // This will be replaced with actual deployed backend URL
-  // For Render: https://your-app-name.onrender.com/api
-  apiUrl: 'https://beauty-parlour-application.onrender.com/api',
-  // Note: In production, configure RAZORPAY_KEY environment variable at build time
-  // Fallback to test key for demo purposes
+  apiUrl: '',
+  // Parlour WhatsApp Business Phone Number (with country code, e.g. 919876543210)
+  whatsAppNumber: '919876543210',
+  // Optional Google Sheet ID for dynamic live updates by owner (leave empty to use local data)
+  googleSheetId: '',
   razorpayKey: 'rzp_test_simulation',
   firebaseConfig: {
     apiKey: 'AIzaSyBzmssqi2wBHPKP-H5cRQwfERJ0RmV0RZk',
